@@ -3,7 +3,7 @@ var $ = {
   createRealm(globals) {
     globals = globals || {};
 
-    realm = newGlobal();
+    var realm = newGlobal();
     realm.eval(this.source);
     realm.$.source = this.source;
 
@@ -19,7 +19,7 @@ var $ = {
       globals = {};
     }
 
-    $child = this.createRealm(globals);
+    var $child = this.createRealm(globals);
     $child.evalInNewScript(code, errorCb);
   },
   evalInNewScript(code, errorCb) {

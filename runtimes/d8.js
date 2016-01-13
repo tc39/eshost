@@ -7,6 +7,8 @@ var $ = {
     Realm.eval(realm, this.source);
     var $child = Realm.shared;
     $child.realm = realm;
+    $child.source = this.source;
+    Realm.shared = void 0;
 
     for(var glob in globals) {
       $child.setGlobal(glob, globals[glob]);
@@ -30,9 +32,9 @@ var $ = {
       if (errorCb) errorCb(e);
     }
   },
-  source: $SOURCE,
   setGlobal: function (name, value) {
     this.global[name] = value;
-  }
+  },
+  source: $SOURCE
 };
 Realm.shared = $;
