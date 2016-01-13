@@ -3,7 +3,10 @@ var $ = {
   createRealm(globals) {
     globals = globals || {};
 
-    var realm = newGlobal();
+    var realm;
+    run(this.file, function(newRealm) {
+      realm = newRealm;
+    });
     realm.eval(this.source);
     realm.$.source = this.source;
 
@@ -24,7 +27,8 @@ var $ = {
   },
   evalInNewScript(code, errorCb) {
     try {
-      evaluate(code);
+      /* FIXME: `code` should be executed as a global script, not an eval script. */
+      this.global.eval(code);
     } catch (e) {
       if (errorCb) errorCb(e);
     }
@@ -32,6 +36,6 @@ var $ = {
   setGlobal(name, value) {
     this.global[name] = value;
   },
-  source: $SOURCE
+  source: $SOURCE,
+  file: $FILE
 };
-

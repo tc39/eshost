@@ -157,6 +157,10 @@ hosts.forEach(function (record) {
     });
 
     it('can eval lexical bindings in new scripts', function () {
+      if (type === 'jsc') {
+        // Skip test for JavaScriptCore, see fixme in runtimes/jsc.js.
+        this.skip();
+      }
       return runner.exec(`
         $.evalInNewScript("'use strict'; let x = 3;");
         print(x);

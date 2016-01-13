@@ -1,9 +1,9 @@
 var $ = {
   global: this,
-  createRealm(globals) {
+  createRealm: function(globals) {
     globals = globals || {};
 
-    var realm = newGlobal();
+    var realm = loadWithNewGlobal({script: 'this', name: 'createRealm'});
     realm.eval(this.source);
     realm.$.source = this.source;
 
@@ -13,7 +13,7 @@ var $ = {
 
     return realm.$;
   },
-  evalInNewRealm(code, globals, errorCb) {
+  evalInNewRealm: function(code, globals, errorCb) {
     if (typeof globals === 'function') {
       errorCb = globals;
       globals = {};
@@ -22,16 +22,15 @@ var $ = {
     var $child = this.createRealm(globals);
     $child.evalInNewScript(code, errorCb);
   },
-  evalInNewScript(code, errorCb) {
+  evalInNewScript: function(code, errorCb) {
     try {
-      evaluate(code);
+      load({script: code, name: 'evalInNewScript'});
     } catch (e) {
       if (errorCb) errorCb(e);
     }
   },
-  setGlobal(name, value) {
+  setGlobal: function(name, value) {
     this.global[name] = value;
   },
   source: $SOURCE
 };
-
