@@ -14,13 +14,13 @@ npm install es-host-wrapper
 
 | Host | Supported Platforms | Download | Notes |
 |------|---------------------|----------|-------|
-| Browsers | Any | | Errors reported from Microsoft Edge are all of type Error. |
-| Node | Any | https://nodejs.org | |
+| browser | Any | | Errors reported from Microsoft Edge are all of type Error. |
+| node | Any | https://nodejs.org | |
 | ch | Windows | Built [from source](https://github.com/microsoft/chakracore)| Chakra console host. |
 | d8 | Any | Built [from source](https://github.com/v8/v8) | v8 console host. Errors are reported on stdout. Use $.setGlobal to set properties of global objects in other realms. |
-| jsshell | Any | [Download](https://archive.mozilla.org/pub/firefox/nightly/latest-mozilla-central/) | |
-| JSC | Mac | Built [from source](http://trac.webkit.org/wiki/JavaScriptCore)¹ | |
-| Nashorn | Any | Built [from source](https://wiki.openjdk.java.net/display/Nashorn/Building+Nashorn) | |
+| jsshell | Any | [Download](https://archive.mozilla.org/pub/firefox/nightly/latest-mozilla-central/) | SpiderMonkey console host. |
+| jsc | Mac | Built [from source](http://trac.webkit.org/wiki/JavaScriptCore)¹ | |
+| nashorn | Any | Built [from source](https://wiki.openjdk.java.net/display/Nashorn/Building+Nashorn) | |
 
 1: Also available on your Mac system at `/System/Library/Frameworks/JavaScriptCore.framework/Versions/A/Resources/jsc`.
 
