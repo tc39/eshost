@@ -2,6 +2,8 @@
 
 Es-host-wrapper is a library for executing ECMAScript code uniformly across any ECMAScript host environment. Es-host-wrapper consists of a wrapper around the various ways of executing a host and processing its output (called a Runner) and a runtime library for host-agnostic scripts to use.
 
+For a CLI tool that uses this library to make comparing ECMAScript hosts super easy, see [eshost](https://github.com/bterlson/eshost).
+
 ### Installation
 
 ```
