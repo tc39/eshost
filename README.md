@@ -9,11 +9,18 @@ npm install es-host-wrapper
 ```
 
 ### Supported Hosts
-* Browsers (Tested with Edge, Chrome, and Firefox)
-* Node
-* d8 (v8 console host)
-* jsshell (SpiderMonkey console host)
-* ch.exe (Chakra console host)
+
+| Host | Supported Platforms | Download | Notes |
+|------|---------------------|----------|-------|
+| Browsers | Any | | Errors reported from Microsoft Edge are all of type Error. |
+| Node | Any | https://nodejs.org | |
+| ch | Windows | Built [from source](https://github.com/microsoft/chakracore)| Chakra console host. |
+| d8 | Any | Built [from source](https://github.com/v8/v8) | v8 console host. Errors are reported on stdout. Use $.setGlobal to set properties of global objects in other realms. |
+| jsshell | Any | [Download](https://archive.mozilla.org/pub/firefox/nightly/latest-mozilla-central/) | |
+| JSC | Mac | Built [from source](http://trac.webkit.org/wiki/JavaScriptCore)¹ | |
+| Nashorn | Any | Built [from source](https://wiki.openjdk.java.net/display/Nashorn/Building+Nashorn) | |
+
+1: Also available on your Mac system at `/System/Library/Frameworks/JavaScriptCore.framework/Versions/A/Resources/jsc`.
 
 ### Examples
 
@@ -87,10 +94,3 @@ Scripts are different from eval in that lexical bindings go into the global lexi
 
 #### $.setGlobal(name, value)
 Sets a global property name to value.
-
-### Host-specific notes
-
-* *Microsoft Edge*: All reported errors are of type Error, as Edge does not allow capturing actual error objects via window.onerror.
-* *d8*:
-  * Errors are reported on stdout so error results will also contain much stdout text.
-  * You cannot set properties of other global objects directly. Instead, use `$.setGlobal`.
