@@ -33,6 +33,9 @@ var $ = {
       if (errorCb) errorCb(e);
     }
   },
+  getGlobal(name) {
+    return this.global[name];
+  },
   setGlobal(name, value) {
     this.global[name] = value;
   },

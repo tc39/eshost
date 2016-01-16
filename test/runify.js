@@ -169,6 +169,31 @@ hosts.forEach(function (record) {
       })
     });
 
+    it('can set properties in new realms', function() {
+      return runner.exec(`
+        var sub$ = $.createRealm({});
+        sub$.evalInNewScript("var x = 1");
+        sub$.evalInNewScript("print(x)");
+
+        sub$.setGlobal("x", 2);
+
+        sub$.evalInNewScript("print(x)");
+      `).then(function(result) {
+        assert(result.stdout.match(/^1\r?\n2\r?\n/m), "Unexpected stdout: " + result.stdout + result.stderr);
+      });
+    });
+
+    it('can access properties from new realms', function() {
+      return runner.exec(`
+        var sub$ = $.createRealm({});
+        sub$.evalInNewScript("var x = 1");
+
+        print(sub$.getGlobal("x"));
+      `).then(function(result) {
+        assert(result.stdout.match(/^1\r?\n/m), "Unexpected stdout: " + result.stdout + result.stderr);
+      });
+    });
+
     it('runs in the proper mode', function () {
       return runner.exec(`
         "use strict"
