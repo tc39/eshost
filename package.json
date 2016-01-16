@@ -1,7 +1,7 @@
 {
   "name": "es-host-wrapper",
   "repository": "https://github.com/bterlson/es-host-wrapper",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "Invoke ECMAScript scripts in any command line JS engine.",
   "main": "lib/runify.js",
   "scripts": {
