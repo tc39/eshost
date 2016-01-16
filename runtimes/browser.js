@@ -36,6 +36,9 @@ var $ = {
     document.body.appendChild(s);
     this.onNextError = null;
   },
+  getGlobal: function (name) {
+    return this.global[name];
+  },
   setGlobal: function (name, value) {
     this.global[name] = value;
   },

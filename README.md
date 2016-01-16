@@ -17,7 +17,7 @@ npm install es-host-wrapper
 | browser | Any | | Errors reported from Microsoft Edge are all of type Error. |
 | node | Any | https://nodejs.org | |
 | ch | Windows | Built [from source](https://github.com/microsoft/chakracore)| Chakra console host. |
-| d8 | Any | Built [from source](https://github.com/v8/v8) | v8 console host. Errors are reported on stdout. Use $.setGlobal to set properties of global objects in other realms. |
+| d8 | Any | Built [from source](https://github.com/v8/v8) | v8 console host. Errors are reported on stdout. Use $.getGlobal and $.setGlobal to get and set properties of global objects in other realms. |
 | jsshell | Any | [Download](https://archive.mozilla.org/pub/firefox/nightly/latest-mozilla-central/) | SpiderMonkey console host. |
 | jsc | Mac | Built [from source](http://trac.webkit.org/wiki/JavaScriptCore)¹ | |
 | nashorn | Any | Built [from source](https://wiki.openjdk.java.net/display/Nashorn/Building+Nashorn) | |
@@ -93,6 +93,9 @@ Creates a new realm and evals `code` in that realm. If an error is thrown, it wi
 Creates a new script and evals `code` in that realm. If an error is thrown, it will be passed to the onError callback.
 
 Scripts are different from eval in that lexical bindings go into the global lexical contour rather than being scoped to the eval.
+
+#### $.getGlobal(name)
+Gets a global property name.
 
 #### $.setGlobal(name, value)
 Sets a global property name to value.
