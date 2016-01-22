@@ -204,6 +204,15 @@ hosts.forEach(function (record) {
         assert(result.stdout.match(/^true\r?\n/m), "Unexpected stdout: " + result.stdout + result.stderr);
 
         return runner.exec(`
+          'use strict'
+          function foo() { print(this === undefined) }
+          foo();
+        `)
+      })
+      .then(function(result) {
+        assert(result.stdout.match(/^true\r?\n/m), "Unexpected stdout: " + result.stdout + result.stderr);
+
+        return runner.exec(`
           function foo() { print(this === Function('return this;')()) }
           foo();
         `)
