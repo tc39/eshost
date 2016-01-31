@@ -1,9 +1,8 @@
 {
-  "name": "es-host-wrapper",
-  "repository": "https://github.com/bterlson/es-host-wrapper",
-  "version": "1.2.0",
+  "name": "eshost",
+  "version": "2.0.0",
   "description": "Invoke ECMAScript scripts in any command line JS engine.",
-  "main": "lib/runify.js",
+  "main": "lib/eshost.js",
   "scripts": {
     "test": "mocha test/*",
     "lint": "eslint lib/* bin/* test/*"
@@ -14,10 +13,15 @@
     "eslint": "^1.10.2",
     "mocha": "^2.3.4"
   },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/bterlson/eshost"
+  },
   "dependencies": {
     "error-stack-parser": "^1.3.3",
     "server-destroy": "^1.0.1",
     "socket.io": "^1.3.7",
     "temp": "^0.8.3"
-  }
+  },
+  "homepage": "https://github.com/bterlson/eshost"
 }
