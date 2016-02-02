@@ -1,13 +1,13 @@
-## es-host-wrapper
+## eshost
 
-Es-host-wrapper is a library for executing ECMAScript code uniformly across any ECMAScript host environment. Es-host-wrapper consists of a wrapper around the various ways of executing a host and processing its output (called a Runner) and a runtime library for host-agnostic scripts to use.
+eshost is a library for executing ECMAScript code uniformly across any ECMAScript host environment. eshost consists of a wrapper around the various ways of executing a host and processing its output (called a Runner) and a runtime library for host-agnostic scripts to use.
 
-For a CLI tool that uses this library to make comparing ECMAScript hosts super easy, see [eshost](https://github.com/bterlson/eshost).
+For a CLI tool that uses this library to make comparing ECMAScript hosts super easy, see [eshost-cli](https://github.com/bterlson/eshost-cli).
 
 ### Installation
 
 ```
-npm install es-host-wrapper
+npm install eshost
 ```
 
 ### Supported Hosts
@@ -35,7 +35,10 @@ runner.exec(`
 
 ## Documentation
 
-### es-host-wrapper API
+### eshost API
+#### supportedHosts
+
+An array of supported host types.
 
 #### getRunner(path, type, arguments)
 Gets an instance of a runner for a particular host type. Supported host types:
