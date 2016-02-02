@@ -6,7 +6,7 @@ const assert = require('assert');
 const hosts = [
   ['./hosts/js.exe', 'jsshell'],
   ['./hosts/ch.exe', 'ch'],
-  ['node.exe', 'node'],
+  ['c:/program files/nodejs/node.exe', 'node'],
   ['../v8/build/Release/d8.exe', 'd8'],
   ['C:/Users/brterlso/AppData/Local/Google/Chrome SxS/Application/chrome.exe', 'browser'],
   //['./hosts/MicrosoftEdgeLauncher.exe', 'browser']
