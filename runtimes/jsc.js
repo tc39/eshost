@@ -27,8 +27,14 @@ var $ = {
   },
   evalInNewScript(code, errorCb) {
     try {
-      /* FIXME: `code` should be executed as a global script, not an eval script. */
-      this.global.eval(code);
+      print(this.scriptStartMarker);
+      print(code);
+      print(this.scriptEndMarker);
+
+      /* Blocks until the script is written to the file system. */
+      readline();
+
+      load(this.scriptFile);
     } catch (e) {
       if (errorCb) errorCb(e);
     }
@@ -40,5 +46,8 @@ var $ = {
     this.global[name] = value;
   },
   source: $SOURCE,
-  file: $FILE
+  file: $FILE,
+  scriptFile: $SCRIPT_FILE,
+  scriptStartMarker: $SCRIPT_START_MARKER,
+  scriptEndMarker: $SCRIPT_END_MARKER,
 };
