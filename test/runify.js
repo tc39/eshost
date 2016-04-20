@@ -28,6 +28,7 @@ hosts.forEach(function (record) {
       return runner.exec('foo x++').then(function (result) {
         assert(result.error, 'error is present');
         assert.equal(result.error.name, 'SyntaxError');
+        assert.equal(result.stdout, '', 'stdout not present');
 
         if (type !== 'node' && type !== 'browser') {
           // node doesn't report any useful stack information for syntax errors at global scope
@@ -40,6 +41,7 @@ hosts.forEach(function (record) {
     it('runs thrown SyntaxErrors', function () {
       return runner.exec('throw new SyntaxError("Custom Message");').then(function (result) {
         assert(result.error, 'error is present');
+        assert.equal(result.stdout, '', 'stdout not present');
 
         assert.equal(result.error.message, 'Custom Message');
         assert.equal(result.error.name, 'SyntaxError');
@@ -50,6 +52,7 @@ hosts.forEach(function (record) {
     it('runs thrown TypeErrors', function () {
       return runner.exec('throw new TypeError("Custom Message");').then(function (result) {
         assert(result.error, 'error is present');
+        assert.equal(result.stdout, '', 'stdout not present');
 
         assert.equal(result.error.message, 'Custom Message');
         assert.equal(result.error.name, 'TypeError');
@@ -60,6 +63,7 @@ hosts.forEach(function (record) {
     it('runs thrown RangeErrors', function () {
       return runner.exec('throw new RangeError("Custom Message");').then(function (result) {
         assert(result.error, 'error is present');
+        assert.equal(result.stdout, '', 'stdout not present');
 
         assert.equal(result.error.message, 'Custom Message');
         assert.equal(result.error.name, 'RangeError');
@@ -69,6 +73,7 @@ hosts.forEach(function (record) {
 
     it('runs thrown Errors', function () {
       return runner.exec('throw new Error("Custom Message");').then(function (result) {
+        assert.equal(result.stdout, '', 'stdout not present');
         assert(result.error, 'error is present');
         assert.equal(result.error.message, 'Custom Message');
         assert.equal(result.error.name, 'Error');
