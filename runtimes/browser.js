@@ -1,7 +1,8 @@
 var $ = {
   global: this,
-  createRealm: function (globals) {
-    globals = globals || {};
+  createRealm: function (options) {
+    options = options || {};
+    const globals = options.globals || {};
 
     var frame = document.createElement('iframe');
     document.body.appendChild(frame);
@@ -17,24 +18,43 @@ var $ = {
       fwin[glob] = globals[glob];
     }
 
-    return fwin.$;
-  },
-  evalInNewRealm: function (code, globals, errorCb) {
-    if (typeof globals === 'function') {
-      errorCb = globals;
-      globals = {};
+    fwin.$.destroy = function () {
+      document.body.removeChild(frame);
+
+      if (options.destroy) {
+        options.destroy();
+      }
     }
 
-    var $child = this.createRealm(globals);
-
-    $child.evalInNewScript(code, errorCb);
+    return fwin.$;
   },
-  evalInNewScript: function (code, errorCb) {
-    this.onNextError = errorCb;
+  evalScript: function (code, options) {
+    options = options || {};
+
     var s = document.createElement('script');
     s.textContent = code;
+    var error = null;
+    window.onerror = function (msg, file, row, col, err) {
+      if (!err) {
+        // make up some error for Edge.
+        err = {
+          name: 'Error',
+          message: msg
+        };
+      }
+
+      error = err;
+    }
     document.body.appendChild(s);
-    this.onNextError = null;
+    if (window) {
+      window.onerror = null;
+    }
+
+    if (error) {
+      return { type: 'throw', value: error };
+    } else {
+      return { type: 'normal', value: undefined };
+    }
   },
   getGlobal: function (name) {
     return this.global[name];
@@ -42,25 +62,12 @@ var $ = {
   setGlobal: function (name, value) {
     this.global[name] = value;
   },
-  _onError: function (err) {
-    if (this.onNextError) {
-      this.onNextError(err);
-      this.onNextError = null;
-    }
+  destroy: function() {
+    $.socket.emit('destroy')
   },
   source: $SOURCE
 };
-this.window.onerror = function (msg, file, row, col, err) {
-  if (!err) {
-    // make up some error for Edge.
-    err = {
-      name: 'Error',
-      message: msg
-    };
-  }
 
-  $._onError(err)
-}
 function print(str) {
   $.socket.emit('print', str);
 }

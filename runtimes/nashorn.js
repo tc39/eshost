@@ -1,32 +1,25 @@
 var $ = {
   global: this,
-  createRealm: function(globals) {
-    globals = globals || {};
+  createRealm: function(options) {
+    options = options || {};
+    options.globals = options.globals || {};
 
     var realm = loadWithNewGlobal({script: 'this', name: 'createRealm'});
     realm.eval(this.source);
     realm.$.source = this.source;
 
-    for(var glob in globals) {
-      realm.$.global[glob] = globals[glob];
+    for(var glob in options.globals) {
+      realm.$.global[glob] = options.globals[glob];
     }
 
     return realm.$;
   },
-  evalInNewRealm: function(code, globals, errorCb) {
-    if (typeof globals === 'function') {
-      errorCb = globals;
-      globals = {};
-    }
-
-    var $child = this.createRealm(globals);
-    $child.evalInNewScript(code, errorCb);
-  },
-  evalInNewScript: function(code, errorCb) {
+  evalScript: function(code) {
     try {
-      load({script: code, name: 'evalInNewScript'});
+      load({script: code, name: 'evalScript'});
+      return { type: 'normal', value: undefined }
     } catch (e) {
-      if (errorCb) errorCb(e);
+      return { type: 'throw', value: e }
     }
   },
   getGlobal: function(name) {
@@ -35,5 +28,6 @@ var $ = {
   setGlobal: function(name, value) {
     this.global[name] = value;
   },
+  destroy: function() { /* noop */ },
   source: $SOURCE
 };

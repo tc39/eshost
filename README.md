@@ -1,8 +1,10 @@
 ## eshost
 
-eshost is a library for executing ECMAScript code uniformly across any ECMAScript host environment. eshost consists of a wrapper around the various ways of executing a host and processing its output (called a Runner) and a runtime library for host-agnostic scripts to use.
+Execute ECMAScript code uniformly across any ECMAScript host environment. See also [eshost-cli](https://github.com/bterlson/eshost-cli) for an easy way to use this library from the command line.
 
-For a CLI tool that uses this library to make comparing ECMAScript hosts super easy, see [eshost-cli](https://github.com/bterlson/eshost-cli).
+Using eshost, you can create an agent (eg. a web browser or a command-line ECMAScript host) and evaluate scripts within that agent. Code running within the agent has access to the eshost runtime API which enables code to evaluate scripts, create new realms, handle errors, and so forth all without worrying about the host-specific mechanisms for these capabilities are.
+
+eshost consists of a wrapper around the various ways of executing a host and processing its output (called a Runner) and a runtime library for host-agnostic scripts to use.
 
 ### Installation
 
@@ -14,13 +16,16 @@ npm install eshost
 
 | Host | Supported Platforms | Download | Notes |
 |------|---------------------|----------|-------|
-| browser | Any | | Errors reported from Microsoft Edge are all of type Error. |
 | node | Any | https://nodejs.org | |
 | ch | Windows | Built [from source](https://github.com/microsoft/chakracore)| Chakra console host. |
 | d8 | Any | Built [from source](https://github.com/v8/v8) | v8 console host. Errors are reported on stdout. Use $.getGlobal and $.setGlobal to get and set properties of global objects in other realms. |
 | jsshell | Any | [Download](https://archive.mozilla.org/pub/firefox/nightly/latest-mozilla-central/) | SpiderMonkey console host. |
 | jsc | Mac | Built [from source](http://trac.webkit.org/wiki/JavaScriptCore)¹ | |
 | nashorn | Any | Built [from source](https://wiki.openjdk.java.net/display/Nashorn/Building+Nashorn) | |
+| edge | Windows | | Errors reported from Microsoft Edge are all of type Error. |
+| chrome | Any | | |
+| firefox | Any | | Firefox Nightly on Windows doesn't appear to work at this time. |
+| safari | Mac | | |
 
 1: Also available on your Mac system at `/System/Library/Frameworks/JavaScriptCore.framework/Versions/A/Resources/jsc`.
 
@@ -28,9 +33,11 @@ npm install eshost
 
 ```js
 const runner = js.getRunner('path/to/d8.exe', 'd8');
-runner.exec(`
+await runner.initialize();
+const result = await runner.exec(`
   print(1+1);
-`).then(result => console.log(result.stdout));
+`);
+console.log(result.stdout);
 ```
 
 ## Documentation
@@ -40,23 +47,29 @@ runner.exec(`
 
 An array of supported host types.
 
-#### getRunner(path, type, arguments)
-Gets an instance of a runner for a particular host type. Supported host types:
+#### createAgent(type: string, options = {}): Runner
+Gets an instance of a runner for a particular host type. See the table above for supported host types.
 
-* browser
-* node
-* d8
-* jsshell
-* ch
+##### Options
 
-Creating a runner may start the host (eg. for the browser, creating the host executes the browser process).
+* **hostPath**: Path to host to execute. For console hosts, this argument is required. For the specific browser runners, hostPath is optional and if omitted, the location for that browser will be detected automatically.
+* **hostArguments**:  Command line arguments used when invoking your host. Not supported for browser hosts. **hostArguments** is an array of strings as you might pass to Node's spawn API.
 
-You can pass command line arguments to the host process using the arguments option. It is an array of strings as you might pass to Node's spawn API.
+### Agent API
+Runner
+#### initialize(): Promise<void>
+Initializes the host and returns a promise that is resolved once the host is initialized. Command line hosts have no initialization as a new process is started for each execution.
 
-### Runner API
+This is called for you if you use the createAgent factory.
 
-#### exec(code)
-Executes `code` in the host. Returns a result object.
+#### evalScript(code, options = {}): Promise<Result>
+Executes `code` in the host using the _Script_ goal symbol. Returns a promise for a result object.
+
+By default, a script will run in Eshost until the realm is destroyed. For most command-line hosts, this is done automatically when the script execution queues are empty. However, browsers will remain open waiting for more code to become available. Therefore, eshost will automatically append `$.destroy()` to the end of your scripts. This behavior is not correct if you are attempting to execute asynchronous code. In such cases, add `async: true` to the options.
+
+Options:
+
+* async: True if the test is expected to call `$.destroy()` on the root realm when it's finished. When false, $.destroy() is added for you.
 
 ##### Result Object
 An object with the following keys:
@@ -70,6 +83,9 @@ The error object is similar to the error object you get in the host itself. Name
 * name: Error name (eg. SyntaxError, TypeError, etc.)
 * message: Error message
 * stack: An array of stack frames.
+
+#### destroy(): Promise<void>
+Tears down the agent. For browsers, this will close the browser window.
 
 ### Runtime Library
 
@@ -89,10 +105,7 @@ $sub = $.createRealm();
 $subsub = $sub.createRealm();
 ```
 
-#### $.evalInNewRealm(code, onError)
-Creates a new realm and evals `code` in that realm. If an error is thrown, it will be passed to the onError callback.
-
-#### $.evalInNewScript(code, onError)
+#### $.evalScript(code)
 Creates a new script and evals `code` in that realm. If an error is thrown, it will be passed to the onError callback.
 
 Scripts are different from eval in that lexical bindings go into the global lexical contour rather than being scoped to the eval.

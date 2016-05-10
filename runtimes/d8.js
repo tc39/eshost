@@ -1,7 +1,8 @@
 var $ = {
   global: this,
-  createRealm: function (globals) {
-    globals = globals || {};
+  createRealm: function (options) {
+    options = options || {};
+    options.globals = options.globals || {};
 
     var realm = Realm.create();
     Realm.eval(realm, this.source);
@@ -10,26 +11,18 @@ var $ = {
     $child.source = this.source;
     Realm.shared = void 0;
 
-    for(var glob in globals) {
-      $child.setGlobal(glob, globals[glob]);
+    for(var glob in options.globals) {
+      $child.setGlobal(glob, options.globals[glob]);
     }
 
     return $child;
   },
-  evalInNewRealm: function (code, globals, errorCb) {
-    if (typeof globals === 'function') {
-      errorCb = globals;
-      globals = {};
-    }
-
-    var $child = this.createRealm(globals);
-    $child.evalInNewScript(code, errorCb);
-  },
-  evalInNewScript: function (code, errorCb) {
+  evalScript: function (code) {
     try {
       Realm.eval(this.realm ? this.realm : Realm.current(), code);
+      return { type: 'normal', value: undefined }
     } catch (e) {
-      if (errorCb) errorCb(e);
+      return { type: 'throw', value: e }
     }
   },
   getGlobal: function (name) {
@@ -38,6 +31,7 @@ var $ = {
   setGlobal: function (name, value) {
     this.global[name] = value;
   },
+  destroy: function() { /* noop */ },
   source: $SOURCE
 };
 Realm.shared = $;

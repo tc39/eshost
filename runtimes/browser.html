@@ -8,16 +8,25 @@
 <script src="/runtime.js"></script>
 <script src="/error-stack-parser.js"></script>
 <script>
-  $.socket = io("http://localhost:1337");
-  $.socket.emit('clientId', document.location.search.slice(1));
-  $.socket.on('exec', function (code) {
-    $.evalInNewRealm(code, function (err) {
-      if (err.stack) {
-        $.socket.emit('execError', { name: err.name, message: err.message, stack: ErrorStackParser.parse(err) });
-      } else {
-        $.socket.emit('execError', { name: err.name, message: err.message, stack: null });
-      }
-    });
+var count = 0;
+var waiting = {};
+$.socket = io("http://localhost:1337");
+$.socket.emit('clientId', document.location.search.slice(1));
+$.socket.on('exec', function (code, options) {
+  function realmDestroyed() {
     $.socket.emit('execDone');
-  });
+  }
+  $child = $.createRealm({ destroy: realmDestroyed });
+  var completion = $child.evalScript(code);
+  if (completion.type === 'throw') {
+    var err = completion.value;
+    if (err.stack) {
+      $.socket.emit('execError', { name: err.name, message: err.message, stack: ErrorStackParser.parse(err) });
+    } else {
+      $.socket.emit('execError', { name: err.name, message: err.message, stack: null });
+    }
+
+    $child.destroy();
+  }
+});
 </script>

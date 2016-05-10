@@ -1,16 +1,17 @@
 var vm = require('vm');
 var $ = {
   global: this,
-  createRealm: function (globals) {
-    globals = globals || {};
+  createRealm: function (options) {
+    options = options || {};
+    options.globals = options.globals || {};
 
     context = {
       console: console,
       require: require
     };
 
-    for(var glob in globals) {
-       context[glob] = globals[glob];
+    for(var glob in options.globals) {
+       context[glob] = options.globals[glob];
     }
 
     var context = vm.createContext(context);
@@ -19,26 +20,17 @@ var $ = {
     context.$.context = context;
     return context.$;
   },
-  evalInNewRealm: function (code, globals, errorCb) {
-    if (typeof globals === 'function') {
-      errorCb = globals;
-      globals = {};
-    }
-
-    $child = this.createRealm(globals);
-    $child.evalInNewScript(code, errorCb);
-
-    return $child;
-  },
-  evalInNewScript: function (code, errorCb) {
+  evalScript: function (code) {
     try {
       if (this.context) {
         vm.runInContext(code, this.context, {displayErrors: false});
       } else {
         vm.runInThisContext(code, {displayErrors: false});
       }
+
+      return { type: 'normal', value: undefined };
     } catch (e) {
-      if(errorCb) errorCb(e);
+      return { type: 'throw', value: e };
     }
   },
   getGlobal: function (name) {
@@ -47,6 +39,7 @@ var $ = {
   setGlobal: function (name, value) {
     this.global[name] = value;
   },
+  destroy: function() { /* noop */ },
   source: $SOURCE
 };
 function print() { console.log.apply(console, arguments) }
