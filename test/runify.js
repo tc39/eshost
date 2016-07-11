@@ -4,20 +4,14 @@ const runify = require('../');
 const assert = require('assert');
 
 const hosts = [
-  /*
   ['./hosts/js.exe', 'jsshell'],
   ['./hosts/ch.exe', 'ch'],
   ['c:/program files/nodejs/node.exe', 'node'],
   ['../v8/build/Release/d8.exe', 'd8'],
-  /*
   ['C:/Users/brterlso/AppData/Local/Google/Chrome SxS/Application/chrome.exe', 'chrome'],
-  /**/
   [undefined, 'chrome'],
   ['C:/Program Files (x86)/Mozilla Firefox/firefox.exe', 'firefox'],
   ['C:/Program Files (x86)/Nightly/firefox.exe', 'firefox'],
-  /*
-  [undefined, 'firefox'], // no path is also ok for browser agents
-/* */
 ];
 
 hosts.forEach(function (record) {
