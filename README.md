@@ -4,7 +4,7 @@ Execute ECMAScript code uniformly across any ECMAScript host environment. See al
 
 Using eshost, you can create an agent (eg. a web browser or a command-line ECMAScript host) and evaluate scripts within that agent. Code running within the agent has access to the eshost runtime API which enables code to evaluate scripts, create new realms, handle errors, and so forth all without worrying about the host-specific mechanisms for these capabilities are.
 
-eshost consists of a wrapper around the various ways of executing a host and processing its output (called a Runner) and a runtime library for host-agnostic scripts to use.
+eshost consists of a wrapper around the various ways of executing a host and processing its output (called an Agent) and a runtime library for host-agnostic scripts to use.
 
 ### Installation
 
@@ -22,10 +22,10 @@ npm install eshost
 | jsshell | Any | [Download](https://archive.mozilla.org/pub/firefox/nightly/latest-mozilla-central/) | SpiderMonkey console host. |
 | jsc | Mac | Built [from source](http://trac.webkit.org/wiki/JavaScriptCore)¹ | |
 | nashorn | Any | Built [from source](https://wiki.openjdk.java.net/display/Nashorn/Building+Nashorn) | |
-| edge | Windows | | Errors reported from Microsoft Edge are all of type Error. |
-| chrome | Any | | |
-| firefox | Any | | Firefox Nightly on Windows doesn't appear to work at this time. |
-| safari | Mac | | |
+| edge | Windows | | Errors reported from Microsoft Edge are all of type Error. Requires [Microsoft WebDriver](https://developer.microsoft.com/en-us/microsoft-edge/platform/documentation/dev-guide/tools/webdriver/) in your path. |
+| chrome | Any | | Requires [ChromeDriver](https://sites.google.com/a/chromium.org/chromedriver/downloads) in your path.|
+| firefox | Any | | Requires [GeckoDriver](https://github.com/mozilla/geckodriver/releases) in your path (possibly renamed to `wires`).|
+| safari | Mac | | Requires (SafariDriver browser extension)[https://github.com/SeleniumHQ/selenium/wiki/SafariDriver]. |
 
 1: Also available on your Mac system at `/System/Library/Frameworks/JavaScriptCore.framework/Versions/A/Resources/jsc`.
 
