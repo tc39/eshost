@@ -8,9 +8,9 @@ const hosts = [
   ['./hosts/ch.exe', 'ch'],
   ['c:/program files/nodejs/node.exe', 'node'],
   ['../v8/build/Release/d8.exe', 'd8'],
-  ['C:/Users/brterlso/AppData/Local/Google/Chrome SxS/Application/chrome.exe', 'chrome'],
-  [undefined, 'chrome'],
-  ['C:/Program Files (x86)/Mozilla Firefox/firefox.exe', 'firefox'],
+  //['C:/Users/brterlso/AppData/Local/Google/Chrome SxS/Application/chrome.exe', 'chrome'],
+  //[undefined, 'chrome'],
+  //['C:/Program Files (x86)/Mozilla Firefox/firefox.exe', 'firefox'],
   ['C:/Program Files (x86)/Nightly/firefox.exe', 'firefox'],
 ];
 
@@ -195,6 +195,16 @@ hosts.forEach(function (record) {
         }
       `, { async: true }).then(result => {
         assert(result.stdout.match(/async result/), 'Unexpected stdout: ' + result.stdout + result.stderr);
+      });
+    });
+
+    it('accepts destroy callbacks', function () {
+      return agent.evalScript(`
+        $child = $.createRealm({ destroy: function () { print("destroyed") }});
+        $child.destroy();
+      `)
+      .then(result => {
+        assert(result.stdout.match(/destroyed/), 'Unexpected stdout: ' + result.stdout + result.stderr);
       });
     });
 

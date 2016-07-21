@@ -10,6 +10,11 @@ var $ = {
     });
     realm.eval(this.source);
     realm.$.source = this.source;
+    realm.$.destroy = function () {
+      if (options.destroy) {
+        options.destroy();
+      }
+    };
 
     for(var glob in options.globals) {
       realm.$.global[glob] = options.globals[glob];

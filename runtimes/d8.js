@@ -10,7 +10,11 @@ var $ = {
     $child.realm = realm;
     $child.source = this.source;
     Realm.shared = void 0;
-
+    $child.destroy = function () {
+      if (options.destroy) {
+        options.destroy();
+      }
+    };
     for(var glob in options.globals) {
       $child.setGlobal(glob, options.globals[glob]);
     }

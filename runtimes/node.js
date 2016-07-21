@@ -18,6 +18,11 @@ var $ = {
     vm.runInContext(this.source, context);
     context.$.source = this.source;
     context.$.context = context;
+    context.$.destroy = function () {
+      if (options.destroy) {
+        options.destroy();
+      }
+    };
     return context.$;
   },
   evalScript: function (code) {

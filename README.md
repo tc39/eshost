@@ -95,7 +95,7 @@ Prints `str` to stdout.
 #### $.global
 A reference to the global object.
 
-#### $.createRealm(globals)
+#### $.createRealm(options)
 Creates a new realm, returning that realm's runtime library ($).
 
 For example, creating two nested realms:
@@ -105,10 +105,30 @@ $sub = $.createRealm();
 $subsub = $sub.createRealm();
 ```
 
+You can also use a destroy callback that gets called when the code inside the realm calls `$.destroy()`. For example:
+
+```js
+$sub = $.createRealm({
+  destroy: function () {
+    print('destroyed!')
+  }
+});
+
+$sub.evalScript('$.destroy()'); // prints "destroyed!"
+```
+
+Options:
+
+* globals: an object containing properties to add to the global object in the new realm.
+* destroy: a callback that is called when the code executing in the realm destroys its realm (ie. by calling `$.destroy()`).
+
 #### $.evalScript(code)
 Creates a new script and evals `code` in that realm. If an error is thrown, it will be passed to the onError callback.
 
 Scripts are different from eval in that lexical bindings go into the global lexical contour rather than being scoped to the eval.
+
+#### $.destroy()
+Destroys the realm. Note that in some hosts, $.destroy may not actually stop executing code in the realm or even destroy the realm.
 
 #### $.getGlobal(name)
 Gets a global property name.
