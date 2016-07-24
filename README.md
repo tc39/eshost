@@ -32,9 +32,9 @@ npm install eshost
 ### Examples
 
 ```js
-const runner = js.getRunner('path/to/d8.exe', 'd8');
-await runner.initialize();
-const result = await runner.exec(`
+const esh = require('eshost');
+const agent = esh.createAgent('d8', { hostPath: 'path/to/d8.exe' });
+const result = await agent.evalScript(`
   print(1+1);
 `);
 console.log(result.stdout);
@@ -56,7 +56,6 @@ Gets an instance of a runner for a particular host type. See the table above for
 * **hostArguments**:  Command line arguments used when invoking your host. Not supported for browser hosts. **hostArguments** is an array of strings as you might pass to Node's spawn API.
 
 ### Agent API
-Runner
 #### initialize(): Promise<void>
 Initializes the host and returns a promise that is resolved once the host is initialized. Command line hosts have no initialization as a new process is started for each execution.
 
