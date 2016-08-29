@@ -8,10 +8,11 @@ const hosts = [
   ['./hosts/ch.exe', 'ch'],
   ['c:/program files/nodejs/node.exe', 'node'],
   ['../v8/build/Release/d8.exe', 'd8'],
+  ['../webkit/build/bin64/jsc.exe', 'jsc'],
   //['C:/Users/brterlso/AppData/Local/Google/Chrome SxS/Application/chrome.exe', 'chrome'],
   //[undefined, 'chrome'],
   //['C:/Program Files (x86)/Mozilla Firefox/firefox.exe', 'firefox'],
-  ['C:/Program Files (x86)/Nightly/firefox.exe', 'firefox'],
+  //['C:/Program Files (x86)/Nightly/firefox.exe', 'firefox'],
 ];
 
 hosts.forEach(function (record) {
@@ -86,6 +87,25 @@ hosts.forEach(function (record) {
         assert(result.error, 'error is present');
         assert.equal(result.error.message, 'Custom Message');
         assert.equal(result.error.name, 'Foo1Error');
+      });
+    });
+
+    it('runs thrown Errors without messages', function () {
+      return agent.evalScript('throw new Error();').then(function (result) {
+        assert.equal(result.stdout, '', 'stdout not present');
+        assert(result.error, 'error is present');
+        assert.equal(result.error.message, undefined);
+        assert.equal(result.error.name, 'Error');
+      });
+    });
+
+    it('runs thrown errors from eval', function () {
+      return agent.evalScript('eval("\'\\u000Astr\\u000Aing\\u000A\'") === "\\u000Astr\\u000Aing\\u000A"')
+      .then(function (result) {
+        assert.equal(result.stdout, '', 'stdout not present');
+        assert(result.error, 'error is present');
+        assert(result.error.message); // message should be present (but is implementation defined)
+        assert.equal(result.error.name, 'SyntaxError');
       });
     });
 
