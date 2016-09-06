@@ -8,8 +8,6 @@
 <script src="/runtime.js"></script>
 <script src="/error-stack-parser.js"></script>
 <script>
-var count = 0;
-var waiting = {};
 $.socket = io("http://localhost:1337");
 $.socket.emit('clientId', document.location.search.slice(1));
 $.socket.on('exec', function (code, options) {

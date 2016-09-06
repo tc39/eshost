@@ -70,6 +70,12 @@ Options:
 
 * async: True if the test is expected to call `$.destroy()` on the root realm when it's finished. When false, $.destroy() is added for you.
 
+#### stop(): Promise<void>
+Stops the currently executing script. For a console host, this simply kills the child process. For browser hosts, it will kill the current window and create a new one.
+
+#### destroy(): Promise<void>
+Destroys the agent, closing any of its associated resources (eg. browser windows, child processes, etc.).
+
 ##### Result Object
 An object with the following keys:
 

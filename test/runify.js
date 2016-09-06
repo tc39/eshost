@@ -9,18 +9,26 @@ const hosts = [
   ['c:/program files/nodejs/node.exe', 'node'],
   ['../v8/build/Release/d8.exe', 'd8'],
   ['../webkit/build/bin64/jsc.exe', 'jsc'],
-  //['C:/Users/brterlso/AppData/Local/Google/Chrome SxS/Application/chrome.exe', 'chrome'],
-  //[undefined, 'chrome'],
-  //['C:/Program Files (x86)/Mozilla Firefox/firefox.exe', 'firefox'],
-  //['C:/Program Files (x86)/Nightly/firefox.exe', 'firefox'],
+  /*[undefined, 'chrome'],*/
+  /*
+  ['C:/Program Files (x86)/Mozilla Firefox/firefox.exe', 'firefox'],
+  ['C:/Program Files (x86)/Nightly/firefox.exe', 'firefox'],
+  ['C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe', 'chrome'],
+  */
 ];
+
+const timeout = function(ms) {
+  return new Promise(res => {
+    setTimeout(res, ms);
+  });
+}
 
 hosts.forEach(function (record) {
   const host = record[0];
   const type = record[1];
 
   describe(`${type} (${host})`, function () {
-    this.timeout(10000);
+    this.timeout(20000);
     let agent;
 
     before(function() {
@@ -292,5 +300,18 @@ hosts.forEach(function (record) {
         assert(result.stdout.match(/^true\r?\n/m), 'Unexpected stdout: ' + result.stdout + result.stderr);
       });
     });
+
+    // mostly this test shouldn't hang (if it hangs, it's a bug)
+    it('can kill infinite loops', function () {
+      var resultP = agent.evalScript(`while (true) { }; print(2);`);
+      return timeout(100).then(_ => {
+        var stopP = agent.stop();
+
+        return Promise.all([resultP, stopP]);
+      }).then(record => {
+        const result = record[0];
+        assert(!result.stdout.match(/2/), 'Unexpected stdout: ' + result.stdout);
+      })
+    })
   });
 });
