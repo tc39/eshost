@@ -10,9 +10,9 @@ const hosts = [
   ['../v8/build/Release/d8.exe', 'd8'],
   ['../webkit/build/bin64/jsc.exe', 'jsc'],
   /*[undefined, 'chrome'],*/
-  /*
+  
   ['C:/Program Files (x86)/Mozilla Firefox/firefox.exe', 'firefox'],
-  ['C:/Program Files (x86)/Nightly/firefox.exe', 'firefox'],
+  /*['C:/Program Files (x86)/Nightly/firefox.exe', 'firefox'],
   ['C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe', 'chrome'],
   */
 ];
@@ -97,6 +97,25 @@ hosts.forEach(function (record) {
         assert.equal(result.error.name, 'Foo1Error');
       });
     });
+
+    it('runs thrown custom Errors that don\'t have Error.prototype', function () {
+      return agent.evalScript(`
+        function Foo2Error(msg) {
+          this.message = msg;
+        }
+        Foo2Error.prototype.name = 'Foo2Error';
+        Foo2Error.prototype.toString = function () {
+          return 'Foo2Error: ' + this.message;
+        }
+
+        throw new Foo2Error('FAIL!');
+      `).then(result => {
+        assert.equal(result.stdout, '', 'stdout not present');
+        assert(result.error, 'error is present');
+        assert.equal(result.error.message, 'FAIL!');
+        assert.equal(result.error.name, 'Foo2Error');
+      });
+    })
 
     it('runs thrown Errors without messages', function () {
       return agent.evalScript('throw new Error();').then(function (result) {
