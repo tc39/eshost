@@ -17,7 +17,7 @@ npm install eshost
 | Host | Supported Platforms | Download | Notes |
 |------|---------------------|----------|-------|
 | node | Any | https://nodejs.org | |
-| ch | Windows | Built [from source](https://github.com/microsoft/chakracore)| Chakra console host. |
+| ch | Any | Built [from source](https://github.com/microsoft/chakracore)| Chakra console host. |
 | d8 | Any | Built [from source](https://github.com/v8/v8) | v8 console host. Errors are reported on stdout. Use $.getGlobal and $.setGlobal to get and set properties of global objects in other realms. |
 | jsshell | Any | [Download](https://archive.mozilla.org/pub/firefox/nightly/latest-mozilla-central/) | SpiderMonkey console host. |
 | jsc | Mac | Built [from source](http://trac.webkit.org/wiki/JavaScriptCore)¹ | |
