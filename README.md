@@ -17,17 +17,18 @@ npm install eshost
 | Host | Supported Platforms | Download | Notes |
 |------|---------------------|----------|-------|
 | node | Any | https://nodejs.org | |
-| ch | Windows | Built [from source](https://github.com/microsoft/chakracore)| Chakra console host. |
-| d8 | Any | Built [from source](https://github.com/v8/v8) | v8 console host. Errors are reported on stdout. Use $.getGlobal and $.setGlobal to get and set properties of global objects in other realms. |
+| ch | Any | [Download](https://github.com/Microsoft/ChakraCore/releases) or [build](https://github.com/Microsoft/ChakraCore/wiki/Building-ChakraCore) | Chakra console host. |
+| d8 | Any | Build [from source](https://github.com/v8/v8) | v8 console host. Errors are reported on stdout. Use $.getGlobal and $.setGlobal to get and set properties of global objects in other realms. |
 | jsshell | Any | [Download](https://archive.mozilla.org/pub/firefox/nightly/latest-mozilla-central/) | SpiderMonkey console host. |
-| jsc | Mac | Built [from source](http://trac.webkit.org/wiki/JavaScriptCore)¹ | |
-| nashorn | Any | Built [from source](https://wiki.openjdk.java.net/display/Nashorn/Building+Nashorn) | |
+| jsc | Mac¹ | Build [from source](http://trac.webkit.org/wiki/JavaScriptCore)² | |
+| nashorn | Any | Build [from source](https://wiki.openjdk.java.net/display/Nashorn/Building+Nashorn) | |
 | edge | Windows | | Errors reported from Microsoft Edge are all of type Error. Requires [Microsoft WebDriver](https://developer.microsoft.com/en-us/microsoft-edge/platform/documentation/dev-guide/tools/webdriver/) in your path. |
 | chrome | Any | | Requires [ChromeDriver](https://sites.google.com/a/chromium.org/chromedriver/downloads) in your path.|
 | firefox | Any | | Requires [GeckoDriver](https://github.com/mozilla/geckodriver/releases) in your path (possibly renamed to `wires`).|
 | safari | Mac | | Requires (SafariDriver browser extension)[https://github.com/SeleniumHQ/selenium/wiki/SafariDriver]. |
 
-1: Also available on your Mac system at `/System/Library/Frameworks/JavaScriptCore.framework/Versions/A/Resources/jsc`.
+* 1: It is possible to build jsc on other platforms, but not supported.
+* 2: Also available on your Mac system at `/System/Library/Frameworks/JavaScriptCore.framework/Versions/A/Resources/jsc`.
 
 ### Examples
 
