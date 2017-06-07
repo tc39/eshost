@@ -360,4 +360,26 @@ hosts.forEach(function (record) {
       })
     })
   });
+
+  describe(`${type} (${host})`, function () {
+    this.timeout(20000);
+
+    let agent;
+    function transpiler(x) { return `print("${x}")`; }
+
+    before(function() {
+      let options = { hostPath: host, transpiler }
+      return runify.createAgent(type, options).then(a => agent = a);
+    });
+
+    after(function() {
+      return agent.destroy();
+    });
+
+    it('runs transpilers', function () {
+      return agent.evalScript('foo').then(function(result) {
+        assert(result.stdout.match(/^foo\r?\n/), 'Unexpected stdout: ' + result.stdout);
+      });
+    });
+  });
 });
