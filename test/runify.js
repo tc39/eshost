@@ -11,7 +11,7 @@ const hosts = [
   ['../webkit/build/bin64/jsc.exe', 'jsc'],
   /*[undefined, 'chrome'],*/
   
-  ['C:/Program Files (x86)/Mozilla Firefox/firefox.exe', 'firefox'],
+  //['C:/Program Files (x86)/Mozilla Firefox/firefox.exe', 'firefox'],
   /*['C:/Program Files (x86)/Nightly/firefox.exe', 'firefox'],
   ['C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe', 'chrome'],
   */
@@ -37,6 +37,15 @@ hosts.forEach(function (record) {
 
     after(function() {
       return agent.destroy();
+    });
+
+    it('allows custom shortNames', function() {
+      return runify.createAgent(type, { hostPath: host, shortName: '$testing' }).then(agent => {
+        return agent.evalScript('$testing.evalScript("print(1)")').then(result => {
+          assert(result.error === null, 'no error');
+          assert.equal(result.stdout.indexOf('1'), 0);
+        });
+      });
     });
 
     it('runs SyntaxErrors', function () {
