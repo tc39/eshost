@@ -21,9 +21,9 @@ var $ = {
   evalScript(code) {
     try {
       evaluate(code);
-      return { completion: 'normal', value: undefined };
+      return { type: 'normal', value: undefined };
     } catch (e) {
-      return { completion: 'throw', value: e };
+      return { type: 'throw', value: e };
     }
   },
   getGlobal(name) {
