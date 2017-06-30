@@ -26,6 +26,14 @@ var $ = {
       return { type: 'throw', value: e };
     }
   },
+  evalModule(code) {
+    try {
+      WScript.LoadModule(code);
+      return { type: 'normal', value: undefined };
+    } catch (e) {
+      return { type: 'throw', value: e };
+    }
+  },
   getGlobal(name) {
     return this.global[name];
   },
