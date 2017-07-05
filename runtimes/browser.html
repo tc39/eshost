@@ -8,8 +8,18 @@
 <script src="/runtime.js"></script>
 <script src="/error-stack-parser.js"></script>
 <script>
+(function() {
+'use strict';
+var clientId = document.location.search.match(/clientId=([^&]+)(&|$)/)[1];
+// This script removes the global `$` binding if the `shortName` option is in
+// use. Maintain a function-scoped binding for internal use.
+var $ = window.$;
+$.shortName = document.location.search.match(/shortName=([^&]+)(&|$)/)[1];
+delete window.$;
+window[$.shortName] = $;
+
 $.socket = io("http://localhost:1337");
-$.socket.emit('clientId', document.location.search.slice(1));
+$.socket.emit('clientId', clientId);
 $.socket.on('exec', function (code, options) {
   function realmDestroyed() {
     $.socket.emit('execDone');
@@ -27,4 +37,5 @@ $.socket.on('exec', function (code, options) {
     $child.destroy();
   }
 });
+}());
 </script>
