@@ -14,7 +14,7 @@ $.socket.on('exec', function (code, options) {
   function realmDestroyed() {
     $.socket.emit('execDone');
   }
-  $child = $.createRealm({ destroy: realmDestroyed });
+  var $child = $.createRealm({ destroy: realmDestroyed });
   var completion = $child.evalScript(code);
   if (completion.type === 'throw') {
     var err = completion.value;
