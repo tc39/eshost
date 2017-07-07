@@ -87,4 +87,4 @@ function print(str) {
 }
 
 window.print = print;
-}());
+}.call(this));
