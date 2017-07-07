@@ -1,0 +1,30 @@
+---
+language: node_js
+node_js: "6"
+dist: trusty
+sudo: false
+before_install:
+    - export DISPLAY=:99.0
+    - sh -e /etc/init.d/xvfb start
+before_script:
+    - wget https://aka.ms/chakracore/cc_linux_x64_1_5_2
+    - tar -xvf cc_linux_x64_1_5_2
+    - "export TMP=$(mktemp);
+      wget https://archive.mozilla.org/pub/firefox/nightly/2017/07/2017-07-07-10-01-38-mozilla-central/jsshell-linux-x86_64.zip -O $TMP;
+      mkdir jsshell;
+      unzip -d jsshell $TMP;
+      rm $TMP;
+      unset TMP"
+    - "export TMP=$(mktemp);
+      wget https://archive.mozilla.org/pub/firefox/nightly/2017/07/2017-07-07-10-01-38-mozilla-central/firefox-56.0a1.en-US.linux-x86_64.tar.bz2 -O $TMP;
+      tar -xvf $TMP;
+wget https://github.com/mozilla/geckodriver/releases/download/v0.17.0/geckodriver-v0.17.0-linux64.tar.gz -O $TMP;
+      tar --directory firefox -xvf $TMP;
+      rm $TMP;
+      unset TMP;"
+script:
+    - "PATH=$(pwd)/firefox:$PATH:$(pwd)/ChakraCoreFiles/bin:$(pwd)/jsshell
+      ESHOST_SKIP_D8=1
+      ESHOST_SKIP_JSC=1
+      ESHOST_SKIP_CHROME=1
+      npm test"
