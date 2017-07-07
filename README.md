@@ -141,3 +141,21 @@ Gets a global property name.
 
 #### $.setGlobal(name, value)
 Sets a global property name to value.
+
+### Running the tests
+
+This project's tests can be executed with the following command:
+
+    npm test
+
+The above command will cause tests to be run against all supported hosts.
+Executables for each host must be available on the system's `PATH` environment
+variable.
+
+One or more hosts may be skipped from the test run by setting corresponding
+environment variables whose name match the pattern `ESHOST_SKIP_*`, where `*`
+is the capitalized name of the host. For example, in a Unix-like system, the
+following command executes the project's tests but skips JavaScriptCore and D8
+tests:
+
+    ESHOST_SKIP_JSC=1 ESHOST_SKIP_D8=1 npm test
