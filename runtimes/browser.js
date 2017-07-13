@@ -1,5 +1,16 @@
-var $ = {
+(function() {
+'use strict';
+
+// The global $ binding will be removed if the `shortName` option is in use.
+// Maintain a function-scoped binding for internal use.
+var $ = window.$ = {
   global: this,
+  // Because the source text of this file is used as the "replaceValue" of
+  // `String.prototype.replace`, care must be taken to avoid character
+  // sequences which have special meaning in that context (notably the "dollar
+  // sign" character followed immediately by the "single quotation mark"
+  // character).
+  shortName: '$ '[0],
   createRealm: function (options) {
     options = options || {};
     const globals = options.globals || {};
@@ -11,14 +22,17 @@ var $ = {
     var fscript = fdoc.createElement('script');
     fscript.textContent = this.source;
     fdoc.body.appendChild(fscript);
-    fwin.$.source = this.source;
-    fwin.$.socket = this.socket;
+    var f$ = fwin.$;
+    delete fwin.$;
+    fwin[$.shortName] = f$;
+    f$.source = this.source;
+    f$.socket = this.socket;
 
     for(var glob in globals) {
       fwin[glob] = globals[glob];
     }
 
-    fwin.$.destroy = function () {
+    f$.destroy = function () {
       document.body.removeChild(frame);
 
       if (options.destroy) {
@@ -26,7 +40,7 @@ var $ = {
       }
     }
 
-    return fwin.$;
+    return f$;
   },
   evalScript: function (code, options) {
     options = options || {};
@@ -71,3 +85,6 @@ var $ = {
 function print(str) {
   $.socket.emit('print', str);
 }
+
+window.print = print;
+}.call(this));
