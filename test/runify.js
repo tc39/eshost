@@ -47,10 +47,14 @@ hosts.forEach(function (record) {
 
     it('allows custom shortNames', function() {
       return runify.createAgent(type, { hostPath: host, shortName: '$testing' }).then(agent => {
-        return agent.evalScript('$testing.evalScript("print(1)")').then(result => {
+        var p = agent.evalScript('$testing.evalScript("print(1)")').then(result => {
           assert(result.error === null, 'no error');
           assert.equal(result.stdout.indexOf('1'), 0);
         });
+
+        p.catch(function() {}).then(() => agent.destroy());
+
+        return p;
       });
     });
 

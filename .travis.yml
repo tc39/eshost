@@ -6,25 +6,49 @@ sudo: false
 before_install:
     - export DISPLAY=:99.0
     - sh -e /etc/init.d/xvfb start
-before_script:
-    - wget https://aka.ms/chakracore/cc_linux_x64_1_5_2
-    - tar -xvf cc_linux_x64_1_5_2
-    - "export TMP=$(mktemp);
+env:
+  - ESHOST_TARGET=node
+  - ESHOST_TARGET=firefox
+  - ESHOST_TARGET=chakra
+  - ESHOST_TARGET=jsshell
+install: '
+    export ESHOST_SKIP_D8=1
+    export ESHOST_SKIP_JSC=1
+    export ESHOST_SKIP_CHROME=1
+    export ESHOST_SKIP_FIREFOX=1
+    export ESHOST_SKIP_JS=1
+    export ESHOST_SKIP_CH=1
+    export ESHOST_SKIP_NODE=1
+
+    if [[ "$ESHOST_TARGET" == "node" ]]; then
+      unset ESHOST_SKIP_NODE;
+    elif [[ "$ESHOST_TARGET" == "firefox" ]]; then
+      export TMP=$(mktemp);
+      wget https://archive.mozilla.org/pub/firefox/nightly/2017/07/2017-07-07-10-01-38-mozilla-central/firefox-56.0a1.en-US.linux-x86_64.tar.bz2 -O $TMP;
+      tar -xvf $TMP;
+      wget https://github.com/mozilla/geckodriver/releases/download/v0.17.0/geckodriver-v0.17.0-linux64.tar.gz -O $TMP;
+      tar --directory firefox -xvf $TMP;
+      rm $TMP;
+      unset TMP;
+      export PATH=$(pwd)/firefox:$PATH;
+      unset ESHOST_SKIP_FIREFOX;
+    elif [[ "$ESHOST_TARGET" == "jsshell" ]]; then
+      export TMP=$(mktemp);
       wget https://archive.mozilla.org/pub/firefox/nightly/2017/07/2017-07-07-10-01-38-mozilla-central/jsshell-linux-x86_64.zip -O $TMP;
       mkdir jsshell;
       unzip -d jsshell $TMP;
       rm $TMP;
-      unset TMP"
-    - "export TMP=$(mktemp);
-      wget https://archive.mozilla.org/pub/firefox/nightly/2017/07/2017-07-07-10-01-38-mozilla-central/firefox-56.0a1.en-US.linux-x86_64.tar.bz2 -O $TMP;
-      tar -xvf $TMP;
-wget https://github.com/mozilla/geckodriver/releases/download/v0.17.0/geckodriver-v0.17.0-linux64.tar.gz -O $TMP;
-      tar --directory firefox -xvf $TMP;
-      rm $TMP;
-      unset TMP;"
-script:
-    - "PATH=$(pwd)/firefox:$PATH:$(pwd)/ChakraCoreFiles/bin:$(pwd)/jsshell
-      ESHOST_SKIP_D8=1
-      ESHOST_SKIP_JSC=1
-      ESHOST_SKIP_CHROME=1
-      npm test"
+      unset TMP;
+      export PATH=$PATH:$(pwd)/jsshell;
+      unset ESHOST_SKIP_JS;
+    elif [[ "$ESHOST_TARGET" == "chakra" ]]; then
+      wget https://aka.ms/chakracore/cc_linux_x64_1_5_2;
+      tar -xvf cc_linux_x64_1_5_2;
+      export PATH=$PATH:$(pwd)/ChakraCoreFiles/bin;
+      unset ESHOST_SKIP_CH;
+    else
+      exit 1;
+    fi
+
+    npm install
+    '
