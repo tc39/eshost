@@ -2,7 +2,11 @@
 
 const runify = require('../');
 const assert = require('assert');
+const cp = require('child_process');
+const path = require('path');
+const os = require('os');
 
+// Default Hosts (as seen on windows)
 const hosts = [
   ['./hosts/js.exe', 'jsshell'],
   ['./hosts/ch.exe', 'ch'],
@@ -10,12 +14,27 @@ const hosts = [
   ['../v8/build/Release/d8.exe', 'd8'],
   ['../webkit/build/bin64/jsc.exe', 'jsc'],
   /*[undefined, 'chrome'],*/
-  
+
   //['C:/Program Files (x86)/Mozilla Firefox/firefox.exe', 'firefox'],
   /*['C:/Program Files (x86)/Nightly/firefox.exe', 'firefox'],
   ['C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe', 'chrome'],
   */
 ];
+
+if (os.platform() !== 'win32') {
+  hosts.forEach((record, index) => {
+    const [ host, type ] = record;
+    let bin = type;
+
+    if (!host.endsWith(`${bin}.exe`)) {
+      bin = path.basename(host, '.exe');
+    }
+
+    try {
+      hosts[index][0] = cp.execSync(`which ${bin}`).toString().trim();
+    } catch (error) {}
+  });
+}
 
 const timeout = function(ms) {
   return new Promise(res => {
