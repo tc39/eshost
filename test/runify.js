@@ -368,6 +368,11 @@ hosts.forEach(function (record) {
     function transform(x) { return `print("${x}")`; }
 
     before(function() {
+      if (process.env['ESHOST_SKIP_' + host.toUpperCase()]) {
+        this.skip();
+        return;
+      }
+
       let options = { hostPath: host, transform }
       return runify.createAgent(type, options).then(a => agent = a);
     });
