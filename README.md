@@ -55,6 +55,7 @@ Gets an instance of a runner for a particular host type. See the table above for
 
 * **hostPath**: Path to host to execute. For console hosts, this argument is required. For the specific browser runners, hostPath is optional and if omitted, the location for that browser will be detected automatically.
 * **hostArguments**:  Command line arguments used when invoking your host. Not supported for browser hosts. **hostArguments** is an array of strings as you might pass to Node's spawn API.
+* **transform**: A function to map the source to some other source before running the result on the underlying host.
 
 ### Agent API
 #### initialize(): Promise<void>

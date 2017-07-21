@@ -338,10 +338,10 @@ hosts.forEach(function (record) {
     this.timeout(20000);
 
     let agent;
-    function transpiler(x) { return `print("${x}")`; }
+    function transform(x) { return `print("${x}")`; }
 
     before(function() {
-      let options = { hostPath: host, transpiler }
+      let options = { hostPath: host, transform }
       return runify.createAgent(type, options).then(a => agent = a);
     });
 
@@ -349,7 +349,7 @@ hosts.forEach(function (record) {
       return agent.destroy();
     });
 
-    it('runs transpilers', function () {
+    it('runs transforms', function () {
       return agent.evalScript('foo').then(function(result) {
         assert(result.stdout.match(/^foo\r?\n/), 'Unexpected stdout: ' + result.stdout);
       });
