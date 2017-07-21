@@ -8,13 +8,13 @@ const isWindows = process.platform === 'win32' ||
   process.env.OSTYPE === 'msys';
 
 const hosts = [
-  ['js', 'jsshell'],
-  ['ch', 'ch'],
-  ['node', 'node'],
-  ['d8', 'd8'],
-  ['jsc', 'jsc'],
-  ['chrome', 'chrome'],
-  ['firefox', 'firefox'],
+  ['jsshell', { hostPath: 'js' }],
+  ['ch', { hostPath: 'ch' }],
+  ['node', { hostPath: 'node' }],
+  ['d8', { hostPath: 'd8' }],
+  ['jsc', { hostPath: 'jsc' }],
+  ['chrome', { hostPath: 'chrome' }],
+  ['firefox', { hostPath: 'firefox' }],
 ];
 
 const timeout = function(ms) {
@@ -24,15 +24,17 @@ const timeout = function(ms) {
 }
 
 hosts.forEach(function (record) {
-  const host = record[0];
-  const hostBin = host + (isWindows ? '.exe' : '');
-  const type = record[1];
+  const type = record[0];
+  const options = record[1];
+  if (options.hostPath && isWindows) {
+    options.hostPath += '.exe';
+  }
 
-  describe(`${type} (${host})`, function () {
+  describe(`${type} (${options.hostPath})`, function () {
     this.timeout(20000);
 
     before(function() {
-      if (process.env['ESHOST_SKIP_' + host.toUpperCase()]) {
+      if (process.env['ESHOST_SKIP_' + type.toUpperCase()]) {
         this.skip();
         return;
       }
@@ -42,7 +44,7 @@ hosts.forEach(function (record) {
       let agent;
 
       before(function() {
-        return runify.createAgent(type, { hostPath: hostBin })
+        return runify.createAgent(type, options)
           .then(a => agent = a);
       });
 
@@ -401,7 +403,8 @@ hosts.forEach(function (record) {
 
     describe('`shortName` option', function () {
       it('allows custom shortNames', function() {
-        return runify.createAgent(type, { hostPath: host, shortName: '$testing' }).then(agent => {
+        const withShortName = Object.assign({ shortName: '$testing' }, options);
+        return runify.createAgent(type, withShortName).then(agent => {
           var p = agent.evalScript('$testing.evalScript("print(1)")').then(result => {
             assert(result.error === null, 'no error');
             assert.equal(result.stdout.indexOf('1'), 0);
@@ -419,8 +422,8 @@ hosts.forEach(function (record) {
       function transform(x) { return `print("${x}")`; }
 
       before(function() {
-        let options = { hostPath: host, transform }
-        return runify.createAgent(type, options).then(a => agent = a);
+        let withTransform = Object.assign({ transform }, options);
+        return runify.createAgent(type, withTransform).then(a => agent = a);
       });
 
       after(function() {
