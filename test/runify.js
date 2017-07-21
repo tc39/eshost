@@ -6,6 +6,11 @@ const assert = require('assert');
 const isWindows = process.platform === 'win32' ||
   process.env.OSTYPE === 'cygwin' ||
   process.env.OSTYPE === 'msys';
+const remoteCapabilities = {
+  browserName: process.env.ESHOST_REMOTE_BROWSERNAME || 'firefox',
+  platform: process.env.ESHOST_REMOTE_PLATFORM || 'ANY',
+  version: process.env.ESHOST_REMOTE_VERSION || ''
+};
 
 const hosts = [
   ['jsshell', { hostPath: 'js' }],
@@ -15,6 +20,11 @@ const hosts = [
   ['jsc', { hostPath: 'jsc' }],
   ['chrome', { hostPath: 'chrome' }],
   ['firefox', { hostPath: 'firefox' }],
+  ['remote', {
+      webdriverServer: 'http://localhost:4444/wd/hub',
+      capabilities: remoteCapabilities
+    }
+  ],
 ];
 
 const timeout = function(ms) {
@@ -26,17 +36,23 @@ const timeout = function(ms) {
 hosts.forEach(function (record) {
   const type = record[0];
   const options = record[1];
+  const effectiveType = type === 'remote' ?
+    options.capabilities.browserName : type;
   if (options.hostPath && isWindows) {
     options.hostPath += '.exe';
   }
 
-  describe(`${type} (${options.hostPath})`, function () {
+  describe(`${type} (${options.hostPath || effectiveType})`, function () {
     this.timeout(20000);
 
     before(function() {
       if (process.env['ESHOST_SKIP_' + type.toUpperCase()]) {
         this.skip();
         return;
+      }
+
+      if (type === 'remote') {
+        this.timeout(60 * 1000);
       }
     });
 
@@ -384,7 +400,7 @@ hosts.forEach(function (record) {
         // The GeckoDriver project cannot currently destroy browsing sessions
         // whose main thread is blocked.
         // https://github.com/mozilla/geckodriver/issues/825
-        if (type === 'firefox') {
+        if (effectiveType === 'firefox') {
           this.skip();
           return;
         }

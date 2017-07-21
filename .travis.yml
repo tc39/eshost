@@ -12,18 +12,18 @@ env:
   - ESHOST_TARGET=chakra
   - ESHOST_TARGET=jsshell
   - ESHOST_TARGET=chrome
+  - ESHOST_TARGET=remote ESHOST_REMOTE_BROWSERNAME=firefox
 install: |
     export ESHOST_SKIP_D8=1
     export ESHOST_SKIP_JSC=1
     export ESHOST_SKIP_CHROME=1
     export ESHOST_SKIP_FIREFOX=1
-    export ESHOST_SKIP_JS=1
+    export ESHOST_SKIP_JSSHELL=1
     export ESHOST_SKIP_CH=1
     export ESHOST_SKIP_NODE=1
+    export ESHOST_SKIP_REMOTE=1
 
-    if [[ "$ESHOST_TARGET" == "node" ]]; then
-      unset ESHOST_SKIP_NODE;
-    elif [[ "$ESHOST_TARGET" == "firefox" ]]; then
+    function install_firefox {
       export TMP=$(mktemp);
       wget https://archive.mozilla.org/pub/firefox/nightly/2017/07/2017-07-07-10-01-38-mozilla-central/firefox-56.0a1.en-US.linux-x86_64.tar.bz2 -O $TMP;
       tar -xvf $TMP;
@@ -31,6 +31,12 @@ install: |
       tar --directory firefox -xvf $TMP;
       rm $TMP;
       unset TMP;
+    }
+
+    if [[ "$ESHOST_TARGET" == "node" ]]; then
+      unset ESHOST_SKIP_NODE;
+    elif [[ "$ESHOST_TARGET" == "firefox" ]]; then
+      install_firefox;
       export PATH=$(pwd)/firefox:$PATH;
       unset ESHOST_SKIP_FIREFOX;
     elif [[ "$ESHOST_TARGET" == "jsshell" ]]; then
@@ -41,7 +47,7 @@ install: |
       rm $TMP;
       unset TMP;
       export PATH=$PATH:$(pwd)/jsshell;
-      unset ESHOST_SKIP_JS;
+      unset ESHOST_SKIP_JSSHELL;
     elif [[ "$ESHOST_TARGET" == "chakra" ]]; then
       wget https://aka.ms/chakracore/cc_linux_x64_1_5_2;
       tar -xvf cc_linux_x64_1_5_2;
@@ -76,8 +82,18 @@ install: |
       unzip -d chrome chromedriver_linux64.zip
       PATH=$PATH:$(pwd)/chrome
       unset ESHOST_SKIP_CHROME;
+    elif [[ "$ESHOST_TARGET" == "remote" ]]; then
+      install_firefox;
+      wget http://selenium-release.storage.googleapis.com/3.4/selenium-server-standalone-3.4.0.jar
+      PATH=$PATH:$(pwd)/firefox java -jar selenium-server-standalone-3.4.0.jar &> selenium-server.log &
+
+      unset ESHOST_SKIP_REMOTE;
     else
       exit 1;
     fi
 
     npm install
+after_script: |
+    if [[ "$ESHOST_TARGET" == "remote" ]]; then
+      cat selenium-server.log
+    fi

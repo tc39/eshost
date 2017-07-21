@@ -56,6 +56,13 @@ Gets an instance of a runner for a particular host type. See the table above for
 * **hostPath**: Path to host to execute. For console hosts, this argument is required. For the specific browser runners, hostPath is optional and if omitted, the location for that browser will be detected automatically.
 * **hostArguments**:  Command line arguments used when invoking your host. Not supported for browser hosts. **hostArguments** is an array of strings as you might pass to Node's spawn API.
 * **transform**: A function to map the source to some other source before running the result on the underlying host.
+* **webHost**: for web browser hosts only; URL host name from which to serve browser assets; optional; defaults to `"localhost"`
+* **webPort**: for web browser hosts only; URL port number from which to serve browser assets; optional; defaults to `1337`
+* **capabilities**: for `remote` host only; the Selenium/WebDriver capabilities to request for the remote session; all specified attributes will be forwarded to the server; [a listing of available attributes is available in the Selenium project's wiki](https://github.com/SeleniumHQ/selenium/wiki/DesiredCapabilities); the following attributes are required:
+  * **capabilities.browserName**
+  * **capabilities.platform**
+  * **capabilities.version**
+* **webdriverServer**: for `remote` host only; URL of the WebDriver server to which commands should be issued
 
 ### Agent API
 #### initialize(): Promise<void>
@@ -160,3 +167,13 @@ following command executes the project's tests but skips JavaScriptCore and D8
 tests:
 
     ESHOST_SKIP_JSC=1 ESHOST_SKIP_D8=1 npm test
+
+Tests for the "remote" agent can be configured to run against any arbitrary
+Selenium/WebDriver configuration through the specification of the following
+environment variables: `ESHOST_REMOTE_BROWSERNAME`, `ESHOST_REMOTE_VERSION`,
+`ESHOST_REMOTE_PLATFORM`. These values are used to define the host's
+capabilities; see the above documentation of `eshost.createAgent` for more
+details. For example, in a Unix-like system, the following command executes the
+project's tests in a remote instance of the Firefox web browser:
+
+    ESHOST_REMOTE_BROWSERNAME=firefox npm test
