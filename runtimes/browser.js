@@ -19,12 +19,13 @@ var $ = window.$ = {
     document.body.appendChild(frame);
     var fwin = frame.contentWindow;
     var fdoc = fwin.document;
-    var fscript = fdoc.createElement('script');
 
     // The following is a workaround for a bug in Chromium related to reporting
     // errors produced from evaluating code using `eval`.
     // https://bugs.chromium.org/p/chromium/issues/detail?id=746564
     fdoc.write('<body>');
+
+    var fscript = fdoc.createElement('script');
 
     fscript.textContent = this.source;
     fdoc.body.appendChild(fscript);
@@ -58,7 +59,7 @@ var $ = window.$ = {
       if (!err) {
         // make up some error for Edge.
         err = {
-          name: 'Error',
+          name: 'UnknownESHostError',
           message: msg
         };
       }
@@ -66,9 +67,15 @@ var $ = window.$ = {
       error = err;
     }
     document.body.appendChild(s);
-    if (window) {
+
+    /**
+     * Microsoft Edge throws a TypeError (message: "Object expected") when
+     * referencing the `window` identifier in an iframe that is not attached to
+     * some parent document.
+     */
+    try {
       window.onerror = null;
-    }
+    } catch (err) {}
 
     if (error) {
       return { type: 'throw', value: error };

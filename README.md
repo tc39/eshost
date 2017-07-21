@@ -63,6 +63,19 @@ Gets an instance of a runner for a particular host type. See the table above for
   * **capabilities.platform**
   * **capabilities.version**
 * **webdriverServer**: for `remote` host only; URL of the WebDriver server to which commands should be issued
+* **noKeepAlive**: for `remote` host only; controls whether a WebDriver command is sent with each script evaluation; defaults to `false`
+
+##### "Keep Alive" signal
+
+Some WebDriver service providers consider long-running sessions with no
+WebDriver traffic as "timed out," and they may subsequently destroy such
+sessions. Because `eshost` circumvents the WebDriver protocol to execute
+scripts (using a separate WebSocket channel rather than the WebDriver "Execute
+Script" command) sessions that are actually active may be interpreted as "timed
+out." To avoid this, `eshost`'s WebDriver agent sends a "Get URL" WebDriver command
+prior to each script execution and discards the result.
+
+This behavior can be disabled via the `noKeepAlive` option.
 
 ### Agent API
 #### initialize(): Promise<void>
