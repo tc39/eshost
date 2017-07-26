@@ -30,7 +30,7 @@ var $ = {
       if (this.context) {
         vm.runInContext(code, this.context, {displayErrors: false});
       } else {
-        vm.runInThisContext(code, {displayErrors: false});
+        vm.runInESHostContext(code, {displayErrors: false});
       }
 
       return { type: 'normal', value: undefined };
