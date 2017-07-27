@@ -11,7 +11,8 @@ env:
   - ESHOST_TARGET=firefox
   - ESHOST_TARGET=chakra
   - ESHOST_TARGET=jsshell
-install: '
+  - ESHOST_TARGET=chrome
+install: |
     export ESHOST_SKIP_D8=1
     export ESHOST_SKIP_JSC=1
     export ESHOST_SKIP_CHROME=1
@@ -46,9 +47,37 @@ install: '
       tar -xvf cc_linux_x64_1_5_2;
       export PATH=$PATH:$(pwd)/ChakraCoreFiles/bin;
       unset ESHOST_SKIP_CH;
+    elif [[ "$ESHOST_TARGET" == "chrome" ]]; then
+      channel=unstable
+      deb_archive=google-chrome-${channel}_current_amd64.deb
+      wget https://dl.google.com/linux/direct/$deb_archive
+
+      # If the environment provides an installation of Google Chrome, the
+      # existing binary may take precedence over the one introduced in this
+      # script. Remove any previously-existing "alternatives" prior to
+      # installation in order to ensure that the new binary is installed as
+      # intended.
+      if sudo update-alternatives --list google-chrome; then
+        sudo update-alternatives --remove-all google-chrome
+      fi
+
+      # Installation will fail in cases where the package has unmet dependencies.
+      # When this occurs, attempt to use the system package manager to fetch the
+      # required packages and retry.
+      if ! sudo dpkg --install $deb_archive; then
+        sudo apt-get install --fix-broken
+        sudo dpkg --install $deb_archive
+      fi
+
+      mkdir chrome
+      ln -s $(which google-chrome) chrome/chrome
+
+      wget https://chromedriver.storage.googleapis.com/2.30/chromedriver_linux64.zip
+      unzip -d chrome chromedriver_linux64.zip
+      PATH=$PATH:$(pwd)/chrome
+      unset ESHOST_SKIP_CHROME;
     else
       exit 1;
     fi
 
     npm install
-    '

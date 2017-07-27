@@ -20,6 +20,12 @@ var $ = window.$ = {
     var fwin = frame.contentWindow;
     var fdoc = fwin.document;
     var fscript = fdoc.createElement('script');
+
+    // The following is a workaround for a bug in Chromium related to reporting
+    // errors produced from evaluating code using `eval`.
+    // https://bugs.chromium.org/p/chromium/issues/detail?id=746564
+    fdoc.write('<body>');
+
     fscript.textContent = this.source;
     fdoc.body.appendChild(fscript);
     var f$ = fwin.$;
