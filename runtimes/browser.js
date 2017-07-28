@@ -88,8 +88,11 @@ var $ = window.$ = {
   source: $SOURCE
 };
 
-function print(str) {
-  $.socket.emit('print', str);
+function print(value) {
+  // If the `undefined` value is emitted directly, Socket.io will transmit the
+  // `null` value in its place, invalidating the reported output. Emit the
+  // value as a property of an ordinary object to avoid this behavior.
+  $.socket.emit('print', {value: value});
 }
 
 window.print = print;
