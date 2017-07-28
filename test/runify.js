@@ -461,7 +461,7 @@ hosts.forEach(function (record) {
           // TODO: find a flag that produces an observable change in the
           // execution environment.
           hostArguments = '';
-          source = 'true';
+          source = 'print("true");';
         }
 
         if (type === 'd8') {
