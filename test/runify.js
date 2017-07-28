@@ -56,72 +56,6 @@ hosts.forEach(function (record) {
       }
     });
 
-    describe('child process creation', function() {
-      let agent;
-
-      before(function() {
-        return runify.createAgent(type, options)
-          .then(a => agent = a);
-      });
-
-      after(function() {
-        return agent.destroy();
-      });
-
-      it('forwards hostArgs (via agent.args) correctly', function () {
-        let args = [];
-
-        // The arguments in agent.args are those provided
-        // via the --hostArgs options when called from
-        // test262-harness
-
-        // Setup special cases
-        if (type === 'd8') {
-          agent.args.push('--expose_gc');
-          args.push('-e', 'print(typeof gc === "function");');
-        }
-
-        if (type === 'node') {
-          agent.args.push('--expose_gc');
-          args.push('-e', 'console.log(typeof gc === "function");');
-        }
-
-        if (type === 'jsc') {
-          agent.args.push('--useWebAssembly=true');
-          args.push('-e', 'print(typeof WebAssembly === "function");');
-        }
-
-        if (type === 'jsshell') {
-          agent.args.push('--no-wasm');
-          args.push('-e', 'print(typeof WebAssembly === "undefined");');
-        }
-
-        // chakra cannot be tested in this manner (no -e support),
-        // but the changes apply to that host as well.
-        //
-        // browsers are irrelevant to this test
-        //
-        if (['ch', 'firefox', 'chrome', 'remote'].includes(type)) {
-          this.skip();
-          return;
-        }
-
-        return new Promise(resolve => {
-          let acp = agent.createChildProcess(args);
-          let stdout = '';
-          let stderr = '';
-
-          acp.stdout.on('data', str => { stdout += str; });
-          acp.stderr.on('data', str => { stderr += str; });
-          acp.on('close', () => {
-            acp = null;
-            assert.equal(stdout.trim(), 'true');
-            resolve();
-          });
-        });
-      });
-    });
-
     describe('normal script evaluation', function() {
       let agent;
 
@@ -508,8 +442,58 @@ hosts.forEach(function (record) {
         }).then(record => {
           const result = record[0];
           assert(!result.stdout.match(/2/), 'Unexpected stdout: ' + result.stdout);
-        })
-      })
+        });
+      });
+
+      it('creates "optional" environments correctly (hostArgs)', function() {
+        // browsers are irrelevant to this test
+        //
+        if (['firefox', 'chrome', 'remote'].includes(type)) {
+          this.skip();
+          return;
+        }
+
+        let source = '';
+        let hostArguments = '';
+
+        // Setup special cases
+        if (type === 'ch') {
+          // TODO: find a flag that produces an observable change in the
+          // execution environment.
+          hostArguments = '';
+          source = 'true';
+        }
+
+        if (type === 'd8') {
+          hostArguments = '--expose_gc';
+          source = 'print(typeof gc === "function");';
+        }
+
+        if (type === 'jsc') {
+          hostArguments = '--useWebAssembly=true';
+          source = 'print(typeof WebAssembly === "function");';
+        }
+
+        if (type === 'jsshell') {
+          hostArguments = '--no-wasm';
+          source = 'print(typeof WebAssembly === "undefined");';
+        }
+
+        if (type === 'node') {
+          hostArguments = '--expose_gc';
+          source = 'print(typeof gc === "function");';
+        }
+
+        return runify.createAgent(type, Object.assign({ hostArguments }, options))
+          .then(a => {
+            agent = a;
+
+            return agent.evalScript(source)
+              .then(result => {
+                assert.equal(result.stdout.trim(), 'true');
+              });
+          });
+      });
     });
 
     describe('`shortName` option', function () {
