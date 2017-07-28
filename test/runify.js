@@ -349,6 +349,35 @@ hosts.forEach(function (record) {
         });
       });
 
+      it("prints values correctly", function () {
+        return agent.evalScript(`
+              print(undefined);
+              print(null);
+              print('string');
+              print(true);
+              print(false);
+              print(0);
+              print(1);
+              print(1.2);
+              print(-1);
+            `).then((result) => {
+               var values;
+
+               assert.equal(result.stderr, '');
+
+               values = result.stdout.split(/\r?\n/);
+               assert.equal(values[0], 'undefined')
+               assert.equal(values[1], 'null')
+               assert.equal(values[2], 'string')
+               assert.equal(values[3], 'true')
+               assert.equal(values[4], 'false')
+               assert.equal(values[5], '0')
+               assert.equal(values[6], '1')
+               assert.equal(values[7], '1.2')
+               assert.equal(values[8], '-1')
+              });
+      });
+
       it('tolerates broken execution environments', function () {
         return agent.evalScript(`
               Object.defineProperty(Object.prototype, "length", {
