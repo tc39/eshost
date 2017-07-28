@@ -12,7 +12,8 @@ const remoteOptions = {
   capabilities: {
     browserName: process.env.ESHOST_REMOTE_BROWSERNAME || 'firefox',
     platform: process.env.ESHOST_REMOTE_PLATFORM || 'ANY',
-    version: process.env.ESHOST_REMOTE_VERSION || ''
+    version: process.env.ESHOST_REMOTE_VERSION || '',
+    'tunnel-identifier': process.env.TRAVIS_JOB_NUMBER
   }
 };
 
@@ -430,7 +431,7 @@ hosts.forEach(function (record) {
         // The GeckoDriver project cannot currently destroy browsing sessions
         // whose main thread is blocked.
         // https://github.com/mozilla/geckodriver/issues/825
-        if (effectiveType === 'firefox' || effectiveType === 'MicrosoftEdge') {
+        if (['firefox', 'MicrosoftEdge', 'safari'].indexOf(effectiveType) > -1) {
           this.skip();
           return;
         }

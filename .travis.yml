@@ -20,6 +20,10 @@ env:
     SAUCE_USERNAME=jugglinmike
     ESHOST_WEB_HOST=eshost.test
     ESHOST_REMOTE_WEBDRIVER_SERVER=
+  - ESHOST_TARGET=remote:safari
+    SAUCE_USERNAME=jugglinmike
+    ESHOST_WEB_HOST=eshost.test
+    ESHOST_REMOTE_WEBDRIVER_SERVER=
 install: |
     export ESHOST_SKIP_D8=1
     export ESHOST_SKIP_JSC=1
@@ -98,30 +102,43 @@ install: |
       export ESHOST_REMOTE_PLATFORM=ANY
       export ESHOST_REMOTE_VERSION=
       unset ESHOST_SKIP_REMOTE;
-    elif [[ "$ESHOST_TARGET" == "remote:edge" ]]; then
+    elif [[ "$ESHOST_TARGET" == "remote:edge" || "$ESHOST_TARGET" == "remote:safari" ]]; then
       wget https://saucelabs.com/downloads/sc-4.4.8-linux.tar.gz
       tar -xvf sc-4.4.8-linux.tar.gz
 
+      ready_file=sauce-connect-ready-$RANDOM
+
       sc-4.4.8-linux/bin/sc \
-        --logfile sauce-connect.log \
-        --tunnel-domains eshost.test \
-        --readyfile sauce-connect-ready &
+        --logfile=sauce-connect.log \
+        --tunnel-domains=eshost.test \
+        --tunnel-identifier=$TRAVIS_JOB_NUMBER \
+        --no-remove-colliding-tunnels \
+        --readyfile=$ready_file &
       SC_PID="$!"
 
-      echo "Waiting for Sauce Connect readyfile"
-      while [ ! -f sauce-connect-ready ] && ps -f $SC_PID >&/dev/null; do
+      echo "Waiting for Sauce Connect 'ready' file..."
+      while [ ! -f $ready_file ] && ps -f $SC_PID >&/dev/null; do
         sleep .5
       done
 
-      if [ ! -f sauce-connect-ready ]; then
-        echo "readyfile not created"
+      if [ ! -f $ready_file ]; then
+        echo "Sauce Connect 'ready' file not created."
         exit 1;
       fi
 
+      echo "Sauce Connect 'ready' file created. Continuing installation."
+
+      if [[ "$ESHOST_TARGET" == "remote:edge" ]]; then
+        export ESHOST_REMOTE_BROWSERNAME=MicrosoftEdge
+        export ESHOST_REMOTE_PLATFORM='Windows 10'
+        export ESHOST_REMOTE_VERSION=15.15063
+      elif [[ "$ESHOST_TARGET" == "remote:safari" ]]; then
+        export ESHOST_REMOTE_BROWSERNAME=safari
+        export ESHOST_REMOTE_PLATFORM='macOS 10.12'
+        export ESHOST_REMOTE_VERSION=10.0
+      fi
+
       export ESHOST_REMOTE_WEBDRIVER_SERVER=https://$SAUCE_USERNAME:$SAUCE_ACCESS_KEY@ondemand.saucelabs.com/wd/hub
-      export ESHOST_REMOTE_BROWSERNAME=MicrosoftEdge
-      export ESHOST_REMOTE_PLATFORM='Windows 10'
-      export ESHOST_REMOTE_VERSION=15.15063
       unset ESHOST_SKIP_REMOTE;
     else
       exit 1;
