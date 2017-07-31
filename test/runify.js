@@ -458,10 +458,8 @@ hosts.forEach(function (record) {
 
         // Setup special cases
         if (type === 'ch') {
-          // TODO: find a flag that produces an observable change in the
-          // execution environment.
-          hostArguments = '';
-          source = 'print("true");';
+          hostArguments = '-Intl-';
+          source = 'print(typeof Intl === "undefined");';
         }
 
         if (type === 'd8') {
