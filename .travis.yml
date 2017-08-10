@@ -49,8 +49,8 @@ install: |
       export PATH=$PATH:$(pwd)/jsshell;
       unset ESHOST_SKIP_JSSHELL;
     elif [[ "$ESHOST_TARGET" == "chakra" ]]; then
-      wget https://s3.amazonaws.com/eshost-builds/ChakraCore-Debug.tar.gz;
-      tar -xvf ChakraCore-Debug.tar.gz;
+      wget https://s3.amazonaws.com/eshost-builds/ChakraCore-Debug_linux_1_7_0.tar.gz;
+      tar -xvf ChakraCore-Debug_linux_1_7_0.tar.gz;
       export PATH=$PATH:$(pwd)/out/Debug;
       unset ESHOST_SKIP_CH;
     elif [[ "$ESHOST_TARGET" == "chrome" ]]; then
