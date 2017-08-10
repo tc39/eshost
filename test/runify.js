@@ -442,8 +442,55 @@ hosts.forEach(function (record) {
         }).then(record => {
           const result = record[0];
           assert(!result.stdout.match(/2/), 'Unexpected stdout: ' + result.stdout);
-        })
-      })
+        });
+      });
+
+      it('creates "optional" environments correctly (hostArgs)', function() {
+        // browsers are irrelevant to this test
+        if (['firefox', 'chrome', 'remote'].includes(type)) {
+          this.skip();
+          return;
+        }
+
+        let source = '';
+        let hostArguments = '';
+
+        // Setup special cases
+        if (type === 'ch') {
+          hostArguments = '-Intl-';
+          source = 'print(typeof Intl === "undefined");';
+        }
+
+        if (type === 'd8') {
+          hostArguments = '--expose_gc';
+          source = 'print(typeof gc === "function");';
+        }
+
+        if (type === 'jsc') {
+          hostArguments = '--useWebAssembly=true';
+          source = 'print(typeof WebAssembly === "function");';
+        }
+
+        if (type === 'jsshell') {
+          hostArguments = '--no-wasm';
+          source = 'print(typeof WebAssembly === "undefined");';
+        }
+
+        if (type === 'node') {
+          hostArguments = '--expose_gc';
+          source = 'print(typeof gc === "function");';
+        }
+
+        return runify.createAgent(type, Object.assign({ hostArguments }, options))
+          .then(a => {
+            agent = a;
+
+            return agent.evalScript(source)
+              .then(result => {
+                assert.equal(result.stdout.trim(), 'true');
+              });
+          });
+      });
     });
 
     describe('`shortName` option', function () {
