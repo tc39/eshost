@@ -447,7 +447,6 @@ hosts.forEach(function (record) {
 
       it('creates "optional" environments correctly (hostArgs)', function() {
         // browsers are irrelevant to this test
-        //
         if (['firefox', 'chrome', 'remote'].includes(type)) {
           this.skip();
           return;
