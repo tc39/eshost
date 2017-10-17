@@ -43,7 +43,8 @@ var $ = {
   setGlobal(name, value) {
     this.global[name] = value;
   },
-  destroy: function() { /* noop */ },
+  destroy() { /* noop */ },
+  uncallableAndIsHTMLDDA() { return {}; },
   source: $SOURCE,
   file: $FILE,
   scriptFile: $SCRIPT_FILE,

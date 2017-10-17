@@ -44,7 +44,7 @@ var $ = window.$ = {
       if (options.destroy) {
         options.destroy();
       }
-    }
+    };
 
     return f$;
   },
@@ -84,6 +84,9 @@ var $ = window.$ = {
   },
   destroy: function() {
     $.socket.emit('destroy')
+  },
+  uncallableAndIsHTMLDDA() {
+    return document.all;
   },
   source: $SOURCE
 };
