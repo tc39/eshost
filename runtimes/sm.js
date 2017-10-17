@@ -33,7 +33,7 @@ var $ = {
     this.global[name] = value;
   },
   destroy() { /* noop */ },
-  uncallableAndIsHTMLDDA() { return {}; },
+  uncallableAndIsHTMLDDA() { return objectEmulatingUndefined(); },
   source: $SOURCE
 };
 
