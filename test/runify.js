@@ -529,10 +529,10 @@ hosts.forEach(function (record) {
       });
     });
 
-    describe('`uncallableAndIsHTMLDDA`', function () {
-      it('has a default uncallableAndIsHTMLDDA', function () {
+    describe('`fakeDocumentAll`', function () {
+      it('has a default fakeDocumentAll', function () {
         return runify.createAgent(type, options).then(agent => {
-          let p = agent.evalScript('print(typeof $.uncallableAndIsHTMLDDA);').then(result => {
+          let p = agent.evalScript('print(typeof $.fakeDocumentAll);').then(result => {
             console.log(result);
             assert(result.error === null, 'no error');
             assert.equal(result.stdout.indexOf('function'), 0);

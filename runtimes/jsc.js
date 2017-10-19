@@ -44,7 +44,7 @@ var $ = {
     this.global[name] = value;
   },
   destroy() { /* noop */ },
-  uncallableAndIsHTMLDDA() { return {}; },
+  fakeDocumentAll() { return {}; },
   source: $SOURCE,
   file: $FILE,
   scriptFile: $SCRIPT_FILE,
