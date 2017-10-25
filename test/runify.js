@@ -424,6 +424,20 @@ hosts.forEach(function (record) {
             });
       });
 
+      // The host may need to perform a number of asynchronous operations in
+      // order to evaluate a script. If the `stop` method is invoked while
+      // these operations are taking place, the host should not evaluate the
+      // script.
+      it('avoids race conditions in `stop`', function () {
+        const evalScript = agent.evalScript('print(1);');
+
+        agent.stop();
+
+        return evalScript.then(result => {
+          assert.equal(result.stdout, '');
+        });
+      });
+
       // mostly this test shouldn't hang (if it hangs, it's a bug)
       it('can kill infinite loops', function () {
         // The GeckoDriver project cannot currently destroy browsing sessions
