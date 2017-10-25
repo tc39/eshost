@@ -6,10 +6,15 @@ const assert = require('assert');
 const isWindows = process.platform === 'win32' ||
   process.env.OSTYPE === 'cygwin' ||
   process.env.OSTYPE === 'msys';
-const remoteCapabilities = {
-  browserName: process.env.ESHOST_REMOTE_BROWSERNAME || 'firefox',
-  platform: process.env.ESHOST_REMOTE_PLATFORM || 'ANY',
-  version: process.env.ESHOST_REMOTE_VERSION || ''
+const remoteOptions = {
+  webHost: process.env.ESHOST_WEB_HOST || 'localhost',
+  webdriverServer: process.env.ESHOST_REMOTE_WEBDRIVER_SERVER || 'http://localhost:4444/wd/hub',
+  capabilities: {
+    browserName: process.env.ESHOST_REMOTE_BROWSERNAME || 'firefox',
+    platform: process.env.ESHOST_REMOTE_PLATFORM || 'ANY',
+    version: process.env.ESHOST_REMOTE_VERSION || '',
+    'tunnel-identifier': process.env.TRAVIS_JOB_NUMBER
+  }
 };
 
 const hosts = [
@@ -20,11 +25,7 @@ const hosts = [
   ['jsc', { hostPath: 'jsc' }],
   ['chrome', { hostPath: 'chrome' }],
   ['firefox', { hostPath: 'firefox' }],
-  ['remote', {
-      webdriverServer: 'http://localhost:4444/wd/hub',
-      capabilities: remoteCapabilities
-    }
-  ],
+  ['remote', remoteOptions],
 ];
 
 const timeout = function(ms) {
@@ -41,18 +42,16 @@ hosts.forEach(function (record) {
   if (options.hostPath && isWindows) {
     options.hostPath += '.exe';
   }
+  const uncaughtErrorName = (effectiveType === 'MicrosoftEdge') ?
+    () => 'UnknownESHostError' : (name) => name;
 
   describe(`${type} (${options.hostPath || effectiveType})`, function () {
-    this.timeout(20000);
+    this.timeout((type === 'remote') ? 60000 : 20000);
 
     before(function() {
       if (process.env['ESHOST_SKIP_' + type.toUpperCase()]) {
         this.skip();
         return;
-      }
-
-      if (type === 'remote') {
-        this.timeout(60 * 1000);
       }
     });
 
@@ -71,7 +70,7 @@ hosts.forEach(function (record) {
       it('runs SyntaxErrors', function () {
         return agent.evalScript('foo x++').then(function (result) {
           assert(result.error, 'error is present');
-          assert.equal(result.error.name, 'SyntaxError');
+          assert.equal(result.error.name, uncaughtErrorName('SyntaxError'));
           assert.equal(result.stdout, '', 'stdout not present');
         });
       });
@@ -216,11 +215,14 @@ hosts.forEach(function (record) {
       });
 
       it('returns errors from evaling in new script', function () {
+        var expectedPattern = '^' + uncaughtErrorName('SyntaxError') + '\r?\n';
+        var expectedRe = new RegExp(expectedPattern, 'm');
+
         return agent.evalScript(`
           var completion = $.evalScript("x+++");
           print(completion.value.name);
         `).then(function(result) {
-          assert(result.stdout.match(/^SyntaxError\r?\n/m), 'Unexpected stdout: ' + result.stdout + result.stderr);
+          assert(result.stdout.match(expectedRe), 'Unexpected stdout: ' + result.stdout + result.stderr);
         });
       });
 
@@ -443,7 +445,7 @@ hosts.forEach(function (record) {
         // The GeckoDriver project cannot currently destroy browsing sessions
         // whose main thread is blocked.
         // https://github.com/mozilla/geckodriver/issues/825
-        if (effectiveType === 'firefox') {
+        if (['firefox', 'MicrosoftEdge', 'safari'].indexOf(effectiveType) > -1) {
           this.skip();
           return;
         }
