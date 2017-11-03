@@ -36,7 +36,7 @@ var $ = {
     this.global[name] = value;
   },
   destroy() { /* noop */ },
-  fakeDocumentAll() { return {}; },
+  IsHTMLDDA() { return {}; },
   source: $SOURCE
 };
 Realm.shared = $;

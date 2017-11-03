@@ -2,10 +2,12 @@
 
 const runify = require('../');
 const assert = require('assert');
+const fs = require('fs');
 
 const isWindows = process.platform === 'win32' ||
   process.env.OSTYPE === 'cygwin' ||
   process.env.OSTYPE === 'msys';
+
 const remoteCapabilities = {
   browserName: process.env.ESHOST_REMOTE_BROWSERNAME || 'firefox',
   platform: process.env.ESHOST_REMOTE_PLATFORM || 'ANY',
@@ -42,6 +44,10 @@ hosts.forEach(function (record) {
     options.hostPath += '.exe';
   }
 
+  if (options.hostPath && !fs.existsSync(options.hostPath)) {
+    throw new Error('Unable to run tests - host not found: ' + options.hostPath);
+  }
+  
   describe(`${type} (${options.hostPath || effectiveType})`, function () {
     this.timeout(20000);
 
@@ -543,11 +549,10 @@ hosts.forEach(function (record) {
       });
     });
 
-    describe('`fakeDocumentAll`', function () {
-      it('has a default fakeDocumentAll', function () {
+    describe('`IsHTMLDDA`', function () {
+      it('has a default IsHTMLDDA', function () {
         return runify.createAgent(type, options).then(agent => {
-          let p = agent.evalScript('print(typeof $.fakeDocumentAll);').then(result => {
-            console.log(result);
+          let p = agent.evalScript('print(typeof $.IsHTMLDDA);').then(result => {
             assert(result.error === null, 'no error');
             assert.equal(result.stdout.indexOf('function'), 0);
             agent.destroy();

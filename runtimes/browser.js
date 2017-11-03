@@ -85,7 +85,7 @@ var $ = window.$ = {
   destroy: function() {
     $.socket.emit('destroy')
   },
-  fakeDocumentAll() {
+  IsHTMLDDA() {
     return document.all;
   },
   source: $SOURCE

@@ -34,6 +34,6 @@ var $ = {
     this.global[name] = value;
   },
   destroy: function() { /* noop */ },
-  fakeDocumentAll: function() { return {}; },
+  IsHTMLDDA: function() { return {}; },
   source: $SOURCE
 };
