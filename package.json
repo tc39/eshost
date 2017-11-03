@@ -1,6 +1,6 @@
 {
   "name": "eshost",
-  "version": "3.5.1",
+  "version": "3.6.0",
   "description": "Invoke ECMAScript scripts in any command line JS engine.",
   "main": "lib/eshost.js",
   "scripts": {
