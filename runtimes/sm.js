@@ -32,7 +32,8 @@ var $ = {
   setGlobal(name, value) {
     this.global[name] = value;
   },
-  destroy: function() { /* noop */ },
+  destroy() { /* noop */ },
+  fakeDocumentAll() { return objectEmulatingUndefined(); },
   source: $SOURCE
 };
 

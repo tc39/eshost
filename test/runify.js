@@ -542,5 +542,22 @@ hosts.forEach(function (record) {
         });
       });
     });
+
+    describe('`fakeDocumentAll`', function () {
+      it('has a default fakeDocumentAll', function () {
+        return runify.createAgent(type, options).then(agent => {
+          let p = agent.evalScript('print(typeof $.fakeDocumentAll);').then(result => {
+            console.log(result);
+            assert(result.error === null, 'no error');
+            assert.equal(result.stdout.indexOf('function'), 0);
+            agent.destroy();
+          });
+
+          p.catch(function() {}).then(() => agent.destroy());
+
+          return p;
+        });
+      });
+    });
   });
 });
