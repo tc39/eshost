@@ -4,10 +4,7 @@ var $ = {
     options = options || {};
     options.globals = options.globals || {};
 
-    var realm;
-    run(this.file, function(newRealm) {
-      realm = newRealm;
-    });
+    var realm = createGlobalObject();
     realm.eval(this.source);
     realm.$.source = this.source;
     realm.$.destroy = function () {
@@ -15,23 +12,15 @@ var $ = {
         options.destroy();
       }
     };
-
     for(var glob in options.globals) {
       realm.$.global[glob] = options.globals[glob];
     }
 
     return realm.$;
   },
-  evalScript(code, errorCb) {
+  evalScript(code) {
     try {
-      print(this.scriptStartMarker);
-      print(code);
-      print(this.scriptEndMarker);
-
-      /* Blocks until the script is written to the file system. */
-      readline();
-
-      load(this.scriptFile);
+      loadString(code);
       return { type: 'normal', value: undefined };
     } catch (e) {
       return { type: 'throw', value: e }
@@ -46,8 +35,4 @@ var $ = {
   destroy() { /* noop */ },
   IsHTMLDDA() { return {}; },
   source: $SOURCE,
-  file: $FILE,
-  scriptFile: $SCRIPT_FILE,
-  scriptStartMarker: $SCRIPT_START_MARKER,
-  scriptEndMarker: $SCRIPT_END_MARKER,
 };

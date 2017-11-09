@@ -4,26 +4,25 @@ var $ = {
     options = options || {};
     options.globals = options.globals || {};
 
-    var realm = Realm.create();
-    Realm.eval(realm, this.source);
-    var $child = Realm.shared;
-    $child.realm = realm;
-    $child.source = this.source;
-    Realm.shared = void 0;
-    $child.destroy = function () {
+    var realmId = Realm.createAllowCrossRealmAccess();
+    var realm = Realm.global(realmId);
+    Realm.eval(realmId, this.source);
+    realm.$.source = this.source;
+    realm.$.destroy = function () {
       if (options.destroy) {
         options.destroy();
       }
     };
     for(var glob in options.globals) {
-      $child.setGlobal(glob, options.globals[glob]);
+      realm.$.global[glob] = options.globals[glob];
     }
 
-    return $child;
+    return realm.$;
   },
   evalScript(code) {
+    var realmId = typeof this.realm === 'number' ? this.realm : Realm.current();
     try {
-      Realm.eval(this.realm ? this.realm : Realm.current(), code);
+      Realm.eval(realmId, code);
       return { type: 'normal', value: undefined }
     } catch (e) {
       return { type: 'throw', value: e }
@@ -37,6 +36,6 @@ var $ = {
   },
   destroy() { /* noop */ },
   IsHTMLDDA() { return {}; },
-  source: $SOURCE
+  source: $SOURCE,
+  realm: Realm.current(),
 };
-Realm.shared = $;
