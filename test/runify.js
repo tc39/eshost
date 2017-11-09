@@ -487,8 +487,8 @@ hosts.forEach(function (record) {
         }
 
         if (type === 'jsc') {
-          hostArguments = '--useWebAssembly=true';
-          source = 'print(typeof WebAssembly === "function");';
+          hostArguments = '--useWebAssembly=false';
+          source = 'print(typeof WebAssembly === "undefined");';
         }
 
         if (type === 'jsshell') {

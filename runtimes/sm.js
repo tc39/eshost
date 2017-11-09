@@ -33,7 +33,13 @@ var $ = {
     this.global[name] = value;
   },
   destroy() { /* noop */ },
-  IsHTMLDDA() { return objectEmulatingUndefined(); },
+  IsHTMLDDA() {
+    /* objectEmulatingUndefined was replaced by createIsHTMLDDA in newer SpiderMonkey builds. */
+    if (typeof createIsHTMLDDA === 'function') {
+      return createIsHTMLDDA();
+    }
+    return objectEmulatingUndefined();
+  },
   source: $SOURCE
 };
 
