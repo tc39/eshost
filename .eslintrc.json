@@ -1,0 +1,21 @@
+{
+  "env": {
+    "browser": true,
+    "es6": true,
+    "mocha": true,
+    "node": true
+  },
+  "extends": "eslint:recommended",
+  "parserOptions": {
+    "sourceType": "module"
+  },
+  "globals": {
+    "assert": true,
+    "fixture": true,
+    "sandbox": true,
+    "sinon": true
+  },
+  "rules": {
+    "no-console": [0]
+  }
+}
