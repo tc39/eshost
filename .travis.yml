@@ -92,7 +92,12 @@ install: |
       exit 1;
     fi
 
-    npm install
+    npm install --ignore-scripts
+
+script:
+  - npm run lint
+  - npm run test
+
 after_script: |
     if [[ "$ESHOST_TARGET" == "remote" ]]; then
       cat selenium-server.log
