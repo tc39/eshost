@@ -11,6 +11,7 @@
   "license": "MIT",
   "devDependencies": {
     "eslint": "^1.10.2",
+    "hasbin": "^1.2.3",
     "mocha": "^2.3.4"
   },
   "repository": {

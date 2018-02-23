@@ -2,6 +2,7 @@
 
 const runify = require('../');
 const assert = require('assert');
+const hasbin = require('hasbin');
 const fs = require('fs');
 
 const isWindows = process.platform === 'win32' ||
@@ -44,10 +45,10 @@ hosts.forEach(function (record) {
     options.hostPath += '.exe';
   }
 
-  if (options.hostPath && !fs.existsSync(options.hostPath)) {
-    throw new Error('Unable to run tests - host not found: ' + options.hostPath);
+  if (options.hostPath && !hasbin.sync(options.hostPath)) {
+    console.error('Unable to run tests - host not found: ' + options.hostPath);
   }
-  
+
   describe(`${type} (${options.hostPath || effectiveType})`, function () {
     this.timeout(20000);
 
@@ -477,6 +478,11 @@ hosts.forEach(function (record) {
 
         // Setup special cases
         if (type === 'ch') {
+          // Hello! If you come here wondering why this fails
+          // on your local machine, it's because you're using a
+          // version of Chakra that was not compiled with support
+          // for development flags. That's ok! The CI machine
+          // will check this for you, so don't sweat it.
           hostArguments = '-Intl-';
           source = 'print(typeof Intl === "undefined");';
         }
