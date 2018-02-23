@@ -45,7 +45,8 @@ hosts.forEach(function (record) {
     options.hostPath += '.exe';
   }
 
-  if (options.hostPath && !hasbin.sync(options.hostPath)) {
+  if (options.hostPath &&
+    (!hasbin.sync(options.hostPath) && !fs.existsSync(options.hostPath))) {
     console.error('Unable to run tests - host not found: ' + options.hostPath);
   }
 
