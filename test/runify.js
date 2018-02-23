@@ -457,7 +457,7 @@ hosts.forEach(function (record) {
         }
 
         var resultP = agent.evalScript(`while (true) { }; print(2);`);
-        return timeout(100).then(_ => {
+        return timeout(100).then(() => {
           var stopP = agent.stop();
 
           return Promise.all([resultP, stopP]);
