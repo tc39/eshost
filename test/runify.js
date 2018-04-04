@@ -4,6 +4,7 @@ const runify = require('../');
 const assert = require('assert');
 const hasbin = require('hasbin');
 const fs = require('fs');
+const path = require('path');
 
 const isWindows = process.platform === 'win32' ||
   process.env.OSTYPE === 'cygwin' ||
@@ -30,6 +31,21 @@ const hosts = [
   ],
 ];
 
+// console.log(`isWindows: ${isWindows}`);
+if (isWindows) {
+  hosts.forEach(record => {
+    if (record[1].hostPath) {
+      record[1].hostPath += '.exe';
+      const ESHOST_ENV_NAME = `ESHOST_${record[0].toUpperCase()}_PATH`;
+      console.log(`ESHOST_ENV_NAME: ${ESHOST_ENV_NAME}`);
+      if (process.env[ESHOST_ENV_NAME]) {
+        record[1].hostPath = path.join(process.env[ESHOST_ENV_NAME], record[1].hostPath);
+      }
+    }
+  });
+}
+
+
 const timeout = function(ms) {
   return new Promise(res => {
     setTimeout(res, ms);
@@ -41,20 +57,19 @@ hosts.forEach(function (record) {
   const options = record[1];
   const effectiveType = type === 'remote' ?
     options.capabilities.browserName : type;
-  if (options.hostPath && isWindows) {
-    options.hostPath += '.exe';
-  }
+  const isSkipped = process.env[`ESHOST_SKIP_${effectiveType.toUpperCase()}`];
+  console.log(`ESHOST_SKIP_${effectiveType.toUpperCase()} isSkipped ${isSkipped}`);
 
-  if (options.hostPath &&
-    (!hasbin.sync(options.hostPath) && !fs.existsSync(options.hostPath))) {
-    console.error('Unable to run tests - host not found: ' + options.hostPath);
+  if (!isSkipped &&
+    (options.hostPath && (!hasbin.sync(options.hostPath) && !fs.existsSync(options.hostPath)))) {
+    console.error(`Unable to run tests - host not found: ${options.hostPath}`);
   }
 
   describe(`${type} (${options.hostPath || effectiveType})`, function () {
     this.timeout(20000);
 
     before(function() {
-      if (process.env['ESHOST_SKIP_' + type.toUpperCase()]) {
+      if (isSkipped) {
         this.skip();
         return;
       }

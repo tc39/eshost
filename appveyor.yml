@@ -3,16 +3,48 @@ version: "{build}"
 clone_depth: 1
 
 environment:
+  ESHOST_SKIP_D8: 1
+  ESHOST_SKIP_JSC: 1
+  ESHOST_SKIP_CHROME: 1
+  ESHOST_SKIP_FIREFOX: 1
+  # These are not skipped
+  # ESHOST_SKIP_JSSHELL: 1
+  # ESHOST_SKIP_CH: 1
+  # ESHOST_SKIP_NODE: 1
+  ESHOST_SKIP_REMOTE: 1
   matrix:
     - nodejs_version: 6
     - nodejs_version: 8
 
 platform:
-  - x86
   - x64
+  - x86
 
 install:
   - ps: Install-Product node $env:nodejs_version
+  - set ESHOST_PATH=%CD%
+  - mkdir hosts
+  - mkdir spidermonkey
+  - curl -fsS -o spidermonkey\jsshell-win64.zip https://archive.mozilla.org/pub/firefox/nightly/latest-mozilla-central/jsshell-win64.zip
+  - 7z e -o%CD%\spidermonkey spidermonkey\jsshell-win64.zip
+  - set PATH=%PATH%;%CD%\spidermonkey\
+  - set ESHOST_JSSHELL_PATH=%CD%\spidermonkey\
+  - where js
+  - mkdir chakracore
+  # eventually, we want to have a pre-compiled debug build stored remotely
+  # - curl -fsSL -o chakracore\cc_windows_all_1_7_1.zip https://aka.ms/chakracore/cc_windows_all_1_7_1
+  # - 7z -y e -o%CD%\chakracore chakracore\cc_windows_all_1_7_1.zip
+  # - set PATH=%PATH%;%CD%\chakracore\
+  # - set ESHOST_CH_PATH=%CD%\chakracore\
+  - git clone https://github.com/Microsoft/ChakraCore.git chakracore
+  - msbuild /p:Platform=%PLATFORM% /p:Configuration=Debug %CD%\chakracore\Build\Chakra.Core.sln
+  - set PATH=%PATH%;%CD%\chakracore\Build\VcBuild\bin\%PLATFORM%_debug
+  - cd %CD%\chakracore\Build\VcBuild\bin\%PLATFORM%_debug
+  # - where ch
+  - cd %ESHOST_PATH%
+  - where node
+  - echo %PATH%
+  - node -v
   - npm install -g npm
   - npm install
 
@@ -20,7 +52,7 @@ build: off
 
 test_script:
   - ps: "npm run lint # PowerShell"
-  - cmd: npm run lint
+  - cmd: npm test
 
 matrix:
   fast_finish: true
