@@ -1,5 +1,9 @@
 ## eshost
 
+[![Travis Build Status](https://travis-ci.org/bterlson/eshost.svg?branch=master)](https://travis-ci.org/bterlson/eshost)
+[![Appveyor Build Status](https://ci.appveyor.com/api/projects/status/github/bterlson/eshost?branch=master&svg=true)](https://ci.appveyor.com/project/bterlson/eshost)
+
+
 Execute ECMAScript code uniformly across any ECMAScript host environment. See also [eshost-cli](https://github.com/bterlson/eshost-cli) for an easy way to use this library from the command line.
 
 Using eshost, you can create an agent (eg. a web browser or a command-line ECMAScript host) and evaluate scripts within that agent. Code running within the agent has access to the eshost runtime API which enables code to evaluate scripts, create new realms, handle errors, and so forth all without worrying about the host-specific mechanisms for these capabilities are.
