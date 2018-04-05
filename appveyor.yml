@@ -5,22 +5,16 @@ clone_depth: 1
 environment:
   matrix:
     - nodejs_version: 6
-    - nodejs_version: 8
 
 platform:
   - x86
   - x64
 
-install:
-  - ps: Install-Product node $env:nodejs_version
-  - npm install -g npm
-  - npm install
-
 build: off
 
 test_script:
-  - ps: "npm run lint # PowerShell"
-  - cmd: npm run lint
+  - echo %platform%
+  - echo %PLATFORM%
 
 matrix:
   fast_finish: true
