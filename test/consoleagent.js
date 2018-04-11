@@ -66,7 +66,7 @@ describe('ConsoleAgent', function () {
         let async = true;
         let compiled = agent.compile(program, {async});
 
-        assert.equal(compiled, `${ConsoleAgent.runtime}${program}`.replace(/\r?\n/g, ''));
+        assert.equal(compiled, `  const name = 'ConsoleAgent';${program}`.replace(/\r?\n/g, ''));
       });
     });
     it('Removes all linebreaks from runtime code', function() {
