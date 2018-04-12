@@ -38,6 +38,10 @@ var $ = {
   IsHTMLDDA() { return {}; },
   source: $SOURCE,
   realm: Realm.current(),
+  detachArrayBuffer(buffer) {
+    var w = new Worker('');
+    w.postMessage('', [buffer]);
+  },
   agent: (function() {
     /*
       Copyright 2017 the V8 project authors. All rights reserved.
