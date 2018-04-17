@@ -88,7 +88,7 @@ hosts.forEach(function (record) {
       });
 
       after(function() {
-        return agent.destroy();
+        return agent && agent.destroy();
       });
 
       it('runs SyntaxErrors', function () {
@@ -561,7 +561,7 @@ hosts.forEach(function (record) {
       });
 
       after(function() {
-        return agent.destroy();
+        return agent && agent.destroy();
       });
 
       it('runs transforms', function () {

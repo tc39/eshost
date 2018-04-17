@@ -7,12 +7,12 @@ before_install:
     - export DISPLAY=:99.0
     - sh -e /etc/init.d/xvfb start
 env:
-  - ESHOST_TARGET=node
+  # - ESHOST_TARGET=node
   - ESHOST_TARGET=firefox
-  - ESHOST_TARGET=chakra
-  - ESHOST_TARGET=jsshell
-  - ESHOST_TARGET=chrome
-  - ESHOST_TARGET=remote ESHOST_REMOTE_BROWSERNAME=firefox
+  # - ESHOST_TARGET=chakra
+  # - ESHOST_TARGET=jsshell
+  # - ESHOST_TARGET=chrome
+  # - ESHOST_TARGET=remote ESHOST_REMOTE_BROWSERNAME=firefox
 install: |
     export ESHOST_SKIP_D8=1
     export ESHOST_SKIP_JSC=1
