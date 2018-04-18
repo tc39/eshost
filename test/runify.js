@@ -57,15 +57,16 @@ hosts.forEach(function (record) {
   const options = record[1];
   const effectiveType = type === 'remote' ?
     options.capabilities.browserName : type;
-  const isSkipped = process.env[`ESHOST_SKIP_${effectiveType.toUpperCase()}`];
-  console.log(`ESHOST_SKIP_${effectiveType.toUpperCase()} isSkipped ${isSkipped}`);
+
+  const isSkipped = process.env[`ESHOST_SKIP_${type.toUpperCase()}`];
+  console.log(`ESHOST_SKIP_${type.toUpperCase()} isSkipped ${isSkipped}`);
 
   if (!isSkipped &&
     (options.hostPath && (!hasbin.sync(options.hostPath) && !fs.existsSync(options.hostPath)))) {
     console.error(`Unable to run tests - host not found: ${options.hostPath}`);
   }
 
-  describe(`${type} (${options.hostPath || effectiveType})`, function () {
+  describe(`${type} (${options.hostPath || type})`, function () {
     this.timeout(20000);
 
     before(function() {
