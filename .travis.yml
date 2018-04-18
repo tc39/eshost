@@ -25,9 +25,9 @@ install: |
 
     function install_firefox {
       export TMP=$(mktemp);
-      wget https://archive.mozilla.org/pub/firefox/nightly/2017/07/2017-07-07-10-01-38-mozilla-central/firefox-56.0a1.en-US.linux-x86_64.tar.bz2 -O $TMP;
+      wget https://archive.mozilla.org/pub/firefox/nightly/latest-mozilla-central/firefox-61.0a1.en-US.linux-x86_64.tar.bz2 -O $TMP;
       tar -xvf $TMP;
-      wget https://github.com/mozilla/geckodriver/releases/download/v0.17.0/geckodriver-v0.17.0-linux64.tar.gz -O $TMP;
+      wget https://github.com/mozilla/geckodriver/releases/download/v0.20.1/geckodriver-v0.20.1-linux64.tar.gz -O $TMP;
       tar --directory firefox -xvf $TMP;
       rm $TMP;
       unset TMP;
@@ -41,7 +41,7 @@ install: |
       unset ESHOST_SKIP_FIREFOX;
     elif [[ "$ESHOST_TARGET" == "jsshell" ]]; then
       export TMP=$(mktemp);
-      wget https://archive.mozilla.org/pub/firefox/nightly/2017/07/2017-07-07-10-01-38-mozilla-central/jsshell-linux-x86_64.zip -O $TMP;
+      wget https://archive.mozilla.org/pub/firefox/nightly/latest-mozilla-central/jsshell-linux-x86_64.zip -O $TMP;
       mkdir jsshell;
       unzip -d jsshell $TMP;
       rm $TMP;
@@ -84,8 +84,8 @@ install: |
       unset ESHOST_SKIP_CHROME;
     elif [[ "$ESHOST_TARGET" == "remote" ]]; then
       install_firefox;
-      wget http://selenium-release.storage.googleapis.com/3.4/selenium-server-standalone-3.4.0.jar
-      PATH=$PATH:$(pwd)/firefox java -jar selenium-server-standalone-3.4.0.jar &> selenium-server.log &
+      wget http://selenium-release.storage.googleapis.com/3.11/selenium-server-standalone-3.11.0.jar
+      PATH=$PATH:$(pwd)/firefox java -jar selenium-server-standalone-3.11.0.jar &> selenium-server.log &
 
       unset ESHOST_SKIP_REMOTE;
     else
