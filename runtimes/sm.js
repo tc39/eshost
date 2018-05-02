@@ -74,11 +74,6 @@ var $ = {
     if (!sabTestable) {
       return {
         _notAvailable() {
-          /* See comment above. */
-          if (!hasThreads && shellCode) {
-            reportCompare(0,0);
-            quit(0);
-          }
           throw new Error("Agents not available");
         },
         start(script) { this._notAvailable() },
@@ -140,7 +135,8 @@ $262.agent = (function () {
     sleep(s) {
       Atomics.wait(_ia, ${_SLEEP_LOC}, 0, s);
     },
-    leaving() {}
+    leaving() {},
+    monotonicNow,
   };
   Atomics.add(_ia, ${_RDY_LOC}, 1);
   return agent;
@@ -154,11 +150,6 @@ $262.agent = (function () {
 
       _bailIfNotAvailable() {
         if (!sabTestable) {
-          // See comment above.
-          if (!hasThreads && shellCode) {
-            reportCompare(0,0);
-            quit(0);
-          }
           throw new Error("Agents not available");
         }
       },
@@ -202,6 +193,8 @@ $262.agent = (function () {
         this._bailIfNotAvailable();
         Atomics.wait(_ia, _SLEEP_LOC, 0, s);
       },
+
+      monotonicNow,
     };
   })()
 };

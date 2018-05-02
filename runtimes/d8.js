@@ -101,8 +101,13 @@ var $ = {
               postMessage(String(msg));
               Atomics.add(i32a, ${WORKER_REPORT_LOC} + index, 1);
             },
-            sleep(s) { Atomics.wait(i32a, ${SLEEP_LOC}, 0, s); },
-            leaving() {}
+            sleep(s) {
+              Atomics.wait(i32a, ${SLEEP_LOC}, 0, s);
+            },
+            monotonicNow() {
+              return performance.now();
+            },
+            leaving() {},
           }
         };`;
     }
@@ -143,7 +148,13 @@ var $ = {
         return pendingReports.shift() || null;
       },
 
-      sleep(s) { Atomics.wait(i32a, SLEEP_LOC, 0, s); }
+      sleep(s) {
+        Atomics.wait(i32a, SLEEP_LOC, 0, s);
+      },
+
+      monotonicNow() {
+        return performance.now();
+      },
     };
     return agent;
   })()
