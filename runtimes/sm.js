@@ -71,10 +71,13 @@ var $ = {
     var hasThreads = helperThreadCount ? helperThreadCount() > 0 : true;
     var sabTestable = Atomics && SharedArrayBuffer && hasThreads && shellCode;
 
+    // This is a stop-gap until https://bugzilla.mozilla.org/show_bug.cgi?id=1457560 is merged.
+    var monotonicNow = monotonicNow || Date.now;
+
     if (!sabTestable) {
       return {
         _notAvailable() {
-          throw new Error("Agents not available");
+          throw new Test262Error("Agent not yet supported.");
         },
         start(script) { this._notAvailable() },
         broadcast(sab, id) { this._notAvailable() },

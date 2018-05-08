@@ -4,7 +4,7 @@ var $ = {
     options = options || {};
     options.globals = options.globals || {};
 
-    var realm = loadWithNewGlobal({script: 'this', name: 'createRealm'});
+    var realm = loadWithNewGlobal({ script: 'this', name: 'createRealm' });
     realm.eval(this.source);
     realm.$.source = this.source;
     realm.$.destroy = function () {
@@ -21,7 +21,7 @@ var $ = {
   },
   evalScript: function(code) {
     try {
-      load({script: code, name: 'evalScript'});
+      load({ script: code, name: 'evalScript' });
       return { type: 'normal', value: undefined }
     } catch (e) {
       return { type: 'throw', value: e }
@@ -35,5 +35,17 @@ var $ = {
   },
   destroy: function() { /* noop */ },
   IsHTMLDDA: function() { return {}; },
-  source: $SOURCE
+  source: $SOURCE,
+  agent: (function() {
+    function thrower() {
+      throw new Test262Error('Agent not yet supported.');
+    };
+    return {
+      start: thrower,
+      broadcast: thrower,
+      getReport: thrower,
+      sleep: thrower,
+      monotonicNow: thrower,
+    };
+  })(),
 };
