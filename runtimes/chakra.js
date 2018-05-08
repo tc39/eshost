@@ -34,5 +34,17 @@ var $ = {
   },
   destroy() { /* noop */ },
   IsHTMLDDA() { return {}; },
-  source: $SOURCE
+  source: $SOURCE,
+  agent: (function() {
+    function thrower() {
+      throw new Test262Error("Atomic operations are not supported.");
+    };
+    return {
+      start: thrower,
+      broadcast: thrower,
+      getReport: thrower,
+      sleep: thrower,
+      monotonicNow: thrower,
+    };
+  })(),
 };
