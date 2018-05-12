@@ -22,9 +22,10 @@ npm install eshost
 |------|---------------------|----------|-------|
 | node | Any | https://nodejs.org | |
 | ch | Any | [Download](https://github.com/Microsoft/ChakraCore/releases) or [build](https://github.com/Microsoft/ChakraCore/wiki/Building-ChakraCore) | Chakra console host. |
-| d8 | Any | Build [from source](https://github.com/v8/v8) | v8 console host. Errors are reported on stdout. Use $.getGlobal and $.setGlobal to get and set properties of global objects in other realms. |
+| d8 | Any | Build [from source](https://github.com/v8/v8) | V8 console host. Errors are reported on stdout. Use `$.getGlobal` and `$.setGlobal` to get and set properties of global objects in other realms. |
 | jsshell | Any | [Download](https://archive.mozilla.org/pub/firefox/nightly/latest-mozilla-central/) | SpiderMonkey console host. |
 | jsc | Mac¹ | Build [from source](http://trac.webkit.org/wiki/JavaScriptCore)² | |
+| xs | Any | Build [from source](https://github.com/Moddable-OpenSource/moddable-xst) | |
 | nashorn | Any | Build [from source](https://wiki.openjdk.java.net/display/Nashorn/Building+Nashorn) | |
 | edge | Windows | | Errors reported from Microsoft Edge are all of type Error. Requires [Microsoft WebDriver](https://developer.microsoft.com/en-us/microsoft-edge/platform/documentation/dev-guide/tools/webdriver/) in your path. |
 | chrome | Any | | Requires [ChromeDriver](https://sites.google.com/a/chromium.org/chromedriver/downloads) in your path.|
