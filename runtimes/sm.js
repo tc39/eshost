@@ -65,8 +65,9 @@ var $ = {
       being run at all.
     */
 
-    var hasEvalInWorker = typeof evalInWorker == "function";
-    var hasMailbox = typeof setSharedArrayBuffer == "function" && typeof getSharedArrayBuffer == "function";
+    var hasEvalInWorker = typeof evalInWorker === 'function';
+    var hasMailbox = typeof setSharedArrayBuffer === 'function' &&
+                      typeof getSharedArrayBuffer == 'function';
     var shellCode = hasMailbox && hasEvalInWorker;
     var hasThreads = helperThreadCount ? helperThreadCount() > 0 : true;
     var sabTestable = Atomics && SharedArrayBuffer && hasThreads && shellCode;
@@ -74,16 +75,17 @@ var $ = {
     // This is a stop-gap until https://bugzilla.mozilla.org/show_bug.cgi?id=1457560 is merged.
     var monotonicNow = monotonicNow || Date.now;
 
+    function thrower() {
+      throw new Test262Error('Agent not yet supported.');
+    }
+
     if (!sabTestable) {
       return {
-        _notAvailable() {
-          throw new Test262Error("Agent not yet supported.");
-        },
-        start(script) { this._notAvailable() },
-        broadcast(sab, id) { this._notAvailable() },
-        getReport() { this._notAvailable() },
-        sleep(s) { this._notAvailable() }
-      }
+        start: thrower,
+        broadcast: thrower,
+        getReport: thrower,
+        sleep: thrower,
+      };
     }
 
     // The SpiderMonkey implementation uses a designated shared buffer _ia
@@ -126,7 +128,7 @@ $262.agent = (function () {
     report(msg) {
       while (Atomics.compareExchange(_ia, ${_LOCKTXT_LOC}, 0, 1) == 1)
           ;
-      msg = "" + msg;
+      msg = '' + msg;
       var i = _ia[${_NEXT_LOC}];
       _ia[i++] = msg.length;
       for ( let j=0 ; j < msg.length ; j++ )
@@ -151,14 +153,7 @@ $262.agent = (function () {
       _numReports: 0,
       _reportPtr: _FIRST,
 
-      _bailIfNotAvailable() {
-        if (!sabTestable) {
-          throw new Error("Agents not available");
-        }
-      },
-
       start(script) {
-        this._bailIfNotAvailable();
         setSharedArrayBuffer(_ia.buffer);
         var oldrdy = Atomics.load(_ia, _RDY_LOC);
         evalInWorker(_worker_prefix + script);
@@ -168,7 +163,6 @@ $262.agent = (function () {
       },
 
       broadcast(sab, id) {
-        this._bailIfNotAvailable();
         setSharedArrayBuffer(sab);
         Atomics.store(_ia, _ID_LOC, id);
         Atomics.store(_ia, _ACK_LOC, 0);
@@ -179,10 +173,10 @@ $262.agent = (function () {
       },
 
       getReport() {
-        this._bailIfNotAvailable();
-        if (this._numReports == Atomics.load(_ia, _NUMTXT_LOC))
+        if (this._numReports == Atomics.load(_ia, _NUMTXT_LOC)) {
           return null;
-        var s = "";
+        }
+        var s = '';
         var i = this._reportPtr;
         var len = _ia[i++];
         for ( let j=0 ; j < len ; j++ )
@@ -193,7 +187,6 @@ $262.agent = (function () {
       },
 
       sleep(s) {
-        this._bailIfNotAvailable();
         Atomics.wait(_ia, _SLEEP_LOC, 0, s);
       },
 
