@@ -1,20 +1,21 @@
----
 language: node_js
 node_js:
   - 6
   - 8
 dist: trusty
-sudo: false
+sudo: required
+compiler: clang
 before_install:
-    - export DISPLAY=:99.0
-    - sh -e /etc/init.d/xvfb start
+  - export DISPLAY=:99.0
+  - sh -e /etc/init.d/xvfb start
+  - sudo apt-get install -y libunwind8-dev
 env:
-  - ESHOST_TARGET=node
-  - ESHOST_TARGET=firefox
+  # - ESHOST_TARGET=node
+  # - ESHOST_TARGET=firefox
   - ESHOST_TARGET=chakra
-  - ESHOST_TARGET=jsshell
-  - ESHOST_TARGET=chrome
-  - ESHOST_TARGET=remote ESHOST_REMOTE_BROWSERNAME=firefox
+  # - ESHOST_TARGET=jsshell
+  # - ESHOST_TARGET=chrome
+  # - ESHOST_TARGET=remote ESHOST_REMOTE_BROWSERNAME=firefox
 install: |
     export ESHOST_SKIP_D8=1
     export ESHOST_SKIP_JSC=1
@@ -54,6 +55,11 @@ install: |
       # wget https://s3.amazonaws.com/eshost-builds/ChakraCore-Debug_linux_1_7_0.tar.gz;
       # tar -xvf ChakraCore-Debug_linux_1_7_0.tar.gz;
       # export PATH=$PATH:$(pwd)/out/Debug;
+
+
+      sudo ln -s /usr/local/clang-5.0.0 /usr/bin/clang
+      sudo ln -s /usr/local/clang++-5.0.0 /usr/bin/clang++
+
       git clone https://github.com/Microsoft/ChakraCore.git chakracore --depth=1
       cd chakracore
       ./build.sh --test-build --no-icu
