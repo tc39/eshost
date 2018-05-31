@@ -1,19 +1,10 @@
-/* JavaScriptCore exposes a "$" object to its runtime */
-/* Using this["\x24"]; prevents overwrite by ConsoleAgent */
-var jsc = this["\x24"];
-var $ = {
-  agent: jsc.agent,
-  global: jsc.global,
-  createRealm: jsc.createRealm,
-  detachArrayBuffer: jsc.detachArrayBuffer,
-  evalScript: jsc.evalScript,
-  getGlobal(name) {
-    return this.global[name];
-  },
-  setGlobal(name, value) {
-    this.global[name] = value;
-  },
-  destroy() { /* noop */ },
-  IsHTMLDDA() { return {}; },
-  source: $SOURCE,
+/* JavaScriptCore exposes a $ & $262 object to its runtime */
+$262.source = $SOURCE;
+$262.destroy = function() {};
+$262.IsHTMLDDA = function() {};
+$262.getGlobal = function(name) {
+  return this.global[name];
+};
+$262.setGlobal = function(name, value) {
+  this.global[name] = value;
 };

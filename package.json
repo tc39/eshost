@@ -4,7 +4,7 @@
   "description": "Invoke ECMAScript scripts in any command line JS engine.",
   "main": "lib/eshost.js",
   "scripts": {
-    "test": "mocha test/*",
+    "test": "mocha test/*.js",
     "lint": "eslint lib/* bin/* test/*"
   },
   "author": "Brian Terlson",
@@ -12,7 +12,8 @@
   "devDependencies": {
     "eslint": "^4.18.1",
     "hasbin": "^1.2.3",
-    "mocha": "^2.3.4"
+    "mocha": "^2.3.4",
+    "test262-stream": "^1.2.0"
   },
   "repository": {
     "type": "git",

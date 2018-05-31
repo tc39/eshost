@@ -5,6 +5,7 @@ const assert = require('assert');
 const hasbin = require('hasbin');
 const fs = require('fs');
 const path = require('path');
+const Test262Stream = require('test262-stream');
 
 const isWindows = process.platform === 'win32' ||
   process.env.OSTYPE === 'cygwin' ||
@@ -52,7 +53,7 @@ const timeout = function(ms) {
   });
 }
 
-hosts.forEach(function (record) {
+hosts.forEach(function(record) {
   const type = record[0];
   const options = record[1];
   const effectiveType = type === 'remote' ?
@@ -66,7 +67,7 @@ hosts.forEach(function (record) {
     console.error(`Unable to run tests - host not found: ${options.hostPath}`);
   }
 
-  describe(`${type} (${options.hostPath || type})`, function () {
+  describe(`${type} (${options.hostPath || type})`, function() {
     this.timeout(20000);
 
     before(function() {
@@ -92,16 +93,16 @@ hosts.forEach(function (record) {
         return agent && agent.destroy();
       });
 
-      it('runs SyntaxErrors', function () {
-        return agent.evalScript('foo x++').then(function (result) {
+      it('runs SyntaxErrors', function() {
+        return agent.evalScript('foo x++').then(function(result) {
           assert(result.error, 'error is present');
           assert.equal(result.error.name, 'SyntaxError');
           assert.equal(result.stdout, '', 'stdout not present');
         });
       });
 
-      it('runs thrown SyntaxErrors', function () {
-        return agent.evalScript('throw new SyntaxError("Custom Message");').then(function (result) {
+      it('runs thrown SyntaxErrors', function() {
+        return agent.evalScript('throw new SyntaxError("Custom Message");').then(function(result) {
           assert(result.error, 'error is present');
           assert.equal(result.stdout, '', 'stdout not present');
 
@@ -111,8 +112,8 @@ hosts.forEach(function (record) {
         });
       });
 
-      it('runs thrown TypeErrors', function () {
-        return agent.evalScript('throw new TypeError("Custom Message");').then(function (result) {
+      it('runs thrown TypeErrors', function() {
+        return agent.evalScript('throw new TypeError("Custom Message");').then(function(result) {
           assert(result.error, 'error is present');
           assert.equal(result.stdout, '', 'stdout not present');
 
@@ -122,8 +123,8 @@ hosts.forEach(function (record) {
         });
       });
 
-      it('runs thrown RangeErrors', function () {
-        return agent.evalScript('throw new RangeError("Custom Message");').then(function (result) {
+      it('runs thrown RangeErrors', function() {
+        return agent.evalScript('throw new RangeError("Custom Message");').then(function(result) {
           assert(result.error, 'error is present');
           assert.equal(result.stdout, '', 'stdout not present');
 
@@ -133,8 +134,8 @@ hosts.forEach(function (record) {
         });
       });
 
-      it('runs thrown Errors', function () {
-        return agent.evalScript('throw new Error("Custom Message");').then(function (result) {
+      it('runs thrown Errors', function() {
+        return agent.evalScript('throw new Error("Custom Message");').then(function(result) {
           assert.equal(result.stdout, '', 'stdout not present');
           assert(result.error, 'error is present');
           assert.equal(result.error.message, 'Custom Message');
@@ -142,8 +143,8 @@ hosts.forEach(function (record) {
         });
       });
 
-      it('runs thrown custom Errors', function () {
-        return agent.evalScript('function Foo1Error(msg) { this.name = "Foo1Error"; this.message = msg }; Foo1Error.prototype = Error.prototype; throw new Foo1Error("Custom Message");').then(function (result) {
+      it('runs thrown custom Errors', function() {
+        return agent.evalScript('function Foo1Error(msg) { this.name = "Foo1Error"; this.message = msg }; Foo1Error.prototype = Error.prototype; throw new Foo1Error("Custom Message");').then(function(result) {
           assert.equal(result.stdout, '', 'stdout not present');
           assert(result.error, 'error is present');
           assert.equal(result.error.message, 'Custom Message');
@@ -151,13 +152,13 @@ hosts.forEach(function (record) {
         });
       });
 
-      it('runs thrown custom Errors that don\'t have Error.prototype', function () {
+      it('runs thrown custom Errors that don\'t have Error.prototype', function() {
         return agent.evalScript(`
           function Foo2Error(msg) {
             this.message = msg;
           }
           Foo2Error.prototype.name = 'Foo2Error';
-          Foo2Error.prototype.toString = function () {
+          Foo2Error.prototype.toString = function() {
             return 'Foo2Error: ' + this.message;
           }
 
@@ -170,8 +171,8 @@ hosts.forEach(function (record) {
         });
       })
 
-      it('runs thrown Errors without messages', function () {
-        return agent.evalScript('throw new Error();').then(function (result) {
+      it('runs thrown Errors without messages', function() {
+        return agent.evalScript('throw new Error();').then(function(result) {
           assert.equal(result.stdout, '', 'stdout not present');
           assert(result.error, 'error is present');
           assert.equal(result.error.message, undefined);
@@ -179,9 +180,9 @@ hosts.forEach(function (record) {
         });
       });
 
-      it('runs thrown errors from eval', function () {
+      it('runs thrown errors from eval', function() {
         return agent.evalScript('eval("\'\\u000Astr\\u000Aing\\u000A\'") === "\\u000Astr\\u000Aing\\u000A"')
-        .then(function (result) {
+        .then(function(result) {
           assert.equal(result.stdout, '', 'stdout not present');
           assert(result.error, 'error is present');
           assert(result.error.message); // message should be present (but is implementation defined)
@@ -189,13 +190,13 @@ hosts.forEach(function (record) {
         });
       });
 
-      it('gathers stdout', function () {
+      it('gathers stdout', function() {
         return agent.evalScript('print("foo")').then(function(result) {
           assert(result.stdout.match(/^foo\r?\n/), 'Unexpected stdout: ' + result.stdout);
         });
       });
 
-      it('can eval in new realms', function () {
+      it('can eval in new realms', function() {
         return agent.evalScript(`
           var x = 2;
           $child = $.createRealm();
@@ -219,7 +220,7 @@ hosts.forEach(function (record) {
         });
       });
 
-      it('can set globals in new realms', function () {
+      it('can set globals in new realms', function() {
         return agent.evalScript(`
           var x = 1;
           $child = $.createRealm({globals: {x: 2}});
@@ -229,7 +230,7 @@ hosts.forEach(function (record) {
         });
       });
 
-      it('can eval in new scripts', function () {
+      it('can eval in new scripts', function() {
         return agent.evalScript(`
           var x = 2;
           $.evalScript("x = 3;");
@@ -239,7 +240,7 @@ hosts.forEach(function (record) {
         });
       });
 
-      it('returns errors from evaling in new script', function () {
+      it('returns errors from evaling in new script', function() {
         return agent.evalScript(`
           var completion = $.evalScript("x+++");
           print(completion.value.name);
@@ -248,7 +249,7 @@ hosts.forEach(function (record) {
         });
       });
 
-      it('can eval lexical bindings in new scripts', function () {
+      it('can eval lexical bindings in new scripts', function() {
         return agent.evalScript(`
           $.evalScript("'use strict'; let x = 3;");
           print(x);
@@ -282,13 +283,13 @@ hosts.forEach(function (record) {
         });
       });
 
-      it('runs async code', function () {
+      it('runs async code', function() {
         return agent.evalScript(`
           if ($.global.Promise === undefined) {
             print('async result');
             $.destroy()
           } else {
-            Promise.resolve().then(function () {
+            Promise.resolve().then(function() {
               print('async result');
               $.destroy()
             });
@@ -298,9 +299,9 @@ hosts.forEach(function (record) {
         });
       });
 
-      it('accepts destroy callbacks', function () {
+      it('accepts destroy callbacks', function() {
         return agent.evalScript(`
-          $child = $.createRealm({ destroy: function () { print("destroyed") }});
+          $child = $.createRealm({ destroy: function() { print("destroyed") }});
           $child.destroy();
         `)
         .then(result => {
@@ -308,7 +309,7 @@ hosts.forEach(function (record) {
         });
       });
 
-      it('runs in the proper mode', function () {
+      it('runs in the proper mode', function() {
         return agent.evalScript(`
           "use strict"
           function foo() { print(this === undefined) }
@@ -373,7 +374,7 @@ hosts.forEach(function (record) {
         });
       });
 
-      it("prints values correctly", function () {
+      it("prints values correctly", function() {
         return agent.evalScript(`
               print(undefined);
               print(null);
@@ -385,27 +386,27 @@ hosts.forEach(function (record) {
               print(1.2);
               print(-1);
             `).then((result) => {
-               var values;
+              var values;
 
-               assert.equal(result.stderr, '');
+              assert.equal(result.stderr, '');
 
-               values = result.stdout.split(/\r?\n/);
-               assert.equal(values[0], 'undefined')
-               assert.equal(values[1], 'null')
-               assert.equal(values[2], 'string')
-               assert.equal(values[3], 'true')
-               assert.equal(values[4], 'false')
-               assert.equal(values[5], '0')
-               assert.equal(values[6], '1')
-               assert.equal(values[7], '1.2')
-               assert.equal(values[8], '-1')
-              });
+              values = result.stdout.split(/\r?\n/);
+              assert.equal(values[0], 'undefined')
+              assert.equal(values[1], 'null')
+              assert.equal(values[2], 'string')
+              assert.equal(values[3], 'true')
+              assert.equal(values[4], 'false')
+              assert.equal(values[5], '0')
+              assert.equal(values[6], '1')
+              assert.equal(values[7], '1.2')
+              assert.equal(values[8], '-1')
+            });
       });
 
-      it('tolerates broken execution environments', function () {
+      it('tolerates broken execution environments', function() {
         return agent.evalScript(`
               Object.defineProperty(Object.prototype, "length", {
-                  get: function () {
+                  get: function() {
                       return 1;
                   },
                   configurable: true
@@ -413,12 +414,12 @@ hosts.forEach(function (record) {
 
                 print('okay');
             `).then((result) => {
-               assert.equal(result.stderr, '');
-               assert(result.stdout.match(/^okay\r?\n/m));
-              });
+              assert.equal(result.stderr, '');
+              assert(result.stdout.match(/^okay\r?\n/m));
+            });
       });
 
-      it('supports realm nesting', function () {
+      it('supports realm nesting', function() {
         return agent.evalScript(`
               x = 0;
               $.createRealm().evalScript(\`
@@ -432,12 +433,12 @@ hosts.forEach(function (record) {
               print(typeof x);
             `)
           .then((result) => {
-              assert.equal(result.stderr, '');
-              assert(result.stdout.match(/^object\r?\nstring\r?\nnumber\r?\n/m));
-            });
+            assert.equal(result.stderr, '');
+            assert(result.stdout.match(/^object\r?\nstring\r?\nnumber\r?\n/m));
+          });
       });
 
-      it('observes correct cross-script interaction semantics', function () {
+      it('observes correct cross-script interaction semantics', function() {
         return agent.evalScript(`
              print($.evalScript('let eshost;').type);
              print($.evalScript('let eshost;').type);
@@ -452,7 +453,7 @@ hosts.forEach(function (record) {
       // order to evaluate a script. If the `stop` method is invoked while
       // these operations are taking place, the host should not evaluate the
       // script.
-      it('avoids race conditions in `stop`', function () {
+      it('avoids race conditions in `stop`', function() {
         const evalScript = agent.evalScript('print(1);');
 
         agent.stop();
@@ -463,7 +464,7 @@ hosts.forEach(function (record) {
       });
 
       // mostly this test shouldn't hang (if it hangs, it's a bug)
-      it('can kill infinite loops', function () {
+      it('can kill infinite loops', function() {
         // The GeckoDriver project cannot currently destroy browsing sessions
         // whose main thread is blocked.
         // https://github.com/mozilla/geckodriver/issues/825
@@ -536,7 +537,94 @@ hosts.forEach(function (record) {
       });
     });
 
-    describe('`shortName` option', function () {
+    describe('normal module evaluation', function() {
+      let agent;
+      let records;
+
+      before(function() {
+
+        // For now we're only going to confirm these in
+        // SpiderMonkey and V8
+        if (!['jsshell', 'd8'].includes(type)) {
+          this.skip();
+          return;
+        }
+
+        const FAKE_TEST262 = path.join(process.cwd(), 'test/fixtures/fake-test262');
+
+        let captured = [];
+        let stream = new Test262Stream(FAKE_TEST262, {
+          acceptVersion: '3.0.0',
+          includesDir: path.join(FAKE_TEST262, 'harness'),
+          paths: ['test/language/module-code']
+        });
+
+        stream.on('data', test => {
+          // SpiderMonkey doesn't support these yet.
+          if (type === 'jsshell' && test.file.includes('dynamic-import')) {
+            return;
+          }
+          if (test.scenario === 'default') {
+            test.file = path.join(FAKE_TEST262, test.file);
+            captured.push(test);
+          }
+        });
+
+        let pTests = new Promise(resolve => {
+          stream.on('end', () => resolve(captured));
+        });
+
+        let pAgent = runify.createAgent(type, options);
+
+        return Promise.all([
+          pTests,
+          pAgent,
+        ]).then(([r, a]) => {
+          records = r;
+          agent = a;
+        });
+      });
+
+      after(function() {
+        records.length = 0;
+        return agent && agent.destroy();
+      });
+
+      it('Can evaluate module code', function() {
+        // 60 seconds should be enough.
+        this.timeout(60000);
+
+        return Promise.all(
+          records.map(record => {
+            let options = record.attrs.flags;
+
+            return new Promise(resolve => {
+              agent.evalScript(record, options).then(function(result) {
+                let negative = record.attrs.negative;
+                let expectedStdout = record.attrs.flags.async ?
+                  'Test262:AsyncTestComplete' : '';
+
+                if (negative) {
+                  assert(result.error, 'error is not null');
+                  assert.equal(result.stdout, '', 'stdout is empty');
+                } else {
+                  let stdout = result.stdout.trim();
+                  assert(!result.error, 'error is null');
+                  assert(!result.stderr, 'stderr is empty string');
+                  assert.equal(stdout, expectedStdout, `stdout is "${expectedStdout}"`);
+                }
+                resolve();
+              }).catch(error => {
+                console.log(`ERROR: ${path.basename(record.file)}`);
+                console.log(error.message);
+              })
+            });
+          })
+        );
+      });
+    });
+
+    describe('`shortName` option', function() {
       it('allows custom shortNames', function() {
         const withShortName = Object.assign({ shortName: '$testing' }, options);
         return runify.createAgent(type, withShortName).then(agent => {
@@ -552,7 +640,7 @@ hosts.forEach(function (record) {
       });
     });
 
-    describe('`transform` option', function () {
+    describe('`transform` option', function() {
       let agent;
       function transform(x) { return `print("${x}")`; }
 
@@ -565,15 +653,15 @@ hosts.forEach(function (record) {
         return agent && agent.destroy();
       });
 
-      it('runs transforms', function () {
+      it('runs transforms', function() {
         return agent.evalScript('foo').then(function(result) {
           assert(result.stdout.match(/^foo\r?\n/), 'Unexpected stdout: ' + result.stdout);
         });
       });
     });
 
-    describe('`IsHTMLDDA`', function () {
-      it('has a default IsHTMLDDA', function () {
+    describe('`IsHTMLDDA`', function() {
+      it('has a default IsHTMLDDA', function() {
         return runify.createAgent(type, options).then(agent => {
           let p = agent.evalScript('print(typeof $.IsHTMLDDA);').then(result => {
             assert(result.error === null, 'no error');
