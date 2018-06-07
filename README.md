@@ -1,4 +1,4 @@
-## eshost
+# eshost
 
 [![Travis Build Status](https://travis-ci.org/bterlson/eshost.svg?branch=master)](https://travis-ci.org/bterlson/eshost)
 [![Appveyor Build Status](https://ci.appveyor.com/api/projects/status/github/bterlson/eshost?branch=master&svg=true)](https://ci.appveyor.com/project/bterlson/eshost)
@@ -10,13 +10,13 @@ Using eshost, you can create an agent (eg. a web browser or a command-line ECMAS
 
 eshost consists of a wrapper around the various ways of executing a host and processing its output (called an Agent) and a runtime library for host-agnostic scripts to use.
 
-### Installation
+## Installation
 
 ```
 npm install eshost
 ```
 
-### Supported Hosts
+## Supported Hosts
 
 | Host | Supported Platforms | Download | Notes |
 |------|---------------------|----------|-------|
@@ -35,11 +35,11 @@ npm install eshost
 * 1: It is possible to build jsc on other platforms, but not supported.
 * 2: Also available on your Mac system at `/System/Library/Frameworks/JavaScriptCore.framework/Versions/A/Resources/jsc`.
 
-### Examples
+## Example Usage
 
 ```js
-const esh = require('eshost');
-const agent = esh.createAgent('d8', { hostPath: 'path/to/d8.exe' });
+const eshost = require('eshost');
+const agent = await eshost.createAgent('d8', { hostPath: 'path/to/d8.exe' });
 const result = await agent.evalScript(`
   print(1+1);
 `);
@@ -48,73 +48,90 @@ console.log(result.stdout);
 
 ## Documentation
 
-### eshost API
-#### supportedHosts
+### `eshost`
+
+The `eshost` object is the main export of the "eshost" module.
+
+#### `eshost.supportedHosts`
 
 An array of supported host types.
 
-#### createAgent(type: string, options = {}): Runner
-Gets an instance of a runner for a particular host type. See the table above for supported host types.
+#### `eshost.createAgent(type: string, options = {}): Agent`
 
-##### Options
+Creates an instance of a host agent for a particular host type. See the table above for supported host types.
 
-* **hostPath**: Path to host to execute. For console hosts, this argument is required. For the specific browser runners, hostPath is optional and if omitted, the location for that browser will be detected automatically.
-* **hostArguments**:  Command line arguments used when invoking your host. Not supported for browser hosts. **hostArguments** is an array of strings as you might pass to Node's spawn API.
-* **transform**: A function to map the source to some other source before running the result on the underlying host.
-* **webHost**: for web browser hosts only; URL host name from which to serve browser assets; optional; defaults to `"localhost"`
-* **webPort**: for web browser hosts only; URL port number from which to serve browser assets; optional; defaults to `1337`
-* **capabilities**: for `remote` host only; the Selenium/WebDriver capabilities to request for the remote session; all specified attributes will be forwarded to the server; [a listing of available attributes is available in the Selenium project's wiki](https://github.com/SeleniumHQ/selenium/wiki/DesiredCapabilities); the following attributes are required:
-  * **capabilities.browserName**
-  * **capabilities.platform**
-  * **capabilities.version**
-* **webdriverServer**: for `remote` host only; URL of the WebDriver server to which commands should be issued
+`options`:
 
-### Agent API
-#### initialize(): Promise<void>
+| Property | Description |
+|-|-|
+| `hostPath` | Path to host to execute. For console hosts, this argument is required. For the specific browser runners, hostPath is optional and if omitted, the location for that browser will be detected automatically. |
+| `hostArguments` | Command line arguments used when invoking your host. Not supported for browser hosts. `hostArguments` is an array of strings as you might pass to Node's spawn API. |
+| `transform` | A function to map the source to some other source before running the result on the underlying host. |
+| `webHost` | for web browser hosts only; URL host name from which to serve browser assets; optional; defaults to `"localhost"` |
+| `webPort` | for web browser hosts only; URL port number from which to serve browser assets; optional; defaults to `1337` |
+| `capabilities` | for `remote` host only; the Selenium/WebDriver capabilities to request for the remote session; all specified attributes will be forwarded to the server; [a listing of available attributes is available in the Selenium project's wiki](https://github.com/SeleniumHQ/selenium/wiki/DesiredCapabilities); the following attributes are required: ` { browserName, platform, version }` |
+| `webdriverServer` | for `remote` host only; URL of the WebDriver server to which commands should be issued |
+
+
+
+### `Agent`
+
+#### `initialize(): Promise<void>`
 Initializes the host and returns a promise that is resolved once the host is initialized. Command line hosts have no initialization as a new process is started for each execution.
 
 This is called for you if you use the createAgent factory.
 
-#### evalScript(code, options = {}): Promise<Result>
+#### `evalScript(code, options = {}): Promise<Result>`
 Executes `code` in the host using the _Script_ goal symbol. Returns a promise for a result object.
 
-By default, a script will run in Eshost until the realm is destroyed. For most command-line hosts, this is done automatically when the script execution queues are empty. However, browsers will remain open waiting for more code to become available. Therefore, eshost will automatically append `$.destroy()` to the end of your scripts. This behavior is not correct if you are attempting to execute asynchronous code. In such cases, add `async: true` to the options.
+#### `evalScript(record, options = {}): Promise<Result>`
 
-Options:
+When `evalScript` receives a `Test262Stream` test record, it executes `record.contents` in the host using the _Script_ goal symbol, unless `record.attrs.flags.module === true`, in which case it will execute `record.contents` in the host using the _Module_ goal symbol. Returns a promise for a result object. 
 
-* async: True if the test is expected to call `$.destroy()` on the root realm when it's finished. When false, $.destroy() is added for you.
+By default, a script will run in `eshost` until the realm is destroyed. For most command-line hosts, this is done automatically when the script execution queues are empty. However, browsers will remain open waiting for more code to become available. Therefore, `eshost` will automatically append `$.destroy()` to the end of your scripts. This behavior is not correct if you are attempting to execute asynchronous code. In such cases, add `async: true` to the options.
 
-#### stop(): Promise<void>
+`options`:
+
+| Property | Description | Default Value |
+|-|-|-|
+| `async`  | Set to `true` if the test is expected to call `$.destroy()` on the root realm when it's finished. When false, `$.destroy()` is added for you. | `false` |
+
+#### `stop(): Promise<void>`
 Stops the currently executing script. For a console host, this simply kills the child process. For browser hosts, it will kill the current window and create a new one.
 
-#### destroy(): Promise<void>
+#### `destroy(): Promise<void>`
 Destroys the agent, closing any of its associated resources (eg. browser windows, child processes, etc.).
 
-##### Result Object
+##### `Result Object`
 An object with the following keys:
 
-* stdout: anything printed to stdout (mostly what you print using `print`).
-* stderr: anything printed to stderr
-* error: if the script threw an error, it will be an error object. Else, it will be null.
+| Property | Description |
+|-|-|
+| `stdout`  | Anything printed to stdout (mostly what you print using `print`). |
+| `stderr`  | Anything printed to stderr |
+| `error`  | If the script threw an error, it will be an error object. Else, it will be null. |
 
-The error object is similar to the error object you get in the host itself. Namely, it has the following keys:
 
-* name: Error name (eg. SyntaxError, TypeError, etc.)
-* message: Error message
-* stack: An array of stack frames.
+The `error` object is similar to an error object you get in the host itself. Namely, it has the following keys:
 
-#### destroy(): Promise<void>
+| Property | Description |
+|-|-|
+| `name`  | Error name (eg. SyntaxError, TypeError, etc.) |
+| `message`  | Error message |
+| `stack`  | An array of stack frames. |
+
+#### `destroy(): Promise<void>`
 Tears down the agent. For browsers, this will close the browser window.
 
 ### Runtime Library
 
-#### print(str)
+#### `print(str)`
 Prints `str` to stdout.
 
-#### $.global
+#### `$.global`
 A reference to the global object.
 
-#### $.createRealm(options)
+#### `$.createRealm(options)`
 Creates a new realm, returning that realm's runtime library ($).
 
 For example, creating two nested realms:
@@ -128,7 +145,7 @@ You can also use a destroy callback that gets called when the code inside the re
 
 ```js
 $sub = $.createRealm({
-  destroy: function () {
+  destroy() {
     print('destroyed!')
   }
 });
@@ -136,26 +153,30 @@ $sub = $.createRealm({
 $sub.evalScript('$.destroy()'); // prints "destroyed!"
 ```
 
-Options:
+`options`:
 
-* globals: an object containing properties to add to the global object in the new realm.
-* destroy: a callback that is called when the code executing in the realm destroys its realm (ie. by calling `$.destroy()`).
+| Property | Description |
+|-|-|
+| `globals`  | An object containing properties to add to the global object in the new realm. |
+| `destroy`  | A callback that is called when the code executing in the realm destroys its realm (ie. by calling `$.destroy()`). |
 
-#### $.evalScript(code)
+
+
+#### `$.evalScript(code)`
 Creates a new script and evals `code` in that realm. If an error is thrown, it will be passed to the onError callback.
 
 Scripts are different from eval in that lexical bindings go into the global lexical contour rather than being scoped to the eval.
 
-#### $.destroy()
+#### `$.destroy()`
 Destroys the realm. Note that in some hosts, $.destroy may not actually stop executing code in the realm or even destroy the realm.
 
-#### $.getGlobal(name)
+#### `$.getGlobal(name)`
 Gets a global property name.
 
-#### $.setGlobal(name, value)
+#### `$.setGlobal(name, value)`
 Sets a global property name to value.
 
-### Running the tests
+## Running the tests
 
 This project's tests can be executed with the following command:
 
