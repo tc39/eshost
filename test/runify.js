@@ -59,7 +59,7 @@ hosts.forEach(function(record) {
   const effectiveType = type === 'remote' ?
     options.capabilities.browserName : type;
 
-  const isSkipped = process.env[`ESHOST_SKIP_${type.toUpperCase()}`];
+  const isSkipped = process.env[`ESHOST_SKIP_${type.toUpperCase()}`] || false;
   console.log(`ESHOST_SKIP_${type.toUpperCase()} isSkipped ${isSkipped}`);
 
   if (!isSkipped &&
@@ -545,6 +545,10 @@ hosts.forEach(function(record) {
 
         // For now we're only going to confirm these in
         // SpiderMonkey and V8
+        //
+        // JSC has an implementation, but it has too
+        // many bugs to be useful for testing eshost
+        //
         if (!['jsshell', 'd8'].includes(type)) {
           this.skip();
           return;
