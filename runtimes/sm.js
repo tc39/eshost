@@ -72,8 +72,12 @@ var $ = {
     var hasThreads = helperThreadCount ? helperThreadCount() > 0 : true;
     var sabTestable = Atomics && SharedArrayBuffer && hasThreads && shellCode;
 
-    // This is a stop-gap until https://bugzilla.mozilla.org/show_bug.cgi?id=1457560 is merged.
-    var monotonicNow = monotonicNow || Date.now;
+
+    // Date.now() is an invalid substitute for monotonicNow,
+    // but until jsshell exposes the function we need, Date.now()
+    // is the closest thing available.
+    // Ref: https://bugzilla.mozilla.org/show_bug.cgi?id=1457560
+    var monotonicNow = typeof monotonicNow === 'function' ? monotonicNow : Date.now;
 
     function thrower() {
       throw new Test262Error('Agent not yet supported.');
@@ -111,6 +115,7 @@ var $ = {
 if (typeof $262 == 'undefined') {
   $262 = {};
 }
+var monotonicNow = typeof monotonicNow === 'function' ? monotonicNow : Date.now;
 $262.agent = (function () {
   var _ia = new Int32Array(getSharedArrayBuffer());
   var agent = {

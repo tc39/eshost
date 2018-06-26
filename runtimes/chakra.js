@@ -6,7 +6,7 @@ var $ = {
 
     var realm = WScript.LoadScript(this.source, 'samethread');
     realm.$.source = this.source;
-    realm.$.destroy = function () {
+    realm.$.destroy = function() {
       if (options.destroy) {
         options.destroy();
       }
@@ -36,51 +36,42 @@ var $ = {
   IsHTMLDDA() { return {}; },
   source: $SOURCE,
   agent: (function() {
-    const isAgentSupportable = typeof WScript.Broadcast === 'function';
+    const isAgentSupportable = WScript.Broadcast && WScript.ReceiveBroadcast &&
+                                WScript.Sleep && WScript.Leaving &&
+                                WScript.Report && WScript.GetReport;
 
     function thrower() {
       throw new Test262Error('Agent not yet supported.');
     }
 
+    // Date.now() is an invalid substitute for monotonicNow,
+    // but until WScript exposes the function we need, Date.now()
+    // is the closest thing available.
+
     if (isAgentSupportable) {
-      const {
-        Broadcast: broadcast,
-        GetReport: getReport,
-        Sleep: sleep,
-        Leaving: leaving,
-      } = WScript;
-      // This is temporary until a real monotonicNow
-      // can be introduced into WScript
-      const monotonicNow = Date.now;
-      const agentPreable = `
-        const {
-          ReceiveBroadcast: receiveBroadcast,
-          Report: report,
-          Sleep: sleep,
-          Leaving: leaving,
-        } = WScript;
-        // This is temporary until a real monotonicNow
-        // can be introduced into WScript
-        const monotonicNow = Date.now;
-        $262 = {
-          agent: {
-            receiveBroadcast,
-            report,
-            sleep,
-            leaving,
-            monotonicNow,
-          },
-        };
-      `.trim();
       return {
         start(src) {
-          WScript.LoadScript(`${agentPreable}\n${src}`, 'crossthread');
+
+          const source = `
+          var $262 = {
+            agent: {
+              receiveBroadcast(callback) { WScript.ReceiveBroadcast(callback); },
+              report(value) { WScript.Report(value); },
+              sleep(timeout) { WScript.Sleep(timeout); },
+              monotonicNow() { return Date.now(); },
+              leaving() { WScript.Leaving(); },
+            },
+          };
+          ${src}
+          `.trim();
+
+          WScript.LoadScript(source, 'crossthread');
         },
-        broadcast,
-        getReport,
-        sleep,
-        leaving,
-        monotonicNow,
+        broadcast(sab) { WScript.Broadcast(sab); },
+        getReport() { return WScript.GetReport(); },
+        sleep(timeout) { WScript.Sleep(timeout); },
+        leaving() { WScript.Leaving(); },
+        monotonicNow() { return Date.now(); },
       };
     } else {
       return {
