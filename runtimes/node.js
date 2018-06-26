@@ -48,4 +48,5 @@ var $ = {
   IsHTMLDDA() { return {}; },
   source: $SOURCE
 };
-function print() { console.log.apply(console, arguments) }
+
+function print() { console.log.apply(console, arguments); }
