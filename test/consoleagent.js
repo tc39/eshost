@@ -2,7 +2,12 @@
 
 const ConsoleAgent = require('../lib/ConsoleAgent');
 const assert = require('assert');
+const {ChildProcess} = require('child_process');
+const Emitter = require('events');
+const os = require('os');
+const path = require('path');
 
+const sinon = require('sinon');
 
 describe('ConsoleAgent', function () {
   describe('ConsoleAgent({ hostArguments })', function () {
@@ -11,7 +16,7 @@ describe('ConsoleAgent', function () {
         hostPath: '../',
         hostArguments: '-a',
       });
-      return Promise.resolve(a).then(function (agent) {
+      return Promise.resolve(a).then(agent => {
         assert.deepEqual(agent.args, ['-a']);
       });
     });
@@ -21,7 +26,7 @@ describe('ConsoleAgent', function () {
         hostPath: 'c:\\',
         hostArguments: '-a -b --c --dee',
       });
-      return Promise.resolve(a).then(function (agent) {
+      return Promise.resolve(a).then(agent => {
         assert.deepEqual(agent.args, ['-a', '-b', '--c', '--dee']);
       });
     });
@@ -31,7 +36,7 @@ describe('ConsoleAgent', function () {
         hostPath: '../',
         hostArguments: ['-a'],
       });
-      return Promise.resolve(a).then(function (agent) {
+      return Promise.resolve(a).then(agent => {
         assert.deepEqual(agent.args, ['-a']);
       });
     });
@@ -41,7 +46,7 @@ describe('ConsoleAgent', function () {
         hostPath: 'c:\\',
         hostArguments: ['-a', '-b', '--c', '--dee'],
       });
-      return Promise.resolve(a).then(function (agent) {
+      return Promise.resolve(a).then(agent => {
         assert.deepEqual(agent.args, ['-a', '-b', '--c', '--dee']);
       });
     });
@@ -51,8 +56,66 @@ describe('ConsoleAgent', function () {
         hostPath: '/do/wa/diddy/',
         hostArguments: '-a     -b --c \t --dee',
       });
-      return Promise.resolve(a).then(function (agent) {
+      return Promise.resolve(a).then(agent => {
         assert.deepEqual(agent.args, ['-a', '-b', '--c', '--dee']);
+      });
+    });
+  });
+
+  describe('ConsoleAgent({ out })', function () {
+
+    let sandbox;
+    let ccp;
+    let child;
+
+    beforeEach(function() {
+      sandbox = sinon.createSandbox();
+      child = new ChildProcess();
+
+      child.stdout = new Emitter();
+      child.stderr = new Emitter();
+
+      ccp = sandbox.stub(ConsoleAgent.prototype, 'createChildProcess').returns(
+        Promise.resolve(child)
+      );
+    });
+
+    afterEach(function() {
+      sandbox.restore();
+    });
+
+    it('accepts an option "out" for a user provided output directory', function () {
+      const out = os.tmpdir();
+      const a = new ConsoleAgent({
+        out
+      });
+      return Promise.resolve(a).then(agent => {
+        assert.equal(agent.out, out);
+      });
+    });
+
+    it('makes temp files in the "out" directory', function () {
+      const out = os.tmpdir();
+      const a = new ConsoleAgent({
+        out
+      });
+      return Promise.resolve(a).then(agent => {
+        return Promise.all([
+          // Initiate a script evaluation
+          agent.evalScript('', {}),
+
+          // Since we control the child process,
+          // we need to wait a moment and then send
+          // a close event to end the script evaluation
+          new Promise(resolve => {
+            setTimeout(() => {
+              child.emit('close');
+              resolve();
+            }, 100);
+          })
+        ]).then(() => {
+          assert.equal(path.dirname(ccp.lastCall.args[0][0]), out);
+        });
       });
     });
   });
