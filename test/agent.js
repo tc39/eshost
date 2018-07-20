@@ -2,7 +2,7 @@
 
 const Agent = require('../lib/Agent');
 const assert = require('assert');
-
+const os = require('os');
 
 describe('Agent', function () {
   describe('Agent({ hostArguments })', function () {
@@ -11,7 +11,7 @@ describe('Agent', function () {
         hostPath: '../',
         hostArguments: '-a',
       });
-      return Promise.resolve(a).then(function (agent) {
+      return Promise.resolve(a).then(agent => {
         assert.deepEqual(agent.args, ['-a']);
       });
     });
@@ -21,7 +21,7 @@ describe('Agent', function () {
         hostPath: 'c:\\',
         hostArguments: '-a -b --c --dee',
       });
-      return Promise.resolve(a).then(function (agent) {
+      return Promise.resolve(a).then(agent => {
         assert.deepEqual(agent.args, ['-a', '-b', '--c', '--dee']);
       });
     });
@@ -31,7 +31,7 @@ describe('Agent', function () {
         hostPath: '../',
         hostArguments: ['-a'],
       });
-      return Promise.resolve(a).then(function (agent) {
+      return Promise.resolve(a).then(agent => {
         assert.deepEqual(agent.args, ['-a']);
       });
     });
@@ -41,7 +41,7 @@ describe('Agent', function () {
         hostPath: 'c:\\',
         hostArguments: ['-a', '-b', '--c', '--dee'],
       });
-      return Promise.resolve(a).then(function (agent) {
+      return Promise.resolve(a).then(agent => {
         assert.deepEqual(agent.args, ['-a', '-b', '--c', '--dee']);
       });
     });
@@ -51,8 +51,20 @@ describe('Agent', function () {
         hostPath: '/do/wa/diddy/',
         hostArguments: '-a     -b --c \t --dee',
       });
-      return Promise.resolve(a).then(function (agent) {
+      return Promise.resolve(a).then(agent => {
         assert.deepEqual(agent.args, ['-a', '-b', '--c', '--dee']);
+      });
+    });
+  });
+
+  describe('Agent({ out })', function () {
+    it('accepts an option "out" for a user provided output directory', function () {
+      const out = os.tmpdir();
+      const a = new Agent({
+        out
+      });
+      return Promise.resolve(a).then(agent => {
+        assert.equal(agent.out, out);
       });
     });
   });
