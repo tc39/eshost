@@ -1,6 +1,6 @@
 'use strict';
 
-const runify = require('../');
+const esh = require('../');
 const assert = require('assert');
 const hasbin = require('hasbin');
 const fs = require('fs');
@@ -85,7 +85,7 @@ hosts.forEach(function(record) {
       let agent;
 
       before(function() {
-        return runify.createAgent(type, options)
+        return esh.createAgent(type, options)
           .then(a => agent = a);
       });
 
@@ -525,7 +525,7 @@ hosts.forEach(function(record) {
           source = 'print(typeof gc === "function");';
         }
 
-        return runify.createAgent(type, Object.assign({ hostArguments }, options))
+        return esh.createAgent(type, Object.assign({ hostArguments }, options))
           .then(a => {
             agent = a;
 
@@ -578,7 +578,7 @@ hosts.forEach(function(record) {
           stream.on('end', () => resolve(captured));
         });
 
-        let pAgent = runify.createAgent(type, options);
+        let pAgent = esh.createAgent(type, options);
 
         return Promise.all([
           pTests,
@@ -631,7 +631,7 @@ hosts.forEach(function(record) {
     describe('`shortName` option', function() {
       it('allows custom shortNames', function() {
         const withShortName = Object.assign({ shortName: '$testing' }, options);
-        return runify.createAgent(type, withShortName).then(agent => {
+        return esh.createAgent(type, withShortName).then(agent => {
           var p = agent.evalScript('$testing.evalScript("print(1)")').then(result => {
             assert(result.error === null, 'no error');
             assert.equal(result.stdout.indexOf('1'), 0);
@@ -650,7 +650,7 @@ hosts.forEach(function(record) {
 
       before(function() {
         let withTransform = Object.assign({ transform }, options);
-        return runify.createAgent(type, withTransform).then(a => agent = a);
+        return esh.createAgent(type, withTransform).then(a => agent = a);
       });
 
       after(function() {
@@ -666,7 +666,7 @@ hosts.forEach(function(record) {
 
     describe('`IsHTMLDDA`', function() {
       it('has a default IsHTMLDDA', function() {
-        return runify.createAgent(type, options).then(agent => {
+        return esh.createAgent(type, options).then(agent => {
           let p = agent.evalScript('print(typeof $.IsHTMLDDA);').then(result => {
             assert(result.error === null, 'no error');
             assert.equal(result.stdout.indexOf('function'), 0);
