@@ -27,7 +27,7 @@ install: |
 
     function install_firefox {
       export TMP=$(mktemp);
-      wget https://archive.mozilla.org/pub/firefox/nightly/latest-mozilla-central/firefox-61.0a1.en-US.linux-x86_64.tar.bz2 -O $TMP;
+      wget https://archive.mozilla.org/pub/firefox/nightly/latest-mozilla-central/firefox-63.0a1.en-US.linux-x86_64.tar.bz2 -O $TMP;
       tar -xvf $TMP;
       wget https://github.com/mozilla/geckodriver/releases/download/v0.20.1/geckodriver-v0.20.1-linux64.tar.gz -O $TMP;
       tar --directory firefox -xvf $TMP;
