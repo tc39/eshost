@@ -4,7 +4,7 @@
 description: Dynamic import() returns a Promise object. (top level dynamic import call)
 esid: sec-import-call-runtime-semantics-evaluation
 features: [dynamic-import]
-flags: [generated, async, module]
+flags: [generated, async]
 info: |
     ImportCall :
         import( AssignmentExpression )
