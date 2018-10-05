@@ -13,8 +13,8 @@ environment:
   # ESHOST_SKIP_NODE: 1
   ESHOST_SKIP_REMOTE: 1
   matrix:
-    - nodejs_version: 6
     - nodejs_version: 8
+    - nodejs_version: 10
 
 platform:
   - x64
