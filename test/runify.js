@@ -484,6 +484,49 @@ hosts.forEach(function(record) {
         });
       });
 
+      it('tolerates LINE SEPARATOR and PARAGRAPH SEPARATOR', function() {
+        var operations = [
+            '\u2028print("U+2028 once");',
+            '\u2029print("U+2029 once");',
+            '\u2028\u2029print("both U+2028 and U+2029");',
+            '\u2028\u2028print("U+2028 twice");',
+            '\u2029\u2029print("U+2029 twice");'
+          ].map(function(src) { return agent.evalScript(src); });
+
+        return Promise.all(operations)
+          .then(function(results) {
+            assert.equal(results[0].stderr, '');
+            assert(
+              results[0].stdout.match(/^U\+2028 once\r?\n/),
+              'Unexpected stdout: ' + results[0].stdout
+            );
+
+            assert.equal(results[1].stderr, '');
+            assert(
+              results[1].stdout.match(/^U\+2029 once\r?\n/),
+              'Unexpected stdout: ' + results[1].stdout
+            );
+
+            assert.equal(results[2].stderr, '');
+            assert(
+              results[2].stdout.match(/^both U\+2028 and U\+2029\r?\n/),
+              'Unexpected stdout: ' + results[2].stdout
+            );
+
+            assert.equal(results[3].stderr, '');
+            assert(
+              results[3].stdout.match(/^U\+2028 twice\r?\n/),
+              'Unexpected stdout: ' + results[3].stdout
+            );
+
+            assert.equal(results[4].stderr, '');
+            assert(
+              results[4].stdout.match(/^U\+2029 twice\r?\n/),
+              'Unexpected stdout: ' + results[4].stdout
+            );
+          });
+      });
+
       it('creates "optional" environments correctly (hostArgs)', function() {
         // browsers are irrelevant to this test
         if (['firefox', 'chrome', 'remote'].includes(type)) {
