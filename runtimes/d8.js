@@ -39,7 +39,7 @@ var $ = {
   source: $SOURCE,
   realm: Realm.current(),
   detachArrayBuffer(buffer) {
-    var w = new Worker('');
+    var w = new Worker('', {type: 'string'});
     w.postMessage('', [buffer]);
   },
   agent: (function() {
@@ -117,7 +117,7 @@ var $ = {
         if (i32a === null) {
           i32a = new Int32Array(new SharedArrayBuffer(256));
         }
-        var w = new Worker(workerScript(script));
+        var w = new Worker(workerScript(script), {type: 'string'});
         w.index = workers.length;
         w.postMessage({kind: 'start', i32a, index: w.index});
         workers.push(w);
