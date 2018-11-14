@@ -77,7 +77,7 @@ var $ = {
           }
         };
 
-        onmessage = function(msg) {
+        var onmessage = function(msg) {
           switch (msg.kind) {
             case 'start':
               i32a = msg.i32a;
