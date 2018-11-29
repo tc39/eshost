@@ -18,7 +18,10 @@ const remoteCapabilities = {
 };
 
 const hosts = [
-  ['custom', { hostPath: require.resolve('./fixtures/custom-agent.js') }],
+  ['custom', {
+    agentPath: require.resolve('./fixtures/custom-agent.js'),
+    hostPath: 'node'
+  }],
   ['jsshell', { hostPath: 'js' }],
   ['ch', { hostPath: 'ch' }],
   ['node', { hostPath: 'node' }],
@@ -530,7 +533,7 @@ hosts.forEach(function(record) {
 
       it('creates "optional" environments correctly (hostArgs)', function() {
         // browsers are irrelevant to this test
-        if (['firefox', 'chrome', 'remote'].includes(type)) {
+        if (['firefox', 'chrome', 'remote', 'custom'].includes(type)) {
           this.skip();
           return;
         }
