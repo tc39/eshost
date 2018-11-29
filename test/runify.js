@@ -1,6 +1,7 @@
 'use strict';
 
 const runify = require('../');
+const Agent = require('../lib/Agent');
 const assert = require('assert');
 const hasbin = require('hasbin');
 const fs = require('fs');
@@ -52,6 +53,16 @@ const timeout = function(ms) {
     setTimeout(res, ms);
   });
 }
+
+describe('eshost', function() {
+  it('can create custom agents', function() {
+    return runify.createAgent('custom', {
+      hostPath: require.resolve('./fixtures/custom-agent.js'),
+    }).then(a => {
+      assert(a instanceof Agent);
+    });
+  });
+});
 
 hosts.forEach(function(record) {
   const type = record[0];
