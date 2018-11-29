@@ -18,6 +18,7 @@ const remoteCapabilities = {
 };
 
 const hosts = [
+  ['custom', { hostPath: require.resolve('./fixtures/custom-agent.js') }],
   ['jsshell', { hostPath: 'js' }],
   ['ch', { hostPath: 'ch' }],
   ['node', { hostPath: 'node' }],
