@@ -1,12 +1,13 @@
 'use strict';
 
-const ConsoleAgent = require('../lib/ConsoleAgent');
 const assert = require('assert');
 const {ChildProcess} = require('child_process');
 const Emitter = require('events');
+const fs = require('fs');
 const os = require('os');
 const path = require('path');
 
+const ConsoleAgent = require('../lib/ConsoleAgent');
 const sinon = require('sinon');
 
 describe('ConsoleAgent', function () {
@@ -172,6 +173,105 @@ describe('ConsoleAgent', function () {
         assert.equal(/\$/g.test(compiled), false);
 
         ConsoleAgent.runtime = runtime;
+      });
+    });
+  });
+
+
+  describe('ConsoleAgent.prototype.evalScript', function () {
+
+    let sandbox;
+    let compile;
+    let child;
+
+    const defaultTestRecord = {
+      file: 'test/fixtures/fake-test262/test/language/comments/hashbang/escaped-hashbang.js',
+      contents: '\u0023\u0021\n\nthrow "Test262: This statement should not be evaluated.";\n',
+      attrs: {
+        description: 'Hashbang comments should not be allowed to have encoded characters\n',
+         info: 'HashbangComment::\n  #! SingleLineCommentChars[opt]\n',
+         flags: { raw: true },
+         negative: { phase: 'parse', type: 'SyntaxError' },
+         features: [ 'hashbang' ],
+         includes: [] },
+      copyright: '',
+      relative: 'language/comments/hashbang/escaped-hashbang.js',
+    };
+
+    beforeEach(function() {
+      sandbox = sinon.createSandbox();
+      child = new ChildProcess();
+
+      child.stdout = new Emitter();
+      child.stderr = new Emitter();
+
+      compile = sandbox.stub(ConsoleAgent.prototype, 'compile').returns(
+        Promise.resolve(child)
+      );
+      sandbox.stub(ConsoleAgent.prototype, 'createChildProcess').returns(
+        Promise.resolve(child)
+      );
+      sandbox.stub(fs, 'writeFile').returns(
+        Promise.resolve(child)
+      );
+      sandbox.stub(fs, 'stat').returns(true);
+    });
+
+    afterEach(function() {
+      sandbox.restore();
+    });
+
+
+    it('Does not call agent.compile() when attrs.flags.raw === true', function() {
+      const a = new ConsoleAgent();
+      return Promise.resolve(a).then(agent => {
+        return Promise.all([
+          // Initiate a script evaluation
+          agent.evalScript(defaultTestRecord, {}),
+
+          // Since we control the child process,
+          // we need to wait a moment and then send
+          // a close event to end the script evaluation
+          new Promise(resolve => {
+            setTimeout(() => {
+              child.emit('close');
+              resolve();
+            }, 100);
+          })
+        ]).then(() => {
+          assert.equal(compile.callCount, 0);
+        });
+      });
+    });
+
+    it('Does call agent.compile() when attrs.flags.raw !== true', function() {
+      const a = new ConsoleAgent();
+      return Promise.resolve(a).then(agent => {
+
+        let record = Object.assign(defaultTestRecord, {
+          attrs: {
+            flags: {
+              raw: false,
+            },
+          },
+        });
+
+        return Promise.all([
+          // Initiate a script evaluation
+          agent.evalScript(record, {}),
+
+          // Since we control the child process,
+          // we need to wait a moment and then send
+          // a close event to end the script evaluation
+          new Promise(resolve => {
+            setTimeout(() => {
+              child.emit('close');
+              resolve();
+            }, 100);
+          })
+        ]).then(() => {
+          assert.equal(compile.callCount, 1);
+        });
       });
     });
   });
