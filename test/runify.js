@@ -559,8 +559,8 @@ hosts.forEach(function(record) {
         }
 
         if (type === 'jsshell') {
-          hostArguments = '--no-wasm';
-          source = 'print(typeof WebAssembly === "undefined");';
+          hostArguments = '--shared-memory=off';
+          source = 'print(typeof SharedArrayBuffer === "undefined");';
         }
 
         if (type === 'node') {
