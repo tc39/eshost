@@ -491,10 +491,11 @@ hosts.forEach(function(record) {
             '\u2028\u2029print("both U+2028 and U+2029");',
             '\u2028\u2028print("U+2028 twice");',
             '\u2029\u2029print("U+2029 twice");'
-          ].map(function(src) { return agent.evalScript(src); });
+          ].map(src => agent.evalScript(src));
 
         return Promise.all(operations)
-          .then(function(results) {
+          .then(results => {
+            console.log(results);
             assert.equal(results[0].stderr, '');
             assert(
               results[0].stdout.match(/^U\+2028 once\r?\n/),
