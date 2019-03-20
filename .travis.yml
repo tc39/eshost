@@ -96,6 +96,10 @@ install: |
 
     npm install --ignore-scripts
 
+after_script: |
+    echo $(where firefox);
+    echo $PATH;
+
 script:
   - npm run lint
   - npm run test
