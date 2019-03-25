@@ -27,7 +27,7 @@ install: |
 
     function install_firefox {
       export TMP=$(mktemp);
-      wget https://archive.mozilla.org/pub/firefox/nightly/latest-mozilla-central/firefox-67.0a1.en-US.linux-x86_64.tar.bz2 -O $TMP;
+      wget https://archive.mozilla.org/pub/firefox/nightly/2018/12/2018-12-01-05-49-36-mozilla-central/firefox-65.0a1.en-US.linux-x86_64.tar.bz2 -O $TMP;
       tar -xvf $TMP;
       wget https://github.com/mozilla/geckodriver/releases/download/v0.24.0/geckodriver-v0.24.0-linux64.tar.gz -O $TMP;
       tar --directory firefox -xvf $TMP;
@@ -95,10 +95,6 @@ install: |
     fi
 
     npm install --ignore-scripts
-
-after_script: |
-    echo $(where firefox);
-    echo $PATH;
 
 script:
   - npm run lint
