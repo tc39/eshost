@@ -675,7 +675,7 @@ hosts.forEach(function(record) {
       });
     });
 
-    describe('`shortName` option', function() {
+    describe('"shortName" option', function() {
       it('allows custom shortNames', function() {
         const withShortName = Object.assign({ shortName: '$testing' }, options);
         return runify.createAgent(type, withShortName).then(agent => {
@@ -691,7 +691,7 @@ hosts.forEach(function(record) {
       });
     });
 
-    describe('`transform` option', function() {
+    describe('"transform" option', function() {
       let agent;
       function transform(x) { return `print("${x}")`; }
 
@@ -711,7 +711,7 @@ hosts.forEach(function(record) {
       });
     });
 
-    describe('`IsHTMLDDA`', function() {
+    describe('"IsHTMLDDA"', function() {
       it('has a default IsHTMLDDA', function() {
         return runify.createAgent(type, options).then(agent => {
           let p = agent.evalScript('print(typeof $.IsHTMLDDA);').then(result => {
