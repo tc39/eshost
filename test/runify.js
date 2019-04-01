@@ -58,7 +58,7 @@ hosts.forEach(function(record) {
     options.capabilities.browserName : type;
 
   const isSkipped = process.env[`ESHOST_SKIP_${type.toUpperCase()}`] || false;
-  console.log(`ESHOST_SKIP_${type.toUpperCase()} isSkipped ${isSkipped}`);
+  console.log(`ESHOST_SKIP_${type.toUpperCase()}: ${isSkipped ? 'YES' : 'NO'}`);
 
   if (!isSkipped &&
     (options.hostPath && (!hasbin.sync(options.hostPath) && !fs.existsSync(options.hostPath)))) {
