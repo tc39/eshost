@@ -2,6 +2,7 @@
 
 const runify = require('../');
 const assert = require('assert');
+const {stripIndent} = require('common-tags');
 const hasbin = require('hasbin');
 const fs = require('fs');
 const path = require('path');
@@ -11,36 +12,52 @@ const isWindows = process.platform === 'win32' ||
   process.env.OSTYPE === 'cygwin' ||
   process.env.OSTYPE === 'msys';
 
-const remoteCapabilities = {
+const capabilities = {
   browserName: process.env.ESHOST_REMOTE_BROWSERNAME || 'firefox',
   platform: process.env.ESHOST_REMOTE_PLATFORM || 'ANY',
   version: process.env.ESHOST_REMOTE_VERSION || ''
 };
 
+const webdriverServer = 'http://localhost:4444/wd/hub';
+
 const hosts = [
-  ['jsshell', { hostPath: 'js' }],
   ['ch', { hostPath: 'ch' }],
-  ['node', { hostPath: 'node' }],
   ['d8', { hostPath: 'd8' }],
+  ['engine262', { hostPath: 'engine262' }],
+  ['jsshell', { hostPath: 'js' }],
   ['jsc', { hostPath: 'jsc' }],
+  ['node', { hostPath: 'node' }],
   ['chrome', { hostPath: 'chrome' }],
   ['firefox', { hostPath: 'firefox' }],
-  ['remote', {
-      webdriverServer: 'http://localhost:4444/wd/hub',
-      capabilities: remoteCapabilities
-    }
-  ],
+  ['remote', { webdriverServer, capabilities }],
+];
+
+const hostsOnWindows = [
+  ['ch', { hostPath: 'ch.exe' }],
+  ['d8', { hostPath: 'd8.exe' }],
+  // engine262 is intentionally NOT given an extension!
+  ['engine262', { hostPath: 'engine262.cmd' }],
+  ['jsshell', { hostPath: 'js.exe' }],
+  ['jsc', { hostPath: 'jsc.exe' }],
+  ['node', { hostPath: 'node.exe' }],
+  ['chrome', { hostPath: 'chrome.exe' }],
+  ['firefox', { hostPath: 'firefox.exe' }],
+  ['remote', {}],
 ];
 
 // console.log(`isWindows: ${isWindows}`);
 if (isWindows) {
-  hosts.forEach(record => {
+  hosts.forEach((record, index) => {
+    const host = hostsOnWindows[index];
     if (record[1].hostPath) {
-      record[1].hostPath += '.exe';
+      if (record[0] === host[0]) {
+        record[1].hostPath = host[1].hostPath;
+      }
       const ESHOST_ENV_NAME = `ESHOST_${record[0].toUpperCase()}_PATH`;
       console.log(`ESHOST_ENV_NAME: ${ESHOST_ENV_NAME}`);
       if (process.env[ESHOST_ENV_NAME]) {
         record[1].hostPath = path.join(process.env[ESHOST_ENV_NAME], record[1].hostPath);
+        console.log(record[1].hostPath);
       }
     }
   });
@@ -49,7 +66,7 @@ if (isWindows) {
 
 const timeout = function(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
-}
+};
 
 hosts.forEach(function(record) {
   const type = record[0];
@@ -66,23 +83,27 @@ hosts.forEach(function(record) {
   }
 
   describe(`${type} (${options.hostPath || type})`, function() {
+    let run;
     this.timeout(20000);
 
     before(function() {
+      run = this;
       if (isSkipped) {
-        this.skip();
+        run.skip();
         return;
       }
 
       if (type === 'remote') {
-        this.timeout(60 * 1000);
+        run.timeout(60 * 1000);
       }
     });
 
     describe('normal script evaluation', function() {
+      let run;
       let agent;
 
       before(function() {
+        run = this;
         return runify.createAgent(type, options)
           .then(a => agent = a);
       });
@@ -91,49 +112,64 @@ hosts.forEach(function(record) {
         return agent && agent.destroy();
       });
 
-      it('runs SyntaxErrors', function() {
-        return agent.evalScript('foo x++').then(function(result) {
+      it('runs SyntaxErrors', () => {
+        return agent.evalScript('foo x++').then(result => {
           assert(result.error, 'error is present');
           assert.equal(result.error.name, 'SyntaxError');
           assert.equal(result.stdout, '', 'stdout not present');
         });
       });
 
-      it('runs thrown SyntaxErrors', function() {
-        return agent.evalScript('throw new SyntaxError("Custom Message");').then(function(result) {
+      it('runs thrown SyntaxErrors', () => {
+        return agent.evalScript('throw new SyntaxError("Custom Message");').then(result => {
           assert(result.error, 'error is present');
           assert.equal(result.stdout, '', 'stdout not present');
 
           assert.equal(result.error.message, 'Custom Message');
           assert.equal(result.error.name, 'SyntaxError');
-          assert.equal(result.error.stack[0].lineNumber, 1);
+
+          // Some engines do not provide enough information to
+          // create a complete stack array for all errors
+          if (result.error.stack.length) {
+            assert.equal(result.error.stack[0].lineNumber, 1);
+          }
         });
       });
 
-      it('runs thrown TypeErrors', function() {
-        return agent.evalScript('throw new TypeError("Custom Message");').then(function(result) {
+      it('runs thrown TypeErrors', () => {
+        return agent.evalScript('throw new TypeError("Custom Message");').then(result => {
           assert(result.error, 'error is present');
           assert.equal(result.stdout, '', 'stdout not present');
 
           assert.equal(result.error.message, 'Custom Message');
           assert.equal(result.error.name, 'TypeError');
-          assert.equal(result.error.stack[0].lineNumber, 1);
+
+          // Some engines do not provide enough information to
+          // create a complete stack array for all errors
+          if (result.error.stack.length) {
+            assert.equal(result.error.stack[0].lineNumber, 1);
+          }
         });
       });
 
-      it('runs thrown RangeErrors', function() {
-        return agent.evalScript('throw new RangeError("Custom Message");').then(function(result) {
+      it('runs thrown RangeErrors', () => {
+        return agent.evalScript('throw new RangeError("Custom Message");').then(result => {
           assert(result.error, 'error is present');
           assert.equal(result.stdout, '', 'stdout not present');
 
           assert.equal(result.error.message, 'Custom Message');
           assert.equal(result.error.name, 'RangeError');
-          assert.equal(result.error.stack[0].lineNumber, 1);
+
+          // Some engines do not provide enough information to
+          // create a complete stack array for all errors
+          if (result.error.stack.length) {
+            assert.equal(result.error.stack[0].lineNumber, 1);
+          }
         });
       });
 
-      it('runs thrown Errors', function() {
-        return agent.evalScript('throw new Error("Custom Message");').then(function(result) {
+      it('runs thrown Errors', () => {
+        return agent.evalScript('throw new Error("Custom Message");').then(result => {
           assert.equal(result.stdout, '', 'stdout not present');
           assert(result.error, 'error is present');
           assert.equal(result.error.message, 'Custom Message');
@@ -141,8 +177,9 @@ hosts.forEach(function(record) {
         });
       });
 
-      it('runs thrown custom Errors', function() {
-        return agent.evalScript('function Foo1Error(msg) { this.name = "Foo1Error"; this.message = msg }; Foo1Error.prototype = Error.prototype; throw new Foo1Error("Custom Message");').then(function(result) {
+      it('runs thrown custom Errors', () => {
+        return agent.evalScript('function Foo1Error(msg) { this.name = "Foo1Error"; this.message = msg }; Foo1Error.prototype = Error.prototype; throw new Foo1Error("Custom Message");').then(result => {
+
           assert.equal(result.stdout, '', 'stdout not present');
           assert(result.error, 'error is present');
           assert.equal(result.error.message, 'Custom Message');
@@ -150,8 +187,10 @@ hosts.forEach(function(record) {
         });
       });
 
-      it('runs thrown custom Errors that don\'t have Error.prototype', function() {
-        return agent.evalScript(`
+      it('runs thrown custom Errors that don\'t have Error.prototype', () => {
+
+
+        return agent.evalScript(stripIndent`
           function Foo2Error(msg) {
             this.message = msg;
           }
@@ -169,8 +208,8 @@ hosts.forEach(function(record) {
         });
       })
 
-      it('runs thrown Errors without messages', function() {
-        return agent.evalScript('throw new Error();').then(function(result) {
+      it('runs thrown Errors without messages', () => {
+        return agent.evalScript('throw new Error();').then(result => {
           assert.equal(result.stdout, '', 'stdout not present');
           assert(result.error, 'error is present');
           assert.equal(result.error.message, undefined);
@@ -178,86 +217,94 @@ hosts.forEach(function(record) {
         });
       });
 
-      it('runs thrown errors from eval', function() {
+      it('runs thrown errors from eval', () => {
         return agent.evalScript('eval("\'\\u000Astr\\u000Aing\\u000A\'") === "\\u000Astr\\u000Aing\\u000A"')
-        .then(function(result) {
+        .then(result => {
           assert.equal(result.stdout, '', 'stdout not present');
           assert(result.error, 'error is present');
-          assert(result.error.message); // message should be present (but is implementation defined)
           assert.equal(result.error.name, 'SyntaxError');
+
+          // Some engines do not provide enough information to
+          // create a complete stack array for all errors
+          if (result.error.stack.length) {
+            // message should be present (but is implementation defined)
+            assert(result.error.message);
+          }
         });
       });
 
-      it('gathers stdout', function() {
-        return agent.evalScript('print("foo")').then(function(result) {
-          assert(result.stdout.match(/^foo\r?\n/), 'Unexpected stdout: ' + result.stdout);
+      it('gathers stdout', () => {
+        return agent.evalScript('print("foo")').then(result => {
+          assert(result.stdout.match(/^foo\r?\n/), `Unexpected stdout: ${result.stdout}`);
         });
       });
 
-      it('can eval in new realms', function() {
-        return agent.evalScript(`
+      it('can eval in new realms', () => {
+        return agent.evalScript(stripIndent`
           var x = 2;
-          $child = $.createRealm();
+          var $child = $.createRealm();
           $child.evalScript("var x = 1; print(x);");
           print(x);
-        `).then(function(result) {
-          assert(result.stdout.match(/^1\r?\n2\r?\n/m), 'Unexpected stdout: ' + result.stdout + result.stderr);
+        `).then(result => {
+          assert.equal(result.stderr, '', 'stderr not present');
+          assert(result.stdout.match(/^1\r?\n2\r?\n/m), `Unexpected stdout: ${result.stdout}${result.stderr}`);
         });
       });
 
-      it('can create new realms', function() {
-        return agent.evalScript(`
+      it('can create new realms', () => {
+        return agent.evalScript(stripIndent`
           var sub$ = $.createRealm({});
           sub$.evalScript("var x = 1");
           sub$.evalScript("print(x)");
           subsub$ = sub$.createRealm({});
           subsub$.evalScript("var x = 2");
           subsub$.evalScript("print(2)");
-        `).then(function(result) {
-          assert(result.stdout.match(/^1\r?\n2\r?\n/m), 'Unexpected stdout: ' + result.stdout + result.stderr);
+        `).then(result => {
+          assert.equal(result.stderr, '', 'stderr not present');
+          assert(result.stdout.match(/^1\r?\n2\r?\n/m), `Unexpected stdout: ${result.stdout}${result.stderr}`);
         });
       });
 
-      it('can set globals in new realms', function() {
-        return agent.evalScript(`
+      it('can set globals in new realms', () => {
+        return agent.evalScript(stripIndent`
           var x = 1;
           $child = $.createRealm({globals: {x: 2}});
           $child.evalScript("print(x);");
-        `).then(function(result) {
-          assert(result.stdout.match(/^2\r?\n/m), 'Unexpected stdout: ' + result.stdout + result.stderr);
+        `).then(result => {
+          assert(result.stdout.match(/^2\r?\n/m), `Unexpected stdout: ${result.stdout}${result.stderr}`);
         });
       });
 
-      it('can eval in new scripts', function() {
-        return agent.evalScript(`
+      it('can eval in new scripts', () => {
+        return agent.evalScript(stripIndent`
           var x = 2;
           $.evalScript("x = 3;");
           print(x);
-        `).then(function(result) {
-          assert(result.stdout.match(/^3\r?\n/m), 'Unexpected stdout: ' + result.stdout + result.stderr);
+        `).then(result => {
+          assert(result.stdout.match(/^3\r?\n/m), `Unexpected stdout: ${result.stdout}${result.stderr}`);
         });
       });
 
-      it('returns errors from evaling in new script', function() {
-        return agent.evalScript(`
+      it('returns errors from evaling in new script', () => {
+        return agent.evalScript(stripIndent`
           var completion = $.evalScript("x+++");
           print(completion.value.name);
-        `).then(function(result) {
-          assert(result.stdout.match(/^SyntaxError\r?\n/m), 'Unexpected stdout: ' + result.stdout + result.stderr);
+        `).then(result => {
+          assert(result.stdout.match(/^SyntaxError\r?\n/m), `Unexpected stdout: ${result.stdout}${result.stderr}`);
         });
       });
 
-      it('can eval lexical bindings in new scripts', function() {
-        return agent.evalScript(`
+      it('can eval lexical bindings in new scripts', () => {
+        return agent.evalScript(stripIndent`
           $.evalScript("'use strict'; let x = 3;");
           print(x);
-        `).then(function(result) {
-          assert(result.stdout.match(/^3\r?\n/m), 'Unexpected stdout: ' + result.stdout + result.stderr);
+        `).then(result => {
+          assert(result.stdout.match(/^3\r?\n/m), `Unexpected stdout: ${result.stdout}${result.stderr}`);
         });
       });
 
-      it('can set properties in new realms', function() {
-        return agent.evalScript(`
+      it('can set properties in new realms', () => {
+        return agent.evalScript(stripIndent`
           var sub$ = $.createRealm({});
           sub$.evalScript("var x = 1");
           sub$.evalScript("print(x)");
@@ -265,24 +312,26 @@ hosts.forEach(function(record) {
           sub$.setGlobal("x", 2);
 
           sub$.evalScript("print(x)");
-        `).then(function(result) {
-          assert(result.stdout.match(/^1\r?\n2\r?\n/m), 'Unexpected stdout: ' + result.stdout + result.stderr);
+        `).then(result => {
+          assert.equal(result.stderr, '', 'stderr not present');
+          assert(result.stdout.match(/^1\r?\n2\r?\n/m), `Unexpected stdout: ${result.stdout}${result.stderr}`);
         });
       });
 
-      it('can access properties from new realms', function() {
-        return agent.evalScript(`
+      it('can access properties from new realms', () => {
+        return agent.evalScript(stripIndent`
           var sub$ = $.createRealm({});
           sub$.evalScript("var x = 1");
 
           print(sub$.getGlobal("x"));
-        `).then(function(result) {
-          assert(result.stdout.match(/^1\r?\n/m), 'Unexpected stdout: ' + result.stdout + result.stderr);
+        `).then(result => {
+          assert.equal(result.stderr, '', 'stderr not present');
+          assert(result.stdout.match(/^1\r?\n/m), `Unexpected stdout: ${result.stdout}${result.stderr}`);
         });
       });
 
-      it('runs async code', function() {
-        return agent.evalScript(`
+      it('runs async code', () => {
+        return agent.evalScript(stripIndent`
           if ($.global.Promise === undefined) {
             print('async result');
             $.destroy()
@@ -293,47 +342,50 @@ hosts.forEach(function(record) {
             });
           }
         `, { async: true }).then(result => {
-          assert(result.stdout.match(/async result/), 'Unexpected stdout: ' + result.stdout + result.stderr);
+
+          assert.equal(result.stderr, '', 'stderr not present');
+          assert(result.stdout.match(/async result/), `Unexpected stdout: ${result.stdout}${result.stderr}`);
         });
       });
 
-      it('accepts destroy callbacks', function() {
-        return agent.evalScript(`
+      it('accepts destroy callbacks', () => {
+        return agent.evalScript(stripIndent`
           $child = $.createRealm({ destroy: function() { print("destroyed") }});
           $child.destroy();
         `)
         .then(result => {
-          assert(result.stdout.match(/destroyed/), 'Unexpected stdout: ' + result.stdout + result.stderr);
+          assert.equal(result.stderr, '', 'stderr not present');
+          assert(result.stdout.match(/destroyed/), `Unexpected stdout: ${result.stdout}${result.stderr}`);
         });
       });
 
-      it('runs in the proper mode', function() {
-        return agent.evalScript(`
+      it('runs in the proper mode', () => {
+        return agent.evalScript(stripIndent`
           "use strict"
           function foo() { print(this === undefined) }
           foo();
         `)
-        .then(function(result) {
-          assert(result.stdout.match(/^true\r?\n/m), 'Unexpected stdout: ' + result.stdout + result.stderr);
+        .then(result => {
+          assert(result.stdout.match(/^true\r?\n/m), `Unexpected stdout: ${result.stdout}${result.stderr}`);
 
-          return agent.evalScript(`
+          return agent.evalScript(stripIndent`
             'use strict'
             function foo() { print(this === undefined) }
             foo();
           `);
         })
-        .then(function(result) {
-          assert(result.stdout.match(/^true\r?\n/m), 'Unexpected stdout: ' + result.stdout + result.stderr);
+        .then(result => {
+          assert(result.stdout.match(/^true\r?\n/m), `Unexpected stdout: ${result.stdout}${result.stderr}`);
 
-          return agent.evalScript(`
+          return agent.evalScript(stripIndent`
             function foo() { print(this === Function('return this;')()) }
             foo();
           `);
         })
-        .then(function(result) {
-          assert(result.stdout.match(/^true\r?\n/m), 'Unexpected stdout: ' + result.stdout + result.stderr);
+        .then(result => {
+          assert(result.stdout.match(/^true\r?\n/m), `Unexpected stdout: ${result.stdout}${result.stderr}`);
 
-          return agent.evalScript(`
+          return agent.evalScript(stripIndent`
             /*---
             ---*/
             "use strict";
@@ -341,10 +393,10 @@ hosts.forEach(function(record) {
             foo();
           `);
         })
-        .then(function(result) {
-          assert(result.stdout.match(/^true\r?\n/m), 'Unexpected stdout: ' + result.stdout + result.stderr);
+        .then(result => {
+          assert(result.stdout.match(/^true\r?\n/m), `Unexpected stdout: ${result.stdout}${result.stderr}`);
 
-          return agent.evalScript(`
+          return agent.evalScript(stripIndent`
             /*---
             ---*/
             " some other prolog "
@@ -353,10 +405,10 @@ hosts.forEach(function(record) {
             foo();
           `);
         })
-        .then(function(result) {
-          assert(result.stdout.match(/^true\r?\n/m), 'Unexpected stdout: ' + result.stdout + result.stderr);
+        .then(result => {
+          assert(result.stdout.match(/^true\r?\n/m), `Unexpected stdout: ${result.stdout}${result.stderr}`);
 
-          return agent.evalScript(`
+          return agent.evalScript(stripIndent`
             // normal comment
             /*---
             ---*/
@@ -367,13 +419,14 @@ hosts.forEach(function(record) {
             foo();
           `);
         })
-        .then(function(result) {
-          assert(result.stdout.match(/^true\r?\n/m), 'Unexpected stdout: ' + result.stdout + result.stderr);
+        .then(result => {
+
+          assert(result.stdout.match(/^true\r?\n/m), `Unexpected stdout: ${result.stdout}${result.stderr}`);
         });
       });
 
       it("prints values correctly", function() {
-        return agent.evalScript(`
+        return agent.evalScript(stripIndent`
           print(undefined);
           print(null);
           print('string');
@@ -401,8 +454,8 @@ hosts.forEach(function(record) {
         });
       });
 
-      it('tolerates broken execution environments', function() {
-        return agent.evalScript(`
+      it('tolerates broken execution environments', () => {
+        return agent.evalScript(stripIndent`
           Object.defineProperty(Object.prototype, "length", {
             get: function() {
                 return 1;
@@ -417,8 +470,8 @@ hosts.forEach(function(record) {
         });
       });
 
-      it('supports realm nesting', function() {
-        return agent.evalScript(`
+      it('supports realm nesting', () => {
+        return agent.evalScript(stripIndent`
           x = 0;
           $.createRealm().evalScript(\`
             x = '';
@@ -435,8 +488,8 @@ hosts.forEach(function(record) {
         });
       });
 
-      it('observes correct cross-script interaction semantics', function() {
-        return agent.evalScript(`
+      it('observes correct cross-script interaction semantics', () => {
+        return agent.evalScript(stripIndent`
           print($.evalScript('let eshost;').type);
           print($.evalScript('let eshost;').type);
         `).then((result) => {
@@ -449,7 +502,7 @@ hosts.forEach(function(record) {
       // order to evaluate a script. If the `stop` method is invoked while
       // these operations are taking place, the host should not evaluate the
       // script.
-      it('avoids race conditions in `stop`', function() {
+      it('avoids race conditions in `stop`', () => {
         const evalScript = agent.evalScript('print(1);');
 
         agent.stop();
@@ -460,29 +513,29 @@ hosts.forEach(function(record) {
       });
 
       // mostly this test shouldn't hang (if it hangs, it's a bug)
-      it('can kill infinite loops', function() {
+      it('can kill infinite loops', () => {
         // The GeckoDriver project cannot currently destroy browsing sessions
         // whose main thread is blocked.
         // https://github.com/mozilla/geckodriver/issues/825
         if (effectiveType === 'firefox') {
-          this.skip();
+          run.skip();
           return;
         }
 
-        const resultP = agent.evalScript(`while (true) { }; print(2);`);
+        const resultP = agent.evalScript(stripIndent`while (true) { }; print(2);`);
         return timeout(100).then(() => {
           const stopP = agent.stop();
 
           return Promise.all([resultP, stopP]);
         }).then(record => {
           const result = record[0];
-          assert(!result.stdout.match(/2/), 'Unexpected stdout: ' + result.stdout);
+          assert(!result.stdout.match(/2/), `Unexpected stdout: ${result.stdout}`);
         });
       });
 
-      it('tolerates LINE SEPARATOR and PARAGRAPH SEPARATOR', function() {
+      it('tolerates LINE SEPARATOR and PARAGRAPH SEPARATOR', () => {
         if (!['node'].includes(type)) {
-          this.skip();
+          run.skip();
           return;
         }
 
@@ -530,11 +583,11 @@ hosts.forEach(function(record) {
           });
       });
 
-      it('creates "optional" environments correctly (hostArgs)', function() {
+      it('creates "optional" environments correctly (hostArgs)', () => {
         // browsers are irrelevant to this test
         // jsshell is not working correctly on travis
-        if (['jsshell', 'firefox', 'chrome', 'remote'].includes(type)) {
-          this.skip();
+        if (['engine262', 'jsshell', 'firefox', 'chrome', 'remote'].includes(type)) {
+          run.skip();
           return;
         }
 
@@ -585,11 +638,12 @@ hosts.forEach(function(record) {
     });
 
     describe('normal module evaluation', function() {
+      let run;
       let agent;
       let records;
 
       before(function() {
-
+        run = this;
         // For now we're only going to confirm these in
         // SpiderMonkey and V8
         //
@@ -597,7 +651,7 @@ hosts.forEach(function(record) {
         // many bugs to be useful for testing eshost
         //
         if (!['jsshell', 'd8'].includes(type)) {
-          this.skip();
+          run.skip();
           return;
         }
 
@@ -641,16 +695,16 @@ hosts.forEach(function(record) {
         return agent && agent.destroy();
       });
 
-      it('Can evaluate module code', function() {
+      it('Can evaluate module code', () => {
         // 60 seconds should be enough.
-        this.timeout(60000);
+        run.timeout(60000);
 
         return Promise.all(
           records.map(record => {
             let options = record.attrs.flags;
 
             return new Promise(resolve => {
-              agent.evalScript(record, options).then(function(result) {
+              agent.evalScript(record, options).then(result => {
                 let negative = record.attrs.negative;
                 let expectedStdout = record.attrs.flags.async ?
                   'Test262:AsyncTestComplete' : '';
@@ -675,8 +729,8 @@ hosts.forEach(function(record) {
       });
     });
 
-    describe('"shortName" option', function() {
-      it('allows custom shortNames', function() {
+    describe('"shortName" option', () => {
+      it('allows custom shortNames', () => {
         const withShortName = Object.assign({ shortName: '$testing' }, options);
         return runify.createAgent(type, withShortName).then(agent => {
           var p = agent.evalScript('$testing.evalScript("print(1)")').then(result => {
@@ -691,7 +745,7 @@ hosts.forEach(function(record) {
       });
     });
 
-    describe('"transform" option', function() {
+    describe('"transform" option', () => {
       let agent;
       function transform(x) { return `print("${x}")`; }
 
@@ -704,15 +758,15 @@ hosts.forEach(function(record) {
         return agent && agent.destroy();
       });
 
-      it('runs transforms', function() {
-        return agent.evalScript('foo').then(function(result) {
-          assert(result.stdout.match(/^foo\r?\n/), 'Unexpected stdout: ' + result.stdout);
+      it('runs transforms', () => {
+        return agent.evalScript('foo').then(result => {
+          assert(result.stdout.match(/^foo\r?\n/), `Unexpected stdout: ${result.stdout}`);
         });
       });
     });
 
-    describe('"IsHTMLDDA"', function() {
-      it('has a default IsHTMLDDA', function() {
+    describe('"IsHTMLDDA"', () => {
+      it('has a default IsHTMLDDA', () => {
         return runify.createAgent(type, options).then(agent => {
           let p = agent.evalScript('print(typeof $.IsHTMLDDA);').then(result => {
             assert(result.error === null, 'no error');
