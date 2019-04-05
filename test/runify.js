@@ -32,15 +32,32 @@ const hosts = [
   ['remote', { webdriverServer, capabilities }],
 ];
 
+const hostsOnWindows = [
+  ['ch', { hostPath: 'ch.exe' }],
+  ['d8', { hostPath: 'd8.exe' }],
+  // engine262 is intentionally NOT given an extension!
+  ['engine262', { hostPath: 'engine262.cmd' }],
+  ['jsshell', { hostPath: 'js.exe' }],
+  ['jsc', { hostPath: 'jsc.exe' }],
+  ['node', { hostPath: 'node.exe' }],
+  ['chrome', { hostPath: 'chrome.exe' }],
+  ['firefox', { hostPath: 'firefox.exe' }],
+  ['remote', {}],
+];
+
 // console.log(`isWindows: ${isWindows}`);
 if (isWindows) {
-  hosts.forEach(record => {
+  hosts.forEach((record, index) => {
+    const host = hostsOnWindows[index];
     if (record[1].hostPath) {
-      record[1].hostPath += '.exe';
+      if (record[0] === host[0]) {
+        record[1].hostPath = host[1].hostPath;
+      }
       const ESHOST_ENV_NAME = `ESHOST_${record[0].toUpperCase()}_PATH`;
       console.log(`ESHOST_ENV_NAME: ${ESHOST_ENV_NAME}`);
       if (process.env[ESHOST_ENV_NAME]) {
         record[1].hostPath = path.join(process.env[ESHOST_ENV_NAME], record[1].hostPath);
+        console.log(record[1].hostPath);
       }
     }
   });
@@ -49,7 +66,7 @@ if (isWindows) {
 
 const timeout = function(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
-}
+};
 
 hosts.forEach(function(record) {
   const type = record[0];
@@ -512,7 +529,7 @@ hosts.forEach(function(record) {
           return Promise.all([resultP, stopP]);
         }).then(record => {
           const result = record[0];
-          assert(!result.stdout.match(/2/), 'Unexpected stdout: ' + result.stdout);
+          assert(!result.stdout.match(/2/), `Unexpected stdout: ${result.stdout}`);
         });
       });
 
