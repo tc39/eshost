@@ -6,9 +6,9 @@
 
 Execute ECMAScript code uniformly across any ECMAScript host environment. See also [eshost-cli](https://github.com/bterlson/eshost-cli) for an easy way to use this library from the command line.
 
-Using eshost, you can create an agent (eg. a web browser or a command-line ECMAScript host) and evaluate scripts within that agent. Code running within the agent has access to the eshost runtime API which enables code to evaluate scripts, create new realms, handle errors, and so forth all without worrying about the host-specific mechanisms for these capabilities are.
+Using `eshost`, you can create an agent (eg. a web browser or a command-line ECMAScript host) and evaluate scripts within that agent. Code running within the agent has access to the `eshost` runtime API which enables code to evaluate scripts, create new realms, handle errors, and so forth all without worrying about the host-specific mechanisms for these capabilities are.
 
-eshost consists of a wrapper around the various ways of executing a host and processing its output (called an Agent) and a runtime library for host-agnostic scripts to use.
+`eshost` consists of a wrapper around the various ways of executing a host and processing its output (called an Agent) and a runtime library for host-agnostic scripts to use.
 
 ## Installation
 
@@ -18,22 +18,27 @@ npm install eshost
 
 ## Supported Hosts
 
-| Host | Supported Platforms | Download | Notes |
-|------|---------------------|----------|-------|
-| node | Any | https://nodejs.org | |
-| ch | Any | [Download](https://github.com/Microsoft/ChakraCore/releases) or [build](https://github.com/Microsoft/ChakraCore/wiki/Building-ChakraCore) | Chakra console host. |
-| d8 | Any | Build [from source](https://github.com/v8/v8) | V8 console host. Errors are reported on stdout. Use `$.getGlobal` and `$.setGlobal` to get and set properties of global objects in other realms. |
-| jsshell | Any | [Download](https://archive.mozilla.org/pub/firefox/nightly/latest-mozilla-central/) | SpiderMonkey console host. |
-| jsc | Mac¹ | Build [from source](http://trac.webkit.org/wiki/JavaScriptCore)² | |
-| xs | Any | Build [from source](https://github.com/Moddable-OpenSource/moddable-xst) | |
-| nashorn | Any | Build [from source](https://wiki.openjdk.java.net/display/Nashorn/Building+Nashorn) | |
-| edge | Windows | | Errors reported from Microsoft Edge are all of type Error. Requires [Microsoft WebDriver](https://developer.microsoft.com/en-us/microsoft-edge/platform/documentation/dev-guide/tools/webdriver/) in your path. |
-| chrome | Any | | Requires [ChromeDriver](https://sites.google.com/a/chromium.org/chromedriver/downloads) in your path.|
-| firefox | Any | | Requires [GeckoDriver](https://github.com/mozilla/geckodriver/releases) in your path (possibly renamed to `wires`).|
-| safari | Mac | | Requires (SafariDriver browser extension)[https://github.com/SeleniumHQ/selenium/wiki/SafariDriver]. |
+| Host | Type | Supported Platforms | Download | Notes |
+|------|------|---------------------|----------|-------|
+| ch | CLI | Any | [Download](https://github.com/Microsoft/ChakraCore/releases) or [build](https://github.com/Microsoft/ChakraCore/wiki/Building-ChakraCore) | Chakra console host. |
+| d8 | CLI | Any | Build [from source](https://github.com/v8/v8) | V8 console host. Errors are reported on stdout. Use `$.getGlobal` and `$.setGlobal` to get and set properties of global objects in other realms. |
+| engine262 | CLI | Any | Build [from source](https://github.com/devsnek/engine262) | An implementation of ECMA-262 in JavaScript. |
+| jsshell | CLI | Any | [Download](https://archive.mozilla.org/pub/firefox/nightly/latest-mozilla-central/) | SpiderMonkey console host. |
+| jsc | CLI | Mac¹ | Build [from source](http://trac.webkit.org/wiki/JavaScriptCore)² | |
+| nashorn | CLI | Any | Build [from source](https://wiki.openjdk.java.net/display/Nashorn/Building+Nashorn) | |
+| node | CLI | Any | https://nodejs.org | |
+| xs | CLI | Any | Build [from source](https://github.com/Moddable-OpenSource/moddable-xst) | |
+| chrome | Browser | Any | | Requires [ChromeDriver](https://sites.google.com/a/chromium.org/chromedriver/downloads) in your path.|
+| edge | Browser | Windows | | Errors reported from Microsoft Edge are all of type Error. Requires [Microsoft WebDriver](https://developer.microsoft.com/en-us/microsoft-edge/platform/documentation/dev-guide/tools/webdriver/) in your path. |
+| firefox | Browser | Any | | Requires [GeckoDriver](https://github.com/mozilla/geckodriver/releases) in your path (possibly renamed to `wires`).|
+| safari | Browser | Mac | | Requires (SafariDriver browser extension)[https://github.com/SeleniumHQ/selenium/wiki/SafariDriver]. |
 
 * 1: It is possible to build jsc on other platforms, but not supported.
 * 2: Also available on your Mac system at `/System/Library/Frameworks/JavaScriptCore.framework/Versions/A/Resources/jsc`.
+
+## Use JSVU
+
+[JSVU](https://github.com/GoogleChromeLabs/jsvu) is the recommended tool for maintaining JavaScript engines for testing purposes. Take a look at the [Supported engines](https://github.com/GoogleChromeLabs/jsvu#supported-engines) for more information. 
 
 ## Example Usage
 
