@@ -31,7 +31,7 @@ npm install eshost
 | chrome | Browser | Any | | Requires [ChromeDriver](https://sites.google.com/a/chromium.org/chromedriver/downloads) in your path.|
 | edge | Browser | Windows | | Errors reported from Microsoft Edge are all of type Error. Requires [Microsoft WebDriver](https://developer.microsoft.com/en-us/microsoft-edge/platform/documentation/dev-guide/tools/webdriver/) in your path. |
 | firefox | Browser | Any | | Requires [GeckoDriver](https://github.com/mozilla/geckodriver/releases) in your path (possibly renamed to `wires`).|
-| safari | Browser | Mac | | Requires (SafariDriver browser extension)[https://github.com/SeleniumHQ/selenium/wiki/SafariDriver]. |
+| safari | Browser | Mac | | Requires [SafariDriver browser extension](https://github.com/SeleniumHQ/selenium/wiki/SafariDriver). |
 
 * 1: It is possible to build jsc on other platforms, but not supported.
 * 2: Also available on your Mac system at `/System/Library/Frameworks/JavaScriptCore.framework/Versions/A/Resources/jsc`.
