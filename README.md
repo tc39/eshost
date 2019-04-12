@@ -20,11 +20,11 @@ npm install eshost
 
 | Host | Type | Supported Platforms | Download | Notes |
 |------|------|---------------------|----------|-------|
-| ch | CLI | Any | [Download](https://github.com/Microsoft/ChakraCore/releases) or [build](https://github.com/Microsoft/ChakraCore/wiki/Building-ChakraCore) | Chakra console host. |
-| d8 | CLI | Any | Build [from source](https://github.com/v8/v8) | V8 console host. Errors are reported on stdout. Use `$.getGlobal` and `$.setGlobal` to get and set properties of global objects in other realms. |
+| ch¹ | CLI | Any | [Download](https://github.com/Microsoft/ChakraCore/releases) or [build](https://github.com/Microsoft/ChakraCore/wiki/Building-ChakraCore) | Chakra console host. |
+| d8¹ | CLI | Any | Build [from source](https://github.com/v8/v8) | V8 console host. Errors are reported on stdout. Use `$.getGlobal` and `$.setGlobal` to get and set properties of global objects in other realms. |
 | engine262 | CLI | Any | Build [from source](https://github.com/devsnek/engine262) | An implementation of ECMA-262 in JavaScript. |
-| jsshell | CLI | Any | [Download](https://archive.mozilla.org/pub/firefox/nightly/latest-mozilla-central/) | SpiderMonkey console host. |
-| jsc | CLI | Mac¹ | Build [from source](http://trac.webkit.org/wiki/JavaScriptCore)² | |
+| jsshell¹ | CLI | Any | [Download](https://archive.mozilla.org/pub/firefox/nightly/latest-mozilla-central/) | SpiderMonkey console host. |
+| jsc¹ | CLI | Mac² | Build [from source](http://trac.webkit.org/wiki/JavaScriptCore)³ | |
 | nashorn | CLI | Any | Build [from source](https://wiki.openjdk.java.net/display/Nashorn/Building+Nashorn) | |
 | node | CLI | Any | https://nodejs.org | |
 | xs | CLI | Any | Build [from source](https://github.com/Moddable-OpenSource/moddable-xst) | |
@@ -33,12 +33,17 @@ npm install eshost
 | firefox | Browser | Any | | Requires [GeckoDriver](https://github.com/mozilla/geckodriver/releases) in your path (possibly renamed to `wires`).|
 | safari | Browser | Mac | | Requires [SafariDriver browser extension](https://github.com/SeleniumHQ/selenium/wiki/SafariDriver). |
 
-* 1: It is possible to build jsc on other platforms, but not supported.
-* 2: Also available on your Mac system at `/System/Library/Frameworks/JavaScriptCore.framework/Versions/A/Resources/jsc`.
+* 1: `eshost` accepts JSVU style binary name values as the first argument to `eshost.createAgent(type: string, options = {}): Agent`. See [Use JSVU](#use-jsvu).
+* 2: It is possible to build jsc on other platforms, but not supported.
+* 3: Also available on your Mac system at `/System/Library/Frameworks/JavaScriptCore.framework/Versions/A/Resources/jsc`.
+* 
 
 ## Use JSVU
 
 [JSVU](https://github.com/GoogleChromeLabs/jsvu) is the recommended tool for maintaining JavaScript engines for testing purposes. Take a look at the [Supported engines](https://github.com/GoogleChromeLabs/jsvu#supported-engines) for more information. 
+
+
+
 
 ## Example Usage
 
@@ -57,86 +62,122 @@ console.log(result.stdout);
 
 The `eshost` object is the main export of the "eshost" module.
 
-#### `eshost.supportedHosts`
+### `eshost.supportedHosts`
 
 An array of supported host types.
 
-#### `eshost.createAgent(type: string, options = {}): Agent`
+### `eshost.createAgent(type: string, options = {}): Agent`
 
 Creates an instance of a host agent for a particular host type. See the table above for supported host types.
 
-`options`:
+- `type`
+  
+  Shells: 
 
-| Property | Description |
-|-|-|
-| `hostPath` | Path to host to execute. For console hosts, this argument is required. For the specific browser runners, hostPath is optional and if omitted, the location for that browser will be detected automatically. |
-| `hostArguments` | Command line arguments used when invoking your host. Not supported for browser hosts. `hostArguments` is an array of strings as you might pass to Node's spawn API. |
-| `transform` | A function to map the source to some other source before running the result on the underlying host. |
-| `webHost` | for web browser hosts only; URL host name from which to serve browser assets; optional; defaults to `"localhost"` |
-| `webPort` | for web browser hosts only; URL port number from which to serve browser assets; optional; defaults to `1337` |
-| `capabilities` | for `remote` host only; the Selenium/WebDriver capabilities to request for the remote session; all specified attributes will be forwarded to the server; [a listing of available attributes is available in the Selenium project's wiki](https://github.com/SeleniumHQ/selenium/wiki/DesiredCapabilities); the following attributes are required: ` { browserName, platform, version }` |
-| `webdriverServer` | for `remote` host only; URL of the WebDriver server to which commands should be issued |
+  | Host Type | All Acceptable Values |
+  | ---- | -------------------- |
+  | ChakraCore | `chakra`, `ch` |
+  | Engine262 | `engine262` |
+  | JavaScriptCore | `javascriptcore`, `jsc` |
+  | Nashorn | `nashorn` |
+  | Node | `node` |
+  | SpiderMonkey | `jsshell`, `spidermonkey`, `sm` |
+  | V8 | `d8`, `v8` |
+  | XS | `xs` |
+
+  Browsers: 
+
+  | Host Type | All Acceptable Values |
+  | ---- | -------------------- |
+  | chrome | `chrome` |
+  | edge | `edge` |
+  | firefox | `firefox` |
+  | safari | `safari` |
+
+
+- `options`
+
+  | Property | Description |
+  |-|-|
+  | `hostPath` | Path to host to execute. For console hosts, this argument is required. For the specific browser runners, hostPath is optional and if omitted, the location for that browser will be detected automatically. |
+  | `hostArguments` | Command line arguments used when invoking your host. Not supported for browser hosts. `hostArguments` is an array of strings as you might pass to Node's spawn API. |
+  | `transform` | A function to map the source to some other source before running the result on the underlying host. |
+  | `webHost` | for web browser hosts only; URL host name from which to serve browser assets; optional; defaults to `"localhost"` |
+  | `webPort` | for web browser hosts only; URL port number from which to serve browser assets; optional; defaults to `1337` |
+  | `capabilities` | for `remote` host only; the Selenium/WebDriver capabilities to request for the remote session; all specified attributes will be forwarded to the server; [a listing of available attributes is available in the Selenium project's wiki](https://github.com/SeleniumHQ/selenium/wiki/DesiredCapabilities); the following attributes are required: ` { browserName, platform, version }` |
+  | `webdriverServer` | for `remote` host only; URL of the WebDriver server to which commands should be issued |
 
 
 
-### `Agent`
+## `Agent`
 
 #### `initialize(): Promise<void>`
+
 Initializes the host and returns a promise that is resolved once the host is initialized. Command line hosts have no initialization as a new process is started for each execution.
 
 This is called for you if you use the createAgent factory.
 
-#### `evalScript(code, options = {}): Promise<Result>`
+### `evalScript(code, options = {}): Promise<Result>`
+
 Executes `code` in the host using the _Script_ goal symbol. Returns a promise for a result object.
 
-#### `evalScript(record, options = {}): Promise<Result>`
+### `evalScript(record, options = {}): Promise<Result>`
 
-When `evalScript` receives a `Test262Stream` test record, it executes `record.contents` in the host using the _Script_ goal symbol, unless `record.attrs.flags.module === true`, in which case it will execute `record.contents` in the host using the _Module_ goal symbol. Returns a promise for a result object. 
+When `evalScript` receives a `Test262File` test record, it executes `record.contents` in the host using the _Script_ goal symbol, unless `record.attrs.flags.module === true`, in which case it will execute `record.contents` in the host using the _Module_ goal symbol. Returns a promise for a result object. 
 
 By default, a script will run in `eshost` until the realm is destroyed. For most command-line hosts, this is done automatically when the script execution queues are empty. However, browsers will remain open waiting for more code to become available. Therefore, `eshost` will automatically append `$.destroy()` to the end of your scripts. This behavior is not correct if you are attempting to execute asynchronous code. In such cases, add `async: true` to the options.
 
-`options`:
+- `options`
 
-| Property | Description | Default Value |
-|-|-|-|
-| `async`  | Set to `true` if the test is expected to call `$.destroy()` on the root realm when it's finished. When false, `$.destroy()` is added for you. | `false` |
+  | Property | Description | Default Value |
+  |-|-|-|
+  | `async`  | Set to `true` if the test is expected to call `$.destroy()` on the root realm when it's finished. When false, `$.destroy()` is added for you. | `false` |
 
-#### `stop(): Promise<void>`
-Stops the currently executing script. For a console host, this simply kills the child process. For browser hosts, it will kill the current window and create a new one.
+#### `Result` Object
 
-#### `destroy(): Promise<void>`
-Destroys the agent, closing any of its associated resources (eg. browser windows, child processes, etc.).
-
-##### `Result Object`
 An object with the following keys:
 
 | Property | Description |
 |-|-|
-| `stdout`  | Anything printed to stdout (mostly what you print using `print`). |
-| `stderr`  | Anything printed to stderr |
-| `error`  | If the script threw an error, it will be an error object. Else, it will be null. |
+| `stdout` | Anything printed to stdout (mostly what you print using `print`). |
+| `stderr` | Anything printed to stderr |
+| `error` | If the script threw an error, it will be an **`error` object**. Else, it will be null. |
 
 
-The `error` object is similar to an error object you get in the host itself. Namely, it has the following keys:
+The **`error` object** is similar to an error object you get in the host itself. Namely, it has the following keys:
 
 | Property | Description |
 |-|-|
-| `name`  | Error name (eg. SyntaxError, TypeError, etc.) |
-| `message`  | Error message |
-| `stack`  | An array of stack frames. |
+| `name` | Error name (eg. `SyntaxError`, `TypeError`, etc.) |
+| `message` | Error message, if available. |
+| `stack` | An array of stack frames, if available. |
 
-#### `destroy(): Promise<void>`
-Tears down the agent. For browsers, this will close the browser window.
+
+### `stop(): Promise<void>`
+
+Stops the currently executing script. For a console host, this simply kills the child process. For browser hosts, it will kill the current window and create a new one.
+
+### `destroy(): Promise<void>`
+
+Destroys the agent, closing any of its associated resources (eg. browser windows, child processes, etc.).
+
+
+### `destroy(): Promise<void>`
+
+Tears down the agent. For browsers, this will close the browser window. For most CLI/Shell hosts, this is a no-op.
 
 ### Runtime Library
 
 #### `print(str)`
+
 Prints `str` to stdout.
 
 #### `$.global`
+
 A reference to the global object.
 
 #### `$.createRealm(options)`
+
 Creates a new realm, returning that realm's runtime library ($).
 
 For example, creating two nested realms:
@@ -158,16 +199,17 @@ $sub = $.createRealm({
 $sub.evalScript('$.destroy()'); // prints "destroyed!"
 ```
 
-`options`:
+- `options`
 
-| Property | Description |
-|-|-|
-| `globals`  | An object containing properties to add to the global object in the new realm. |
-| `destroy`  | A callback that is called when the code executing in the realm destroys its realm (ie. by calling `$.destroy()`). |
+  | Property | Description |
+  |-|-|
+  | `globals` | An object containing properties to add to the global object in the new realm. |
+  | `destroy` | A callback that is called when the code executing in the realm destroys its realm (ie. by calling `$.destroy()`). |
 
 
 
 #### `$.evalScript(code)`
+
 Creates a new script and evals `code` in that realm. If an error is thrown, it will be passed to the onError callback.
 
 Scripts are different from eval in that lexical bindings go into the global lexical contour rather than being scoped to the eval.

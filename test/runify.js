@@ -1,6 +1,6 @@
 'use strict';
 
-const runify = require('../');
+const eshost = require('../');
 const assert = require('assert');
 const {stripIndent} = require('common-tags');
 const hasbin = require('hasbin');
@@ -68,6 +68,42 @@ const timeout = function(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
 };
 
+
+describe('supportedHosts', () => {
+  it ('Accepts JSVU style host type names', () => {
+    const supportedHostsMap = {
+      chakra: 'ch',
+      ch: 'ch',
+      javascriptcore: 'jsc',
+      jsc: 'jsc',
+      jsshell: 'jsshell',
+      nashorn: 'nashorn',
+      node: 'node',
+      sm: 'jsshell',
+      spidermonkey: 'jsshell',
+      d8: 'd8',
+      v8: 'd8',
+      xs: 'xs',
+      chrome: 'chrome',
+      edge: 'edge',
+      firefox: 'firefox',
+      remote: 'remote',
+      safari: 'safari'
+    };
+
+    const supportedHosts = Object.keys(supportedHostsMap);
+
+    supportedHosts.forEach(supportedHost => {
+      assert(eshost.supportedHosts.includes(supportedHost));
+      assert.equal(eshost.normalizeHostForJSVU(supportedHost), supportedHostsMap[supportedHost]);
+    });
+
+    return Promise.resolve();
+  });
+
+});
+
+
 hosts.forEach(function(record) {
   const type = record[0];
   const options = record[1];
@@ -104,7 +140,7 @@ hosts.forEach(function(record) {
 
       before(function() {
         run = this;
-        return runify.createAgent(type, options)
+        return eshost.createAgent(type, options)
           .then(a => agent = a);
       });
 
@@ -625,7 +661,7 @@ hosts.forEach(function(record) {
           source = 'print(typeof gc === "function");';
         }
 
-        return runify.createAgent(type, Object.assign({ hostArguments }, options))
+        return eshost.createAgent(type, Object.assign({ hostArguments }, options))
           .then(a => {
             agent = a;
 
@@ -679,7 +715,7 @@ hosts.forEach(function(record) {
           stream.on('end', () => resolve(captured));
         });
 
-        let pAgent = runify.createAgent(type, options);
+        let pAgent = eshost.createAgent(type, options);
 
         return Promise.all([
           pTests,
@@ -732,7 +768,7 @@ hosts.forEach(function(record) {
     describe('"shortName" option', () => {
       it('allows custom shortNames', () => {
         const withShortName = Object.assign({ shortName: '$testing' }, options);
-        return runify.createAgent(type, withShortName).then(agent => {
+        return eshost.createAgent(type, withShortName).then(agent => {
           var p = agent.evalScript('$testing.evalScript("print(1)")').then(result => {
             assert(result.error === null, 'no error');
             assert.equal(result.stdout.indexOf('1'), 0);
@@ -751,7 +787,7 @@ hosts.forEach(function(record) {
 
       before(function() {
         let withTransform = Object.assign({ transform }, options);
-        return runify.createAgent(type, withTransform).then(a => agent = a);
+        return eshost.createAgent(type, withTransform).then(a => agent = a);
       });
 
       after(function() {
@@ -767,7 +803,7 @@ hosts.forEach(function(record) {
 
     describe('"IsHTMLDDA"', () => {
       it('has a default IsHTMLDDA', () => {
-        return runify.createAgent(type, options).then(agent => {
+        return eshost.createAgent(type, options).then(agent => {
           let p = agent.evalScript('print(typeof $.IsHTMLDDA);').then(result => {
             assert(result.error === null, 'no error');
             assert.equal(result.stdout.indexOf('function'), 0);
