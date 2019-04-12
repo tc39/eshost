@@ -20,11 +20,11 @@ npm install eshost
 
 | Host | Type | Supported Platforms | Download | Notes |
 |------|------|---------------------|----------|-------|
-| ch | CLI | Any | [Download](https://github.com/Microsoft/ChakraCore/releases) or [build](https://github.com/Microsoft/ChakraCore/wiki/Building-ChakraCore) | Chakra console host. |
-| d8 | CLI | Any | Build [from source](https://github.com/v8/v8) | V8 console host. Errors are reported on stdout. Use `$.getGlobal` and `$.setGlobal` to get and set properties of global objects in other realms. |
+| ch¹ | CLI | Any | [Download](https://github.com/Microsoft/ChakraCore/releases) or [build](https://github.com/Microsoft/ChakraCore/wiki/Building-ChakraCore) | Chakra console host. |
+| d8¹ | CLI | Any | Build [from source](https://github.com/v8/v8) | V8 console host. Errors are reported on stdout. Use `$.getGlobal` and `$.setGlobal` to get and set properties of global objects in other realms. |
 | engine262 | CLI | Any | Build [from source](https://github.com/devsnek/engine262) | An implementation of ECMA-262 in JavaScript. |
-| jsshell | CLI | Any | [Download](https://archive.mozilla.org/pub/firefox/nightly/latest-mozilla-central/) | SpiderMonkey console host. |
-| jsc | CLI | Mac¹ | Build [from source](http://trac.webkit.org/wiki/JavaScriptCore)² | |
+| jsshell¹ | CLI | Any | [Download](https://archive.mozilla.org/pub/firefox/nightly/latest-mozilla-central/) | SpiderMonkey console host. |
+| jsc¹ | CLI | Mac² | Build [from source](http://trac.webkit.org/wiki/JavaScriptCore)³ | |
 | nashorn | CLI | Any | Build [from source](https://wiki.openjdk.java.net/display/Nashorn/Building+Nashorn) | |
 | node | CLI | Any | https://nodejs.org | |
 | xs | CLI | Any | Build [from source](https://github.com/Moddable-OpenSource/moddable-xst) | |
@@ -33,12 +33,17 @@ npm install eshost
 | firefox | Browser | Any | | Requires [GeckoDriver](https://github.com/mozilla/geckodriver/releases) in your path (possibly renamed to `wires`).|
 | safari | Browser | Mac | | Requires [SafariDriver browser extension](https://github.com/SeleniumHQ/selenium/wiki/SafariDriver). |
 
-* 1: It is possible to build jsc on other platforms, but not supported.
-* 2: Also available on your Mac system at `/System/Library/Frameworks/JavaScriptCore.framework/Versions/A/Resources/jsc`.
+* 1: `eshost` accepts JSVU style binary name values as the first argument to `eshost.createAgent(type: string, options = {}): Agent`. See [Use JSVU](#use-jsvu).
+* 2: It is possible to build jsc on other platforms, but not supported.
+* 3: Also available on your Mac system at `/System/Library/Frameworks/JavaScriptCore.framework/Versions/A/Resources/jsc`.
+* 
 
 ## Use JSVU
 
 [JSVU](https://github.com/GoogleChromeLabs/jsvu) is the recommended tool for maintaining JavaScript engines for testing purposes. Take a look at the [Supported engines](https://github.com/GoogleChromeLabs/jsvu#supported-engines) for more information. 
+
+
+
 
 ## Example Usage
 
@@ -65,17 +70,28 @@ An array of supported host types.
 
 Creates an instance of a host agent for a particular host type. See the table above for supported host types.
 
-`options`:
+- `type`
 
-| Property | Description |
-|-|-|
-| `hostPath` | Path to host to execute. For console hosts, this argument is required. For the specific browser runners, hostPath is optional and if omitted, the location for that browser will be detected automatically. |
-| `hostArguments` | Command line arguments used when invoking your host. Not supported for browser hosts. `hostArguments` is an array of strings as you might pass to Node's spawn API. |
-| `transform` | A function to map the source to some other source before running the result on the underlying host. |
-| `webHost` | for web browser hosts only; URL host name from which to serve browser assets; optional; defaults to `"localhost"` |
-| `webPort` | for web browser hosts only; URL port number from which to serve browser assets; optional; defaults to `1337` |
-| `capabilities` | for `remote` host only; the Selenium/WebDriver capabilities to request for the remote session; all specified attributes will be forwarded to the server; [a listing of available attributes is available in the Selenium project's wiki](https://github.com/SeleniumHQ/selenium/wiki/DesiredCapabilities); the following attributes are required: ` { browserName, platform, version }` |
-| `webdriverServer` | for `remote` host only; URL of the WebDriver server to which commands should be issued |
+  | Host Type | All Acceptable Values |
+  | ---- | -------------------- |
+  | ChakraCore | `chakra`, `ch` |
+  | Engine262 | `engine262` |
+  | JavaScriptCore | `javascriptcore`, `jsc` |
+  | SpiderMonkey | `jsshell`, `spidermonkey`, `sm` |
+  | V8 | `d8`, `v8` |
+  | XS | `xs` |
+
+- `options`
+
+  | Property | Description |
+  |-|-|
+  | `hostPath` | Path to host to execute. For console hosts, this argument is required. For the specific browser runners, hostPath is optional and if omitted, the location for that browser will be detected automatically. |
+  | `hostArguments` | Command line arguments used when invoking your host. Not supported for browser hosts. `hostArguments` is an array of strings as you might pass to Node's spawn API. |
+  | `transform` | A function to map the source to some other source before running the result on the underlying host. |
+  | `webHost` | for web browser hosts only; URL host name from which to serve browser assets; optional; defaults to `"localhost"` |
+  | `webPort` | for web browser hosts only; URL port number from which to serve browser assets; optional; defaults to `1337` |
+  | `capabilities` | for `remote` host only; the Selenium/WebDriver capabilities to request for the remote session; all specified attributes will be forwarded to the server; [a listing of available attributes is available in the Selenium project's wiki](https://github.com/SeleniumHQ/selenium/wiki/DesiredCapabilities); the following attributes are required: ` { browserName, platform, version }` |
+  | `webdriverServer` | for `remote` host only; URL of the WebDriver server to which commands should be issued |
 
 
 

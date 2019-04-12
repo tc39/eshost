@@ -68,6 +68,39 @@ const timeout = function(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
 };
 
+
+describe('supportedHosts', () => {
+  it ('Accepts JSVU style host type names', () => {
+    const map = {
+      chakra: 'ch',
+      ch: 'ch',
+      javascriptcore: 'jsc',
+      jsc: 'jsc',
+      jsshell: 'jsshell',
+      nashorn: 'nashorn',
+      node: 'node',
+      sm: 'jsshell',
+      spidermonkey: 'jsshell',
+      d8: 'd8',
+      v8: 'd8',
+      xs: 'xs',
+      chrome: 'chrome',
+      edge: 'edge',
+      firefox: 'firefox',
+      remote: 'remote',
+      safari: 'safari'
+    };
+
+    Object.entries(map).forEach(([input, result]) => {
+      assert.equal(runify.supportedHosts[input], result);
+    });
+
+    return Promise.resolve();
+  });
+
+});
+
+
 hosts.forEach(function(record) {
   const type = record[0];
   const options = record[1];
