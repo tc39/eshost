@@ -108,7 +108,6 @@ Creates an instance of a host agent for a particular host type. See the table ab
   | `webdriverServer` | for `remote` host only; URL of the WebDriver server to which commands should be issued |
 
 
-
 ## `Agent`
 
 #### `initialize(): Promise<void>`
@@ -166,17 +165,17 @@ Destroys the agent, closing any of its associated resources (eg. browser windows
 
 Tears down the agent. For browsers, this will close the browser window. For most CLI/Shell hosts, this is a no-op.
 
-### Runtime Library
+## Runtime Library
 
-#### `print(str)`
+### `print(str)`
 
 Prints `str` to stdout.
 
-#### `$.global`
+### `$.global`
 
 A reference to the global object.
 
-#### `$.createRealm(options)`
+### `$.createRealm(options)`
 
 Creates a new realm, returning that realm's runtime library ($).
 
@@ -208,26 +207,31 @@ $sub.evalScript('$.destroy()'); // prints "destroyed!"
 
 
 
-#### `$.evalScript(code)`
+### `$.evalScript(code)`
 
 Creates a new script and evals `code` in that realm. If an error is thrown, it will be passed to the onError callback.
 
 Scripts are different from eval in that lexical bindings go into the global lexical contour rather than being scoped to the eval.
 
-#### `$.destroy()`
+### `$.destroy()`
+
 Destroys the realm. Note that in some hosts, $.destroy may not actually stop executing code in the realm or even destroy the realm.
 
-#### `$.getGlobal(name)`
+### `$.getGlobal(name)`
+
 Gets a global property name.
 
-#### `$.setGlobal(name, value)`
+### `$.setGlobal(name, value)`
+
 Sets a global property name to value.
 
 ## Running the tests
 
 This project's tests can be executed with the following command:
 
-    npm test
+```
+npm test
+```
 
 The above command will cause tests to be run against all supported hosts.
 Executables for each host must be available on the system's `PATH` environment
@@ -239,7 +243,9 @@ is the capitalized name of the host. For example, in a Unix-like system, the
 following command executes the project's tests but skips JavaScriptCore and D8
 tests:
 
-    ESHOST_SKIP_JSC=1 ESHOST_SKIP_D8=1 npm test
+```
+ESHOST_SKIP_JSC=1 ESHOST_SKIP_D8=1 npm test
+```
 
 Tests for the "remote" agent can be configured to run against any arbitrary
 Selenium/WebDriver configuration through the specification of the following
@@ -249,4 +255,6 @@ capabilities; see the above documentation of `eshost.createAgent` for more
 details. For example, in a Unix-like system, the following command executes the
 project's tests in a remote instance of the Firefox web browser:
 
-    ESHOST_REMOTE_BROWSERNAME=firefox npm test
+```
+ESHOST_REMOTE_BROWSERNAME=firefox npm test
+```
