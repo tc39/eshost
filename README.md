@@ -22,7 +22,7 @@ npm install eshost
 |------|------|---------------------|----------|-------|
 | ch¹ | CLI | Any | [Download](https://github.com/Microsoft/ChakraCore/releases) or [build](https://github.com/Microsoft/ChakraCore/wiki/Building-ChakraCore) | Chakra console host. |
 | d8¹ | CLI | Any | Build [from source](https://github.com/v8/v8) | V8 console host. Errors are reported on stdout. Use `$.getGlobal` and `$.setGlobal` to get and set properties of global objects in other realms. |
-| engine262 | CLI | Any | Build [from source](https://github.com/devsnek/engine262) | An implementation of ECMA-262 in JavaScript. |
+| engine262 | CLI | Any | Build [from source](https://github.com/engine262/engine262) | An implementation of ECMA-262 in JavaScript. |
 | jsshell¹ | CLI | Any | [Download](https://archive.mozilla.org/pub/firefox/nightly/latest-mozilla-central/) | SpiderMonkey console host. |
 | jsc¹ | CLI | Mac² | Build [from source](http://trac.webkit.org/wiki/JavaScriptCore)³ | |
 | nashorn | CLI | Any | Build [from source](https://wiki.openjdk.java.net/display/Nashorn/Building+Nashorn) | |
@@ -36,11 +36,11 @@ npm install eshost
 * 1: `eshost` accepts JSVU style binary name values as the first argument to `eshost.createAgent(type: string, options = {}): Agent`. See [Use JSVU](#use-jsvu).
 * 2: It is possible to build jsc on other platforms, but not supported.
 * 3: Also available on your Mac system at `/System/Library/Frameworks/JavaScriptCore.framework/Versions/A/Resources/jsc`.
-* 
+*
 
 ## Use JSVU
 
-[JSVU](https://github.com/GoogleChromeLabs/jsvu) is the recommended tool for maintaining JavaScript engines for testing purposes. Take a look at the [Supported engines](https://github.com/GoogleChromeLabs/jsvu#supported-engines) for more information. 
+[JSVU](https://github.com/GoogleChromeLabs/jsvu) is the recommended tool for maintaining JavaScript engines for testing purposes. Take a look at the [Supported engines](https://github.com/GoogleChromeLabs/jsvu#supported-engines) for more information.
 
 
 
@@ -71,8 +71,8 @@ An array of supported host types.
 Creates an instance of a host agent for a particular host type. See the table above for supported host types.
 
 - `type`
-  
-  Shells: 
+
+  Shells:
 
   | Host Type | All Acceptable Values |
   | ---- | -------------------- |
@@ -85,7 +85,7 @@ Creates an instance of a host agent for a particular host type. See the table ab
   | V8 | `d8`, `v8` |
   | XS | `xs` |
 
-  Browsers: 
+  Browsers:
 
   | Host Type | All Acceptable Values |
   | ---- | -------------------- |
@@ -122,7 +122,7 @@ Executes `code` in the host using the _Script_ goal symbol. Returns a promise fo
 
 ### `evalScript(record, options = {}): Promise<Result>`
 
-When `evalScript` receives a `Test262File` test record, it executes `record.contents` in the host using the _Script_ goal symbol, unless `record.attrs.flags.module === true`, in which case it will execute `record.contents` in the host using the _Module_ goal symbol. Returns a promise for a result object. 
+When `evalScript` receives a `Test262File` test record, it executes `record.contents` in the host using the _Script_ goal symbol, unless `record.attrs.flags.module === true`, in which case it will execute `record.contents` in the host using the _Module_ goal symbol. Returns a promise for a result object.
 
 By default, a script will run in `eshost` until the realm is destroyed. For most command-line hosts, this is done automatically when the script execution queues are empty. However, browsers will remain open waiting for more code to become available. Therefore, `eshost` will automatically append `$.destroy()` to the end of your scripts. This behavior is not correct if you are attempting to execute asynchronous code. In such cases, add `async: true` to the options.
 

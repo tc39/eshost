@@ -28,7 +28,7 @@ install:
   - mkdir hosts
   # Engine262: Clone, Build, Link and set PATH
   - mkdir engine262
-  - git clone https://github.com/devsnek/engine262.git engine262
+  - git clone https://github.com/engine262/engine262.git engine262
   - cd %CD%\engine262
   - npm install
   - npm run build
