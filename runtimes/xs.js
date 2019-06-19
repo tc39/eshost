@@ -1,5 +1,8 @@
 var $ = {
   global,
+  gc() {
+    throw new Test262Error('GC not yet supported.');
+  },
   createRealm(options) {
     options = options || {};
     options.globals = options.globals || {};

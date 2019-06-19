@@ -2,8 +2,11 @@
 /* Using this["\x24"]; prevents overwrite by ConsoleAgent */
 var engine262 = this["\x24"];
 var $ = {
-  global: engine262.global,
   realm: null,
+  global: engine262.global,
+  gc() {
+    throw new Test262Error('GC not yet supported.');
+  },
   createRealm(options) {
     options = options || {};
     options.globals = options.globals || {};
