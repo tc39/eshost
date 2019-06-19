@@ -1,13 +1,20 @@
+function print(...args) {
+  console.log(...args);
+}
 var vm = require('vm');
 var $ = {
   global: Function('return this')(),
+  gc() {
+    return gc();
+  },
   createRealm(options) {
     options = options || {};
     options.globals = options.globals || {};
 
     context = {
-      console: console,
-      require: require
+      console,
+      require,
+      print,
     };
 
     for(var glob in options.globals) {
@@ -49,4 +56,4 @@ var $ = {
   source: $SOURCE
 };
 
-function print() { console.log.apply(console, arguments); }
+

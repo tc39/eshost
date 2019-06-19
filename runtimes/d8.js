@@ -1,5 +1,8 @@
 var $ = {
   global: Function('return this')(),
+  gc() {
+    return gc();
+  },
   createRealm(options) {
     options = options || {};
     options.globals = options.globals || {};

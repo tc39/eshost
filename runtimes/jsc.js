@@ -8,3 +8,6 @@ $262.getGlobal = function(name) {
 $262.setGlobal = function(name, value) {
   this.global[name] = value;
 };
+$262.gc = function() {
+  return gc();
+};
