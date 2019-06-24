@@ -1,7 +1,11 @@
 var $ = {
   global: Function('return this')(),
   gc() {
-    throw new Test262Error('GC not yet supported.');
+    if (typeof CollectGarbage === 'function') {
+      return CollectGarbage();
+    } else {
+      throw new Test262Error('GC not yet supported.');
+    }
   },
   createRealm(options) {
     options = options || {};
