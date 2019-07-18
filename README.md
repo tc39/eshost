@@ -18,25 +18,28 @@ npm install eshost
 
 ## Supported Hosts
 
-| Host | Type | Supported Platforms | Download | Notes |
-|------|------|---------------------|----------|-------|
-| ch¹ | CLI | Any | [Download](https://github.com/Microsoft/ChakraCore/releases) or [build](https://github.com/Microsoft/ChakraCore/wiki/Building-ChakraCore) | Chakra console host. |
-| d8¹ | CLI | Any | Build [from source](https://github.com/v8/v8) | V8 console host. Errors are reported on stdout. Use `$.getGlobal` and `$.setGlobal` to get and set properties of global objects in other realms. |
-| engine262 | CLI | Any | Build [from source](https://github.com/engine262/engine262) | An implementation of ECMA-262 in JavaScript. |
-| jsshell¹ | CLI | Any | [Download](https://archive.mozilla.org/pub/firefox/nightly/latest-mozilla-central/) | SpiderMonkey console host. |
-| jsc¹ | CLI | Mac² | Build [from source](http://trac.webkit.org/wiki/JavaScriptCore)³ | |
-| nashorn | CLI | Any | Build [from source](https://wiki.openjdk.java.net/display/Nashorn/Building+Nashorn) | |
-| node | CLI | Any | https://nodejs.org | |
-| xs | CLI | Any | Build [from source](https://github.com/Moddable-OpenSource/moddable-xst) | |
-| chrome | Browser | Any | | Requires [ChromeDriver](https://sites.google.com/a/chromium.org/chromedriver/downloads) in your path.|
-| edge | Browser | Windows | | Errors reported from Microsoft Edge are all of type Error. Requires [Microsoft WebDriver](https://developer.microsoft.com/en-us/microsoft-edge/platform/documentation/dev-guide/tools/webdriver/) in your path. |
-| firefox | Browser | Any | | Requires [GeckoDriver](https://github.com/mozilla/geckodriver/releases) in your path (possibly renamed to `wires`).|
-| safari | Browser | Mac | | Requires [SafariDriver browser extension](https://github.com/SeleniumHQ/selenium/wiki/SafariDriver). |
+| Host | Name | Type | Supported Platforms | Download | Notes |
+|------|------|------|---------------------|----------|-------|
+| ch¹ | ChakraCore | CLI | Any | [Download](https://github.com/Microsoft/ChakraCore/releases) or [build](https://github.com/Microsoft/ChakraCore/wiki/Building-ChakraCore) | Chakra console host. |
+| d8¹ | V8 | CLI | Any | Build [from source](https://github.com/v8/v8) | V8 console host. Errors are reported on stdout. Use `$.getGlobal` and `$.setGlobal` to get and set properties of global objects in other realms. |
+| engine262 | Engine262 | CLI | Any | Build [from source](https://github.com/engine262/engine262) | An implementation of ECMA-262 in JavaScript. |
+| jsshell¹ | SpiderMonkey | CLI | Any | [Download](https://archive.mozilla.org/pub/firefox/nightly/latest-mozilla-central/) | SpiderMonkey console host. |
+| jsc¹ | JavaScriptCore | CLI | Mac² | Build [from source](http://trac.webkit.org/wiki/JavaScriptCore)³ | |
+| nashorn | Nashorn | CLI | Any | Build [from source](https://wiki.openjdk.java.net/display/Nashorn/Building+Nashorn) | |
+| node | Node.js | CLI | Any | https://nodejs.org | |
+| qjs<sup>4, 5</sup> | QuickJS | CLI | Any | Build [from source](https://bellard.org/quickjs/) | |
+| xs | Moddable XS | CLI | Any | Build [from source](https://github.com/Moddable-OpenSource/moddable-xst) | |
+| chrome | Google Chrome | Browser | Any | | Requires [ChromeDriver](https://sites.google.com/a/chromium.org/chromedriver/downloads) in your path.|
+| edge | Microsoft Edge | Browser | Windows | | Errors reported from Microsoft Edge are all of type Error. Requires [Microsoft WebDriver](https://developer.microsoft.com/en-us/microsoft-edge/platform/documentation/dev-guide/tools/webdriver/) in your path. |
+| firefox | Mozilla Firefox | Browser | Any | | Requires [GeckoDriver](https://github.com/mozilla/geckodriver/releases) in your path (possibly renamed to `wires`).|
+| safari | Apple Safari | Browser | Mac | | Requires [SafariDriver browser extension](https://github.com/SeleniumHQ/selenium/wiki/SafariDriver). |
 
 * 1: `eshost` accepts JSVU style binary name values as the first argument to `eshost.createAgent(type: string, options = {}): Agent`. See [Use JSVU](#use-jsvu).
 * 2: It is possible to build jsc on other platforms, but not supported.
 * 3: Also available on your Mac system at `/System/Library/Frameworks/JavaScriptCore.framework/Versions/A/Resources/jsc`.
-*
+* 4: **QuickJS Support Is Experimental**
+* 5: A future release of QuickJS will include `run-test262`, a binary for use with this project. 
+
 
 ## Use JSVU
 
