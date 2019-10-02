@@ -84,7 +84,7 @@ Creates an instance of a host agent for a particular host type. See the table ab
   | JavaScriptCore | `javascriptcore`, `jsc` |
   | Nashorn | `nashorn` |
   | Node | `node` |
-  | QuickJS | `qjs` <sup>1</sup><sup>2</sup> |
+  | QuickJS | `qjs` <sup>1</sup>, <sup>2</sup> |
   | SpiderMonkey | `jsshell`, `spidermonkey`, `sm` |
   | V8 | `d8`, `v8` |
   | XS | `xs` |
