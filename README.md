@@ -21,7 +21,7 @@ npm install eshost
 | Host | Name | Type | Supported Platforms | Download | Notes |
 |------|------|------|---------------------|----------|-------|
 | ch¹ | ChakraCore | CLI | Any | [Download](https://github.com/Microsoft/ChakraCore/releases) or [build](https://github.com/Microsoft/ChakraCore/wiki/Building-ChakraCore) | Chakra console host. |
-| d8¹ | V8 | CLI | Any | Build [from source](https://github.com/v8/v8) | V8 console host. Errors are reported on stdout. Use `$.getGlobal` and `$.setGlobal` to get and set properties of global objects in other realms. |
+| d8¹ | V8 | CLI | Any | Build [from source](https://github.com/v8/v8) | V8 console host. Errors are reported on stdout. Use `$262.getGlobal` and `$262.setGlobal` to get and set properties of global objects in other realms. |
 | engine262 | Engine262 | CLI | Any | Build [from source](https://github.com/engine262/engine262) | An implementation of ECMA-262 in JavaScript. |
 | jsshell¹ | SpiderMonkey | CLI | Any | [Download](https://archive.mozilla.org/pub/firefox/nightly/latest-mozilla-central/) | SpiderMonkey console host. |
 | jsc¹ | JavaScriptCore | CLI | Mac² | Build [from source](http://trac.webkit.org/wiki/JavaScriptCore)³ | |
@@ -132,13 +132,13 @@ Executes `code` in the host using the _Script_ goal symbol. Returns a promise fo
 
 When `evalScript` receives a `Test262File` test record, it executes `record.contents` in the host using the _Script_ goal symbol, unless `record.attrs.flags.module === true`, in which case it will execute `record.contents` in the host using the _Module_ goal symbol. Returns a promise for a result object.
 
-By default, a script will run in `eshost` until the realm is destroyed. For most command-line hosts, this is done automatically when the script execution queues are empty. However, browsers will remain open waiting for more code to become available. Therefore, `eshost` will automatically append `$.destroy()` to the end of your scripts. This behavior is not correct if you are attempting to execute asynchronous code. In such cases, add `async: true` to the options.
+By default, a script will run in `eshost` until the realm is destroyed. For most command-line hosts, this is done automatically when the script execution queues are empty. However, browsers will remain open waiting for more code to become available. Therefore, `eshost` will automatically append `$262.destroy()` to the end of your scripts. This behavior is not correct if you are attempting to execute asynchronous code. In such cases, add `async: true` to the options.
 
 - `options`
 
   | Property | Description | Default Value |
   |-|-|-|
-  | `async`  | Set to `true` if the test is expected to call `$.destroy()` on the root realm when it's finished. When false, `$.destroy()` is added for you. | `false` |
+  | `async`  | Set to `true` if the test is expected to call `$262.destroy()` on the root realm when it's finished. When false, `$262.destroy()` is added for you. | `false` |
 
 #### `Result` Object
 
@@ -179,31 +179,31 @@ Tears down the agent. For browsers, this will close the browser window. For most
 
 Prints `str` to stdout.
 
-### `$.global`
+### `$262.global`
 
 A reference to the global object.
 
-### `$.createRealm(options)`
+### `$262.createRealm(options)`
 
 Creates a new realm, returning that realm's runtime library ($).
 
 For example, creating two nested realms:
 
 ```js
-$sub = $.createRealm();
+$sub = $262.createRealm();
 $subsub = $sub.createRealm();
 ```
 
-You can also use a destroy callback that gets called when the code inside the realm calls `$.destroy()`. For example:
+You can also use a destroy callback that gets called when the code inside the realm calls `$262.destroy()`. For example:
 
 ```js
-$sub = $.createRealm({
+$sub = $262.createRealm({
   destroy() {
     print('destroyed!')
   }
 });
 
-$sub.evalScript('$.destroy()'); // prints "destroyed!"
+$sub.evalScript('$262.destroy()'); // prints "destroyed!"
 ```
 
 - `options`
@@ -211,25 +211,25 @@ $sub.evalScript('$.destroy()'); // prints "destroyed!"
   | Property | Description |
   |-|-|
   | `globals` | An object containing properties to add to the global object in the new realm. |
-  | `destroy` | A callback that is called when the code executing in the realm destroys its realm (ie. by calling `$.destroy()`). |
+  | `destroy` | A callback that is called when the code executing in the realm destroys its realm (ie. by calling `$262.destroy()`). |
 
 
 
-### `$.evalScript(code)`
+### `$262.evalScript(code)`
 
 Creates a new script and evals `code` in that realm. If an error is thrown, it will be passed to the onError callback.
 
 Scripts are different from eval in that lexical bindings go into the global lexical contour rather than being scoped to the eval.
 
-### `$.destroy()`
+### `$262.destroy()`
 
-Destroys the realm. Note that in some hosts, $.destroy may not actually stop executing code in the realm or even destroy the realm.
+Destroys the realm. Note that in some hosts, $262.destroy may not actually stop executing code in the realm or even destroy the realm.
 
-### `$.getGlobal(name)`
+### `$262.getGlobal(name)`
 
 Gets a global property name.
 
-### `$.setGlobal(name, value)`
+### `$262.setGlobal(name, value)`
 
 Sets a global property name to value.
 
