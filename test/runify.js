@@ -22,6 +22,7 @@ const webdriverServer = 'http://localhost:4444/wd/hub';
 
 const hosts = [
   ['ch', { hostPath: 'ch' }],
+  ['hermes', { hostPath: 'hermes' }],
   ['d8', { hostPath: 'd8' }],
   ['engine262', { hostPath: 'engine262' }],
   ['jsshell', { hostPath: 'js' }],
@@ -210,6 +211,11 @@ hosts.forEach(function(record) {
       })
 
       it('runs thrown Errors without messages', () => {
+        if (['hermes'].includes(type)) {
+          run.skip();
+          return;
+        }
+
         return agent.evalScript('throw new Error();').then(result => {
           assert.equal(result.stdout, '', 'stdout not present');
           assert(result.error, 'error is present');
@@ -241,6 +247,11 @@ hosts.forEach(function(record) {
       });
 
       it('can eval in new realms', () => {
+        if (['hermes'].includes(type)) {
+          run.skip();
+          return;
+        }
+
         return agent.evalScript(stripIndent`
           var x = 2;
           var $child = $.createRealm();
@@ -253,6 +264,11 @@ hosts.forEach(function(record) {
       });
 
       it('can create new realms', () => {
+        if (['hermes'].includes(type)) {
+          run.skip();
+          return;
+        }
+
         return agent.evalScript(stripIndent`
           var sub$ = $.createRealm({});
           sub$.evalScript("var x = 1");
@@ -267,6 +283,11 @@ hosts.forEach(function(record) {
       });
 
       it('can set globals in new realms', () => {
+        if (['hermes'].includes(type)) {
+          run.skip();
+          return;
+        }
+
         return agent.evalScript(stripIndent`
           var x = 1;
           $child = $.createRealm({globals: {x: 2}});
@@ -277,6 +298,11 @@ hosts.forEach(function(record) {
       });
 
       it('can eval in new scripts', () => {
+        if (['hermes'].includes(type)) {
+          run.skip();
+          return;
+        }
+
         return agent.evalScript(stripIndent`
           var x = 2;
           $.evalScript("x = 3;");
@@ -287,6 +313,11 @@ hosts.forEach(function(record) {
       });
 
       it('returns errors from evaling in new script', () => {
+        if (['hermes'].includes(type)) {
+          run.skip();
+          return;
+        }
+
         return agent.evalScript(stripIndent`
           var completion = $.evalScript("x+++");
           print(completion.value.name);
@@ -296,6 +327,11 @@ hosts.forEach(function(record) {
       });
 
       it('can eval lexical bindings in new scripts', () => {
+        if (['hermes'].includes(type)) {
+          run.skip();
+          return;
+        }
+
         return agent.evalScript(stripIndent`
           $.evalScript("'use strict'; let x = 3;");
           print(x);
@@ -305,6 +341,11 @@ hosts.forEach(function(record) {
       });
 
       it('can set properties in new realms', () => {
+        if (['hermes'].includes(type)) {
+          run.skip();
+          return;
+        }
+
         return agent.evalScript(stripIndent`
           var sub$ = $.createRealm({});
           sub$.evalScript("var x = 1");
@@ -320,6 +361,11 @@ hosts.forEach(function(record) {
       });
 
       it('can access properties from new realms', () => {
+        if (['hermes'].includes(type)) {
+          run.skip();
+          return;
+        }
+
         return agent.evalScript(stripIndent`
           var sub$ = $.createRealm({});
           sub$.evalScript("var x = 1");
@@ -350,6 +396,11 @@ hosts.forEach(function(record) {
       });
 
       it('accepts destroy callbacks', () => {
+        if (['hermes'].includes(type)) {
+          run.skip();
+          return;
+        }
+
         return agent.evalScript(stripIndent`
           $child = $.createRealm({ destroy: function() { print("destroyed") }});
           $child.destroy();
@@ -472,6 +523,11 @@ hosts.forEach(function(record) {
       });
 
       it('supports realm nesting', () => {
+        if (['hermes'].includes(type)) {
+          run.skip();
+          return;
+        }
+
         return agent.evalScript(stripIndent`
           x = 0;
           $.createRealm().evalScript(\`
@@ -490,6 +546,11 @@ hosts.forEach(function(record) {
       });
 
       it('observes correct cross-script interaction semantics', () => {
+        if (['hermes'].includes(type)) {
+          run.skip();
+          return;
+        }
+
         return agent.evalScript(stripIndent`
           print($.evalScript('let eshost;').type);
           print($.evalScript('let eshost;').type);
@@ -587,7 +648,7 @@ hosts.forEach(function(record) {
       it('creates "optional" environments correctly (hostArgs)', () => {
         // browsers are irrelevant to this test
         // jsshell is not working correctly on travis
-        if (['engine262', 'jsshell', 'firefox', 'chrome', 'remote'].includes(type)) {
+        if (['engine262', 'hermes', 'jsshell', 'firefox', 'chrome', 'remote'].includes(type)) {
           run.skip();
           return;
         }
@@ -732,6 +793,11 @@ hosts.forEach(function(record) {
 
     describe('"shortName" option', () => {
       it('allows custom shortNames', () => {
+        if (['hermes'].includes(type)) {
+          run.skip();
+          return;
+        }
+
         const withShortName = Object.assign({ shortName: '$testing' }, options);
         return eshost.createAgent(type, withShortName).then(agent => {
           var p = agent.evalScript('$testing.evalScript("print(1)")').then(result => {
@@ -768,6 +834,11 @@ hosts.forEach(function(record) {
 
     describe('"IsHTMLDDA"', () => {
       it('has a default IsHTMLDDA', () => {
+        if (['hermes'].includes(type)) {
+          run.skip();
+          return;
+        }
+
         return eshost.createAgent(type, options).then(agent => {
           let p = agent.evalScript('print(typeof $.IsHTMLDDA);').then(result => {
             assert(result.error === null, 'no error');
