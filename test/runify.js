@@ -69,41 +69,6 @@ const timeout = function(ms) {
 };
 
 
-describe('supportedHosts', () => {
-  it ('Accepts JSVU style host type names', () => {
-    const supportedHostsMap = {
-      chakra: 'ch',
-      ch: 'ch',
-      javascriptcore: 'jsc',
-      jsc: 'jsc',
-      jsshell: 'jsshell',
-      nashorn: 'nashorn',
-      node: 'node',
-      sm: 'jsshell',
-      spidermonkey: 'jsshell',
-      d8: 'd8',
-      v8: 'd8',
-      xs: 'xs',
-      chrome: 'chrome',
-      edge: 'edge',
-      firefox: 'firefox',
-      remote: 'remote',
-      safari: 'safari'
-    };
-
-    const supportedHosts = Object.keys(supportedHostsMap);
-
-    supportedHosts.forEach(supportedHost => {
-      assert(eshost.supportedHosts.includes(supportedHost));
-      assert.equal(eshost.normalizeHostForJSVU(supportedHost), supportedHostsMap[supportedHost]);
-    });
-
-    return Promise.resolve();
-  });
-
-});
-
-
 hosts.forEach(function(record) {
   const type = record[0];
   const options = record[1];
