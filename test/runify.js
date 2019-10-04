@@ -22,9 +22,11 @@ const webdriverServer = 'http://localhost:4444/wd/hub';
 
 const hosts = [
   ['ch', { hostPath: 'ch' }],
-  ['hermes', { hostPath: 'hermes' }],
+  // Disabled until we can determine the cause of the process stall
+  // ['hermes', { hostPath: 'hermes' }],
   ['d8', { hostPath: 'd8' }],
-  ['engine262', { hostPath: 'engine262' }],
+  // Disabled until engine262 stdout bug is fixed.
+  // ['engine262', { hostPath: 'engine262' }],
   ['jsshell', { hostPath: 'js' }],
   ['jsc', { hostPath: 'jsc' }],
   ['node', { hostPath: 'node' }],
