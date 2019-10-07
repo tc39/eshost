@@ -48,7 +48,7 @@ install:
   - set ESHOST_SKIP_JSSHELL=0
   # ChakraCore: Clone, Build and set PATH
   - mkdir chakracore
-  - git clone https://github.com/Microsoft/ChakraCore.git chakracore
+  - git clone --branch v1.11.11 https://github.com/Microsoft/ChakraCore.git chakracore
   - msbuild /p:Platform=%PLATFORM% /p:Configuration=Debug %CD%\chakracore\Build\Chakra.Core.sln
   - set PATH=%PATH%;%CD%\chakracore\Build\VcBuild\bin\%PLATFORM%_debug
   - cd %CD%\chakracore\Build\VcBuild\bin\%PLATFORM%_debug
