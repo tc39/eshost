@@ -26,7 +26,7 @@ const hosts = [
   // ['hermes', { hostPath: 'hermes' }],
   ['d8', { hostPath: 'd8' }],
   // Disabled until engine262 stdout bug is fixed.
-  // ['engine262', { hostPath: 'engine262' }],
+  ['engine262', { hostPath: 'engine262' }],
   ['jsshell', { hostPath: 'js' }],
   ['jsc', { hostPath: 'jsc' }],
   ['node', { hostPath: 'node' }],
