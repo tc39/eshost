@@ -47,13 +47,15 @@ install:
   - where js
   - set ESHOST_SKIP_JSSHELL=0
   # ChakraCore: Clone, Build and set PATH
-  - mkdir chakracore
-  - git clone --branch v1.11.11 https://github.com/Microsoft/ChakraCore.git chakracore
-  - msbuild /p:Platform=%PLATFORM% /p:Configuration=Debug %CD%\chakracore\Build\Chakra.Core.sln
-  - set PATH=%PATH%;%CD%\chakracore\Build\VcBuild\bin\%PLATFORM%_debug
-  - cd %CD%\chakracore\Build\VcBuild\bin\%PLATFORM%_debug
-  - where ch
-  - set ESHOST_SKIP_CH=0
+  # TEMPORARILY DISABLED!
+  # ChakraCore is failing to build on windows, which is not a requirement of this project.
+  # - mkdir chakracore
+  # - git clone --branch v1.11.11 https://github.com/Microsoft/ChakraCore.git chakracore
+  # - msbuild /p:Platform=%PLATFORM% /p:Configuration=Debug %CD%\chakracore\Build\Chakra.Core.sln
+  # - set PATH=%PATH%;%CD%\chakracore\Build\VcBuild\bin\%PLATFORM%_debug
+  # - cd %CD%\chakracore\Build\VcBuild\bin\%PLATFORM%_debug
+  # - where ch
+  # - set ESHOST_SKIP_CH=0
   # Return to eshost dir
   - cd %ESHOST_PATH%
   - where node
