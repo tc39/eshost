@@ -36,7 +36,6 @@ const hosts = [
 const hostsOnWindows = [
   ['ch', { hostPath: 'ch.exe' }],
   ['d8', { hostPath: 'd8.exe' }],
-  // engine262 is intentionally NOT given an extension!
   ['engine262', { hostPath: 'engine262.cmd' }],
   ['jsshell', { hostPath: 'js.exe' }],
   ['jsc', { hostPath: 'jsc.exe' }],
