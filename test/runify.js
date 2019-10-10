@@ -22,10 +22,8 @@ const webdriverServer = 'http://localhost:4444/wd/hub';
 
 const hosts = [
   ['ch', { hostPath: 'ch' }],
-  // Disabled until we can determine the cause of the process stall
-  // ['hermes', { hostPath: 'hermes' }],
+  ['hermes', { hostPath: 'hermes' }],
   ['d8', { hostPath: 'd8' }],
-  // Disabled until engine262 stdout bug is fixed.
   ['engine262', { hostPath: 'engine262' }],
   ['jsshell', { hostPath: 'js' }],
   ['jsc', { hostPath: 'jsc' }],
@@ -213,11 +211,6 @@ hosts.forEach(function(record) {
       })
 
       it('runs thrown Errors without messages', () => {
-        if (['hermes'].includes(type)) {
-          run.skip();
-          return;
-        }
-
         return agent.evalScript('throw new Error();').then(result => {
           assert.equal(result.stdout, '', 'stdout not present');
           assert(result.error, 'error is present');
