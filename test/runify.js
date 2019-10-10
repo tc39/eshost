@@ -248,8 +248,8 @@ hosts.forEach(function(record) {
 
         return agent.evalScript(stripIndent`
           var x = 2;
-          var $child = $.createRealm();
-          $child.evalScript("var x = 1; print(x);");
+          var realm = $262.createRealm();
+          realm.evalScript("var x = 1; print(x);");
           print(x);
         `).then(result => {
           assert.equal(result.stderr, '', 'stderr not present');
@@ -264,12 +264,12 @@ hosts.forEach(function(record) {
         }
 
         return agent.evalScript(stripIndent`
-          var sub$ = $.createRealm({});
-          sub$.evalScript("var x = 1");
-          sub$.evalScript("print(x)");
-          subsub$ = sub$.createRealm({});
-          subsub$.evalScript("var x = 2");
-          subsub$.evalScript("print(2)");
+          var realm = $262.createRealm({});
+          realm.evalScript("var x = 1");
+          realm.evalScript("print(x)");
+          subRealm = realm.createRealm({});
+          subRealm.evalScript("var x = 2");
+          subRealm.evalScript("print(2)");
         `).then(result => {
           assert.equal(result.stderr, '', 'stderr not present');
           assert(result.stdout.match(/^1\r?\n2\r?\n/m), `Unexpected stdout: ${result.stdout}${result.stderr}`);
@@ -284,8 +284,8 @@ hosts.forEach(function(record) {
 
         return agent.evalScript(stripIndent`
           var x = 1;
-          $child = $.createRealm({globals: {x: 2}});
-          $child.evalScript("print(x);");
+          realm = $262.createRealm({globals: {x: 2}});
+          realm.evalScript("print(x);");
         `).then(result => {
           assert(result.stdout.match(/^2\r?\n/m), `Unexpected stdout: ${result.stdout}${result.stderr}`);
         });
@@ -299,7 +299,7 @@ hosts.forEach(function(record) {
 
         return agent.evalScript(stripIndent`
           var x = 2;
-          $.evalScript("x = 3;");
+          $262.evalScript("x = 3;");
           print(x);
         `).then(result => {
           assert(result.stdout.match(/^3\r?\n/m), `Unexpected stdout: ${result.stdout}${result.stderr}`);
@@ -313,7 +313,7 @@ hosts.forEach(function(record) {
         }
 
         return agent.evalScript(stripIndent`
-          var completion = $.evalScript("x+++");
+          var completion = $262.evalScript("x+++");
           print(completion.value.name);
         `).then(result => {
           assert(result.stdout.match(/^SyntaxError\r?\n/m), `Unexpected stdout: ${result.stdout}${result.stderr}`);
@@ -327,7 +327,7 @@ hosts.forEach(function(record) {
         }
 
         return agent.evalScript(stripIndent`
-          $.evalScript("'use strict'; let x = 3;");
+          $262.evalScript("'use strict'; let x = 3;");
           print(x);
         `).then(result => {
           assert(result.stdout.match(/^3\r?\n/m), `Unexpected stdout: ${result.stdout}${result.stderr}`);
@@ -341,13 +341,13 @@ hosts.forEach(function(record) {
         }
 
         return agent.evalScript(stripIndent`
-          var sub$ = $.createRealm({});
-          sub$.evalScript("var x = 1");
-          sub$.evalScript("print(x)");
+          var realm = $262.createRealm({});
+          realm.evalScript("var x = 1");
+          realm.evalScript("print(x)");
 
-          sub$.setGlobal("x", 2);
+          realm.setGlobal("x", 2);
 
-          sub$.evalScript("print(x)");
+          realm.evalScript("print(x)");
         `).then(result => {
           assert.equal(result.stderr, '', 'stderr not present');
           assert(result.stdout.match(/^1\r?\n2\r?\n/m), `Unexpected stdout: ${result.stdout}${result.stderr}`);
@@ -361,10 +361,10 @@ hosts.forEach(function(record) {
         }
 
         return agent.evalScript(stripIndent`
-          var sub$ = $.createRealm({});
-          sub$.evalScript("var x = 1");
+          var realm = $262.createRealm({});
+          realm.evalScript("var x = 1");
 
-          print(sub$.getGlobal("x"));
+          print(realm.getGlobal("x"));
         `).then(result => {
           assert.equal(result.stderr, '', 'stderr not present');
           assert(result.stdout.match(/^1\r?\n/m), `Unexpected stdout: ${result.stdout}${result.stderr}`);
@@ -373,13 +373,13 @@ hosts.forEach(function(record) {
 
       it('runs async code', () => {
         return agent.evalScript(stripIndent`
-          if ($.global.Promise === undefined) {
+          if ($262.global.Promise === undefined) {
             print('async result');
-            $.destroy()
+            $262.destroy();
           } else {
             Promise.resolve().then(function() {
               print('async result');
-              $.destroy()
+              $262.destroy();
             });
           }
         `, { async: true }).then(result => {
@@ -396,8 +396,8 @@ hosts.forEach(function(record) {
         }
 
         return agent.evalScript(stripIndent`
-          $child = $.createRealm({ destroy: function() { print("destroyed") }});
-          $child.destroy();
+          realm = $262.createRealm({ destroy() { print("destroyed") }});
+          realm.destroy();
         `)
         .then(result => {
           assert.equal(result.stderr, '', 'stderr not present');
@@ -503,8 +503,8 @@ hosts.forEach(function(record) {
       it('tolerates broken execution environments', () => {
         return agent.evalScript(stripIndent`
           Object.defineProperty(Object.prototype, "length", {
-            get: function() {
-                return 1;
+            get() {
+              return 1;
             },
             configurable: true
           });
@@ -524,9 +524,9 @@ hosts.forEach(function(record) {
 
         return agent.evalScript(stripIndent`
           x = 0;
-          $.createRealm().evalScript(\`
+          $262.createRealm().evalScript(\`
             x = '';
-            $.createRealm().evalScript(\\\`
+            $262.createRealm().evalScript(\\\`
               x = {};
               print(typeof x);
             \\\`);
@@ -546,8 +546,8 @@ hosts.forEach(function(record) {
         }
 
         return agent.evalScript(stripIndent`
-          print($.evalScript('let eshost;').type);
-          print($.evalScript('let eshost;').type);
+          print($262.evalScript('let eshost;').type);
+          print($262.evalScript('let eshost;').type);
         `).then((result) => {
           assert.equal(result.stderr, '');
           assert(result.stdout.match(/^normal\r?\nthrow/m));
@@ -834,7 +834,7 @@ hosts.forEach(function(record) {
         }
 
         return eshost.createAgent(type, options).then(agent => {
-          let p = agent.evalScript('print(typeof $.IsHTMLDDA);').then(result => {
+          let p = agent.evalScript('print(typeof $262.IsHTMLDDA);').then(result => {
             assert(result.error === null, 'no error');
             assert.equal(result.stdout.indexOf('function'), 0);
             agent.destroy();

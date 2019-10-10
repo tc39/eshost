@@ -152,7 +152,7 @@ describe('ConsoleAgent', function () {
       });
     });
 
-    it('Safely replaces all $ in runtime code', function() {
+    it('Safely replaces all $262 in runtime code', function() {
       const runtime = ConsoleAgent.runtime;
       const a = new ConsoleAgent({
         shortName: 'Mine'
@@ -160,8 +160,8 @@ describe('ConsoleAgent', function () {
 
       return Promise.resolve(a).then(function(agent) {
         ConsoleAgent.runtime = `
-          /* $ is special */
-          var $ = { m() { $.something("1") } };
+          /* $262 is special */
+          var $262 = { m() { $262.something("1") } };
           // But not very special.
         `;
         let program = `
@@ -170,7 +170,7 @@ describe('ConsoleAgent', function () {
         let async = true;
         let compiled = agent.compile(program, {async});
 
-        assert.equal(/\$/g.test(compiled), false);
+        assert.equal(/\$262/g.test(compiled), false);
 
         ConsoleAgent.runtime = runtime;
       });

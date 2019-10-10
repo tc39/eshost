@@ -1,7 +1,7 @@
 /* Engine262 exposes a "$" object to its runtime */
 /* Using this["\x24"]; prevents overwrite by ConsoleAgent */
 var engine262 = this["\x24"];
-var $ = {
+var $262 = {
   realm: null,
   global: engine262.global,
   gc() {
