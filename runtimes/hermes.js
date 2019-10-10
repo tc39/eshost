@@ -1,4 +1,4 @@
-var $ = {
+var $262 = {
   global: globalThis,
   gc() {
     return gc();
@@ -10,10 +10,10 @@ var $ = {
     throw new Test262Error('$262.evalScript not yet supported.');
   },
   getGlobal(name) {
-    return globalThis[name];
+    return this.global[name];
   },
   setGlobal(name, value) {
-    globalThis[name] = value;
+    this.global[name] = value;
   },
   destroy() { /* noop */ },
   IsHTMLDDA() { return {}; },

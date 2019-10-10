@@ -1,4 +1,4 @@
-var $ = {
+var $262 = {
   global: Function('return this')(),
   gc() {
     if (typeof CollectGarbage === 'function') {
@@ -12,18 +12,18 @@ var $ = {
     options.globals = options.globals || {};
 
     var realm = WScript.LoadScript(this.source, 'samethread');
-    realm.$.source = this.source;
-    realm.$.destroy = function() {
+    realm.$262.source = this.source;
+    realm.$262.destroy = function() {
       if (options.destroy) {
         options.destroy();
       }
     };
 
     for(var glob in options.globals) {
-      realm.$.global[glob] = options.globals[glob];
+      realm.$262.global[glob] = options.globals[glob];
     }
 
-    return realm.$;
+    return realm.$262;
   },
   evalScript(code) {
     try {
