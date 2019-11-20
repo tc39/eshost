@@ -1,47 +1,80 @@
 ---
 language: node_js
-node_js: "6"
+node_js:
+  - 10
+  - 12
 dist: trusty
 sudo: false
 before_install:
-    - export DISPLAY=:99.0
-    - sh -e /etc/init.d/xvfb start
+  - export DISPLAY=:99.0
+  - sh -e /etc/init.d/xvfb start
 env:
-  - ESHOST_TARGET=node
-  - ESHOST_TARGET=firefox
+  # Shells
   - ESHOST_TARGET=chakra
+  - ESHOST_TARGET=engine262
+  # - ESHOST_TARGET=hermes
   - ESHOST_TARGET=jsshell
+  - ESHOST_TARGET=node
+  # Browsers
+  - ESHOST_TARGET=firefox
   - ESHOST_TARGET=chrome
-  - ESHOST_TARGET=remote ESHOST_REMOTE_BROWSERNAME=firefox
+  # - ESHOST_TARGET=remote ESHOST_REMOTE_BROWSERNAME=firefox
 install: |
+    # Shells
+    export ESHOST_SKIP_CH=1
     export ESHOST_SKIP_D8=1
+    export ESHOST_SKIP_ENGINE262=1
+    export ESHOST_SKIP_HERMES=1
     export ESHOST_SKIP_JSC=1
+    export ESHOST_SKIP_JSSHELL=1
+    export ESHOST_SKIP_NODE=1
+
+    # Browsers
     export ESHOST_SKIP_CHROME=1
     export ESHOST_SKIP_FIREFOX=1
-    export ESHOST_SKIP_JSSHELL=1
-    export ESHOST_SKIP_CH=1
-    export ESHOST_SKIP_NODE=1
     export ESHOST_SKIP_REMOTE=1
 
     function install_firefox {
       export TMP=$(mktemp);
-      wget https://archive.mozilla.org/pub/firefox/nightly/2017/07/2017-07-07-10-01-38-mozilla-central/firefox-56.0a1.en-US.linux-x86_64.tar.bz2 -O $TMP;
+      wget https://archive.mozilla.org/pub/firefox/nightly/2018/12/2018-12-01-05-49-36-mozilla-central/firefox-65.0a1.en-US.linux-x86_64.tar.bz2 -O $TMP;
       tar -xvf $TMP;
-      wget https://github.com/mozilla/geckodriver/releases/download/v0.17.0/geckodriver-v0.17.0-linux64.tar.gz -O $TMP;
+      wget https://github.com/mozilla/geckodriver/releases/download/v0.24.0/geckodriver-v0.24.0-linux64.tar.gz -O $TMP;
       tar --directory firefox -xvf $TMP;
       rm $TMP;
       unset TMP;
     }
 
+    function install_engine262 {
+      git clone https://github.com/devsnek/engine262.git;
+      cd engine262 && npm install && npm run build && npm link;
+      cd $TRAVIS_BUILD_DIR;
+    }
+
+    function install_hermes {
+      export TMP=$(mktemp);
+      wget https://github.com/facebook/hermes/releases/download/v0.2.1/hermes-cli-linux-v0.2.1.tar.gz -O $TMP;
+      tar -xvf $TMP;
+      rm $TMP;
+      unset TMP;
+      export PATH=$PATH:$(pwd)/hermes;
+    }
+
     if [[ "$ESHOST_TARGET" == "node" ]]; then
       unset ESHOST_SKIP_NODE;
+    elif [[ "$ESHOST_TARGET" == "engine262" ]]; then
+      install_engine262;
+      unset ESHOST_SKIP_ENGINE262;
     elif [[ "$ESHOST_TARGET" == "firefox" ]]; then
       install_firefox;
       export PATH=$(pwd)/firefox:$PATH;
       unset ESHOST_SKIP_FIREFOX;
+    elif [[ "$ESHOST_TARGET" == "hermes" ]]; then
+      install_hermes;
+      export PATH=$PATH:$(pwd)/hermes;
+      unset ESHOST_SKIP_HERMES;
     elif [[ "$ESHOST_TARGET" == "jsshell" ]]; then
       export TMP=$(mktemp);
-      wget https://archive.mozilla.org/pub/firefox/nightly/2017/07/2017-07-07-10-01-38-mozilla-central/jsshell-linux-x86_64.zip -O $TMP;
+      wget https://archive.mozilla.org/pub/firefox/nightly/latest-mozilla-central/jsshell-linux-x86_64.zip -O $TMP;
       mkdir jsshell;
       unzip -d jsshell $TMP;
       rm $TMP;
@@ -84,8 +117,8 @@ install: |
       unset ESHOST_SKIP_CHROME;
     elif [[ "$ESHOST_TARGET" == "remote" ]]; then
       install_firefox;
-      wget http://selenium-release.storage.googleapis.com/3.4/selenium-server-standalone-3.4.0.jar
-      PATH=$PATH:$(pwd)/firefox java -jar selenium-server-standalone-3.4.0.jar &> selenium-server.log &
+      wget http://selenium-release.storage.googleapis.com/3.11/selenium-server-standalone-3.11.0.jar
+      PATH=$PATH:$(pwd)/firefox java -jar selenium-server-standalone-3.11.0.jar &> selenium-server.log &
 
       unset ESHOST_SKIP_REMOTE;
     else

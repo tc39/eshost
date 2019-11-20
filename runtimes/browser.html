@@ -11,30 +11,30 @@
 (function() {
 'use strict';
 var clientId = document.location.search.match(/clientId=([^&]+)(&|$)/)[1];
-// This script removes the global `$` binding if the `shortName` option is in
+// This script removes the global `$262` binding if the `shortName` option is in
 // use. Maintain a function-scoped binding for internal use.
-var $ = window.$;
-$.shortName = document.location.search.match(/shortName=([^&]+)(&|$)/)[1];
-delete window.$;
-window[$.shortName] = $;
+var $262 = window.$262;
+$262.shortName = document.location.search.match(/shortName=([^&]+)(&|$)/)[1];
+delete window.$262;
+window[$262.shortName] = $262;
 
-$.socket = io(location.origin);
-$.socket.emit('clientId', clientId);
-$.socket.on('exec', function (code, options) {
+$262.socket = io(location.origin);
+$262.socket.emit('clientId', clientId);
+$262.socket.on('exec', function (code, options) {
   function realmDestroyed() {
-    $.socket.emit('execDone');
+    $262.socket.emit('execDone');
   }
-  var $child = $.createRealm({ destroy: realmDestroyed });
-  var completion = $child.evalScript(code);
+  var realm = $262.createRealm({ destroy: realmDestroyed });
+  var completion = realm.evalScript(code);
   if (completion.type === 'throw') {
     var err = completion.value;
     if (err.stack) {
-      $.socket.emit('execError', { name: err.name, message: err.message, stack: ErrorStackParser.parse(err) });
+      $262.socket.emit('execError', { name: err.name, message: err.message, stack: ErrorStackParser.parse(err) });
     } else {
-      $.socket.emit('execError', { name: err.name, message: err.message, stack: null });
+      $262.socket.emit('execError', { name: err.name, message: err.message, stack: null });
     }
 
-    $child.destroy();
+    realm.destroy();
   }
 });
 }());

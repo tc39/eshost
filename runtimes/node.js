@@ -1,13 +1,20 @@
+function print(...args) {
+  console.log(...args);
+}
 var vm = require('vm');
-var $ = {
-  global: this,
+var $262 = {
+  global: Function('return this')(),
+  gc() {
+    return gc();
+  },
   createRealm(options) {
     options = options || {};
     options.globals = options.globals || {};
 
     context = {
-      console: console,
-      require: require
+      console,
+      require,
+      print,
     };
 
     for(var glob in options.globals) {
@@ -16,14 +23,14 @@ var $ = {
 
     var context = vm.createContext(context);
     vm.runInContext(this.source, context);
-    context.$.source = this.source;
-    context.$.context = context;
-    context.$.destroy = function () {
+    context.$262.source = this.source;
+    context.$262.context = context;
+    context.$262.destroy = function () {
       if (options.destroy) {
         options.destroy();
       }
     };
-    return context.$;
+    return context.$262;
   },
   evalScript(code) {
     try {
@@ -48,4 +55,5 @@ var $ = {
   IsHTMLDDA() { return {}; },
   source: $SOURCE
 };
-function print() { console.log.apply(console, arguments) }
+
+

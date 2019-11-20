@@ -3,16 +3,66 @@ version: "{build}"
 clone_depth: 1
 
 environment:
+  # Shells
+  ESHOST_SKIP_CH: 1
+  ESHOST_SKIP_D8: 1
+  ESHOST_SKIP_ENGINE262: 1
+  ESHOST_SKIP_HERMES: 1
+  ESHOST_SKIP_JSC: 1
+  ESHOST_SKIP_JSSHELL: 1
+  ESHOST_SKIP_NODE: 1
+  # Browsers
+  ESHOST_SKIP_CHROME: 1
+  ESHOST_SKIP_FIREFOX: 1
+  ESHOST_SKIP_REMOTE: 1
   matrix:
-    - nodejs_version: 6
-    - nodejs_version: 8
+    - nodejs_version: 10
+    - nodejs_version: 12
 
 platform:
-  - x86
   - x64
+  - x86
 
 install:
   - ps: Install-Product node $env:nodejs_version
+  - set ESHOST_PATH=%CD%
+  - mkdir hosts
+  # Engine262: Clone, Build, Link and set PATH
+  - mkdir engine262
+  - git clone https://github.com/engine262/engine262.git engine262
+  - cd %CD%\engine262
+  - npm install
+  - npm run build
+  - npm link
+  - set ESHOST_ENGINE262_PATH=C:\Users\appveyor\AppData\Roaming\npm\
+  - set PATH=%PATH%;C:\Users\appveyor\AppData\Roaming\npm\
+  - where engine262
+  - set ESHOST_SKIP_ENGINE262=0
+  - cd %ESHOST_PATH%\hosts
+  # SpiderMonkey: Curl, Unzip and set PATH
+  - mkdir spidermonkey
+  - curl -fsS -o spidermonkey\jsshell-win64.zip https://archive.mozilla.org/pub/firefox/nightly/latest-mozilla-central/jsshell-win64.zip
+  - 7z e -o%CD%\spidermonkey spidermonkey\jsshell-win64.zip
+  - set PATH=%PATH%;%CD%\spidermonkey\
+  - set ESHOST_JSSHELL_PATH=%CD%\spidermonkey\
+  - where js
+  - set ESHOST_SKIP_JSSHELL=0
+  # ChakraCore: Clone, Build and set PATH
+  # TEMPORARILY DISABLED!
+  # ChakraCore is failing to build on windows, which is not a requirement of this project.
+  # - mkdir chakracore
+  # - git clone --branch v1.11.11 https://github.com/Microsoft/ChakraCore.git chakracore
+  # - msbuild /p:Platform=%PLATFORM% /p:Configuration=Debug %CD%\chakracore\Build\Chakra.Core.sln
+  # - set PATH=%PATH%;%CD%\chakracore\Build\VcBuild\bin\%PLATFORM%_debug
+  # - cd %CD%\chakracore\Build\VcBuild\bin\%PLATFORM%_debug
+  # - where ch
+  # - set ESHOST_SKIP_CH=0
+  # Return to eshost dir
+  - cd %ESHOST_PATH%
+  - where node
+  - set ESHOST_SKIP_NODE=0
+  - echo %PATH%
+  - node -v
   - npm install -g npm
   - npm install
 
@@ -20,7 +70,7 @@ build: off
 
 test_script:
   - ps: "npm run lint # PowerShell"
-  - cmd: npm run lint
+  - cmd: npm test
 
 matrix:
   fast_finish: true

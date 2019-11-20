@@ -1,38 +1,13 @@
-var $ = {
-  global: this,
-  createRealm(options) {
-    options = options || {};
-    options.globals = options.globals || {};
-
-    var realm = createGlobalObject();
-    realm.eval(this.source);
-    realm.$.source = this.source;
-    realm.$.destroy = function () {
-      if (options.destroy) {
-        options.destroy();
-      }
-    };
-    for(var glob in options.globals) {
-      realm.$.global[glob] = options.globals[glob];
-    }
-
-    return realm.$;
-  },
-  evalScript(code) {
-    try {
-      loadString(code);
-      return { type: 'normal', value: undefined };
-    } catch (e) {
-      return { type: 'throw', value: e }
-    }
-  },
-  getGlobal(name) {
-    return this.global[name];
-  },
-  setGlobal(name, value) {
-    this.global[name] = value;
-  },
-  destroy() { /* noop */ },
-  IsHTMLDDA() { return {}; },
-  source: $SOURCE,
+/* JavaScriptCore exposes a $ & $262 object to its runtime */
+$262.source = $SOURCE;
+$262.destroy = function() {};
+$262.IsHTMLDDA = function() {};
+$262.getGlobal = function(name) {
+  return this.global[name];
+};
+$262.setGlobal = function(name, value) {
+  this.global[name] = value;
+};
+$262.gc = function() {
+  return gc();
 };
