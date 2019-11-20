@@ -1,22 +1,25 @@
-var $ = {
+var $262 = {
   global,
+  gc() {
+    throw new Test262Error('GC not yet supported.');
+  },
   createRealm(options) {
     options = options || {};
     options.globals = options.globals || {};
 
     var realm = global.createRealm();
     realm.eval(this.source);
-    realm.$.source = this.source;
-    realm.$.destroy = function () {
+    realm.$262.source = this.source;
+    realm.$262.destroy = function () {
       if (options.destroy) {
         options.destroy();
       }
     };
     for(var glob in options.globals) {
-      realm.$.global[glob] = options.globals[glob];
+      realm.$262.global[glob] = options.globals[glob];
     }
 
-    return realm.$;
+    return realm.$262;
   },
   evalScript(code) {
     try {
@@ -34,6 +37,17 @@ var $ = {
   },
   destroy() { /* noop */ },
   IsHTMLDDA() { return {}; },
-  source: $SOURCE
+  source: $SOURCE,
+  agent: (function() {
+    function thrower() {
+      throw new Test262Error('Agent not yet supported.');
+    };
+    return {
+      start: thrower,
+      broadcast: thrower,
+      getReport: thrower,
+      sleep: thrower,
+      monotonicNow: thrower,
+    };
+  })(),
 };
-
