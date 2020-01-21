@@ -23,6 +23,7 @@ npm install eshost
 | ch¹ | ChakraCore | CLI | Any | [Download](https://github.com/Microsoft/ChakraCore/releases) or [build](https://github.com/Microsoft/ChakraCore/wiki/Building-ChakraCore) | Chakra console host. |
 | d8¹ | V8 | CLI | Any | Build [from source](https://github.com/v8/v8) | V8 console host. Errors are reported on stdout. Use `$262.getGlobal` and `$262.setGlobal` to get and set properties of global objects in other realms. |
 | engine262 | Engine262 | CLI | Any | Build [from source](https://github.com/engine262/engine262) | An implementation of ECMA-262 in JavaScript. |
+| graaljs | GraalJS | CLI | Any | [Download](https://github.com/graalvm/graalvm-ce-builds) | |
 | jsshell¹ | SpiderMonkey | CLI | Any | [Download](https://archive.mozilla.org/pub/firefox/nightly/latest-mozilla-central/) | SpiderMonkey console host. |
 | jsc¹ | JavaScriptCore | CLI | Mac² | Build [from source](http://trac.webkit.org/wiki/JavaScriptCore)³ | |
 | nashorn | Nashorn | CLI | Any | Build [from source](https://wiki.openjdk.java.net/display/Nashorn/Building+Nashorn) | |
@@ -80,6 +81,7 @@ Creates an instance of a host agent for a particular host type. See the table ab
   | ---- | -------------------- |
   | ChakraCore | `chakra`, `ch` |
   | Engine262 | `engine262` |
+  | GraalJS | `graaljs` |
   | JavaScriptCore | `javascriptcore`, `jsc` |
   | Nashorn | `nashorn` |
   | Node | `node` |
