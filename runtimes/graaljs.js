@@ -1,5 +1,7 @@
+var es = $262.evalScript;
+var a = $262.agent;
 var $262 = {
-  global: Function('return this')(),
+  global: globalThis,
   gc() {
     throw new Test262Error('GC not yet supported.');
   },
@@ -22,14 +24,6 @@ var $262 = {
 
     return realm.$262;
   },
-  evalScript: function(code) {
-    try {
-      load({ script: code, name: 'evalScript' });
-      return { type: 'normal', value: undefined }
-    } catch (e) {
-      return { type: 'throw', value: e }
-    }
-  },
   getGlobal: function(name) {
     return this.global[name];
   },
@@ -38,17 +32,7 @@ var $262 = {
   },
   destroy: function() { /* noop */ },
   IsHTMLDDA: function() { return {}; },
-  source: $SOURCE,
-  agent: (function() {
-    function thrower() {
-      throw new Test262Error('Agent not yet supported.');
-    };
-    return {
-      start: thrower,
-      broadcast: thrower,
-      getReport: thrower,
-      sleep: thrower,
-      monotonicNow: thrower,
-    };
-  })(),
+  source: $SOURCE
 };
+$262.evalScript = es;
+$262.agent = a;
