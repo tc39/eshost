@@ -1,38 +1,29 @@
-var es = $262.evalScript;
-var a = $262.agent;
-var $262 = {
-  global: globalThis,
-  gc() {
-    throw new Test262Error('GC not yet supported.');
-  },
-  createRealm: function(options) {
-    options = options || {};
-    options.globals = options.globals || {};
-
-    var realm = loadWithNewGlobal({ script: 'this', name: 'createRealm' });
-    realm.eval(this.source);
-    realm.$262.source = this.source;
-    realm.$262.destroy = function () {
-      if (options.destroy) {
-        options.destroy();
-      }
-    };
-
-    for(var glob in options.globals) {
-      realm.$262.global[glob] = options.globals[glob];
+// No need to create $262 object as it is provided behind --experimental-options --js.test262-mode=true flags
+$262.createRealm = function(options) {
+  options = options || {};
+  options.globals = options.globals || {};
+  var realm = loadWithNewGlobal({ script: 'this', name: 'createRealm' });
+  realm.eval(this.source);
+  realm.$262.source = this.source;
+  realm.$262.destroy = function () {
+    if (options.destroy) {
+      options.destroy();
     }
-
-    return realm.$262;
-  },
-  getGlobal: function(name) {
-    return this.global[name];
-  },
-  setGlobal: function(name, value) {
-    this.global[name] = value;
-  },
-  destroy: function() { /* noop */ },
-  IsHTMLDDA: function() { return {}; },
-  source: $SOURCE
+  };
+  for(var glob in options.globals) {
+    realm.$262.global[glob] = options.globals[glob];
+  }
+  return realm.$262;
 };
-$262.evalScript = es;
-$262.agent = a;
+$262.gc = function() {
+  throw new Test262Error('GC not yet supported.');
+};
+$262.getGlobal = function(name) {
+  return this.global[name];
+};
+$262.setGlobal = function(name, value) {
+  this.global[name] = value;
+};
+$262.destroy = function () { /* noop */ };
+$262.IsHTMLDDA = function() { return {}; };
+$262.source = $SOURCE;

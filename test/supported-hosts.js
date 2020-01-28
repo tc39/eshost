@@ -18,6 +18,7 @@ const supportedHostsMap = {
   edge: 'edge',
   engine262: 'engine262',
   firefox: 'firefox',
+  graaljs: 'graaljs',
   hermes: 'hermes',
   javascriptcore: 'jsc',
   jsc: 'jsc',

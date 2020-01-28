@@ -1,54 +1,46 @@
-var $262 = {
-  global,
-  gc() {
-    throw new Test262Error('GC not yet supported.');
-  },
-  createRealm(options) {
-    options = options || {};
-    options.globals = options.globals || {};
-
-    var realm = global.createRealm();
-    realm.eval(this.source);
-    realm.$262.source = this.source;
-    realm.$262.destroy = function () {
-      if (options.destroy) {
-        options.destroy();
+if (!globalThis.$262) {
+  globalThis.$262 = {
+    createRealm(options) {
+      throw new Test262Error('createRealm not yet supported.');
+    },
+    evalScript(code) {
+      try {
+        global.evalScript(code);
+        return { type: 'normal', value: undefined };
+      } catch (e) {
+        return { type: 'throw', value: e };
       }
-    };
-    for(var glob in options.globals) {
-      realm.$262.global[glob] = options.globals[glob];
-    }
-
-    return realm.$262;
-  },
-  evalScript(code) {
-    try {
-      global.evalScript(code);
-      return { type: 'normal', value: undefined };
-    } catch (e) {
-      return { type: 'throw', value: e };
-    }
-  },
-  getGlobal(name) {
-    return global[name];
-  },
-  setGlobal(name, value) {
-    global[name] = value;
-  },
-  destroy() { /* noop */ },
-  IsHTMLDDA() { return {}; },
-  source: $SOURCE,
-  agent: (function() {
-    function thrower() {
-      throw new Test262Error('Agent not yet supported.');
-    };
-    return {
-      start: thrower,
-      broadcast: thrower,
-      getReport: thrower,
-      sleep: thrower,
-      monotonicNow: thrower,
-    };
-  })(),
+    },
+    gc() {
+      throw new Test262Error('GC not yet supported.');
+    },
+    getGlobal(name) {
+      return global[name];
+    },
+    global: globalThis,
+    setGlobal(name, value) {
+      global[name] = value;
+    },
+    agent: (function() {
+      function thrower() {
+        throw new Test262Error('Agent not yet supported.');
+      };
+      return {
+        start: thrower,
+        broadcast: thrower,
+        getReport: thrower,
+        sleep: thrower,
+        monotonicNow: thrower,
+      };
+    })(),
+  };
+}
+$262.IsHTMLDDA = function() {};
+$262.destroy = function() {};
+$262.getGlobal = function(name) {
+  return this.global[name];
 };
-
+$262.setGlobal = function(name, value) {
+  this.global[name] = value;
+};
+$262.source = $SOURCE;
