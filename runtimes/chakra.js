@@ -1,10 +1,10 @@
 var $262 = {
-  global: Function('return this')(),
+  global: typeof globalThis !== 'undefined' ? globalThis : Function('return this')(),
   gc() {
     if (typeof CollectGarbage === 'function') {
       return CollectGarbage();
     } else {
-      throw new Test262Error('GC not yet supported.');
+      throw new Test262Error('gc() not yet supported.');
     }
   },
   createRealm(options) {
@@ -48,7 +48,7 @@ var $262 = {
                                 WScript.Report && WScript.GetReport;
 
     function thrower() {
-      throw new Test262Error('Agent not yet supported.');
+      throw new Test262Error('agent.* not yet supported.');
     }
 
     // Date.now() is an invalid substitute for monotonicNow,

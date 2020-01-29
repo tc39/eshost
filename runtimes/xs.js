@@ -1,7 +1,8 @@
 if (!globalThis.$262) {
   globalThis.$262 = {
+    global: globalThis,
     createRealm(options) {
-      throw new Test262Error('createRealm not yet supported.');
+      throw new Test262Error('createRealm() not yet supported.');
     },
     evalScript(code) {
       try {
@@ -12,18 +13,17 @@ if (!globalThis.$262) {
       }
     },
     gc() {
-      throw new Test262Error('GC not yet supported.');
+      throw new Test262Error('gc() not yet supported.');
     },
     getGlobal(name) {
       return global[name];
     },
-    global: globalThis,
     setGlobal(name, value) {
       global[name] = value;
     },
     agent: (function() {
       function thrower() {
-        throw new Test262Error('Agent not yet supported.');
+        throw new Test262Error('agent.* not yet supported.');
       };
       return {
         start: thrower,

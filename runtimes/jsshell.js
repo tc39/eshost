@@ -83,7 +83,7 @@ var $262 = {
     var monotonicNow = typeof monotonicNow === 'function' ? monotonicNow : Date.now;
 
     function thrower() {
-      throw new Test262Error('Agent not yet supported.');
+      throw new Test262Error('agent.* not yet supported.');
     }
 
     if (!sabTestable) {
