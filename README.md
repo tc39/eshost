@@ -27,7 +27,7 @@ npm install eshost
 | jsshell¹ | SpiderMonkey | CLI | Any | [Download](https://archive.mozilla.org/pub/firefox/nightly/latest-mozilla-central/) | SpiderMonkey console host. |
 | jsc¹ | JavaScriptCore | CLI | Mac² | Build [from source](http://trac.webkit.org/wiki/JavaScriptCore)³ | |
 | nashorn | Nashorn | CLI | Any | Build [from source](https://wiki.openjdk.java.net/display/Nashorn/Building+Nashorn) | |
-| node | Node.js | CLI | Any | https://nodejs.org | [LTS versions only](https://nodejs.org/en/about/releases/) |
+| node | Node.js | CLI | Any | https://nodejs.org | [Active LTS versions only](https://nodejs.org/en/about/releases/) |
 | qjs<sup>4</sup> | QuickJS | CLI | Any | Build [from source](https://bellard.org/quickjs/) | |
 | xs | Moddable XS | CLI | Any | Build [from source](https://github.com/Moddable-OpenSource/moddable-xst) | |
 | chrome | Google Chrome | Browser | Any | | Requires [ChromeDriver](https://sites.google.com/a/chromium.org/chromedriver/downloads) in your path.|
