@@ -1,13 +1,13 @@
-function print() {
-  console.log.apply(console, arguments);
+function print(...args) {
+  console.log(...args);
 }
 var vm = require('vm');
 var $262 = {
   global: Function('return this')(),
-  gc: function() {
+  gc() {
     return gc();
   },
-  createRealm: function createRealm(options) {
+  createRealm(options) {
     options = options || {};
     options.globals = options.globals || {};
 
@@ -32,12 +32,13 @@ var $262 = {
     };
     return context.$262;
   },
-  evalScript: function evalScript(code) {
+  evalScript(code) {
+    const displayErrors = false;
     try {
       if (this.context) {
-        vm.runInContext(code, this.context, {displayErrors: false});
+        vm.runInContext(code, this.context, {displayErrors});
       } else {
-        vm.runInESHostContext(code, {displayErrors: false});
+        vm.runInESHostContext(code, {displayErrors});
       }
 
       return { type: 'normal', value: undefined };
@@ -45,14 +46,14 @@ var $262 = {
       return { type: 'throw', value: e };
     }
   },
-  getGlobal: function getGlobal(name) {
+  getGlobal(name) {
     return this.global[name];
   },
-  setGlobal: function setGlobal(name, value) {
+  setGlobal(name, value) {
     this.global[name] = value;
   },
-  destroy: function destroy() { /* noop */ },
-  IsHTMLDDA: function IsHTMLDDA() { return {}; },
+  destroy() { /* noop */ },
+  IsHTMLDDA() { return {}; },
   source: $SOURCE
 };
 
