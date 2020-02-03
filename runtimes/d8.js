@@ -1,5 +1,5 @@
 var $262 = {
-  global: Function('return this')(),
+  global: globalThis,
   gc() {
     return gc();
   },
@@ -134,7 +134,7 @@ var $262 = {
         Atomics.store(i32a, BROADCAST_LOC, 0);
 
         for (var w of workers) {
-          w.postMessage({kind: 'broadcast', sab: sab, id: id|0});
+          w.postMessage({kind: 'broadcast', sab, id: id|0});
         }
 
         while (Atomics.load(i32a, BROADCAST_LOC) != workers.length) {}

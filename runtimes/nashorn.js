@@ -1,7 +1,7 @@
 var $262 = {
   global: Function('return this')(),
   gc() {
-    throw new Test262Error('GC not yet supported.');
+    throw new Test262Error('gc() not yet supported.');
   },
   createRealm: function(options) {
     options = options || {};
@@ -41,7 +41,7 @@ var $262 = {
   source: $SOURCE,
   agent: (function() {
     function thrower() {
-      throw new Test262Error('Agent not yet supported.');
+      throw new Test262Error('agent.* not yet supported.');
     };
     return {
       start: thrower,

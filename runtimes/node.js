@@ -33,11 +33,12 @@ var $262 = {
     return context.$262;
   },
   evalScript(code) {
+    const displayErrors = false;
     try {
       if (this.context) {
-        vm.runInContext(code, this.context, {displayErrors: false});
+        vm.runInContext(code, this.context, {displayErrors});
       } else {
-        vm.runInESHostContext(code, {displayErrors: false});
+        vm.runInESHostContext(code, {displayErrors});
       }
 
       return { type: 'normal', value: undefined };

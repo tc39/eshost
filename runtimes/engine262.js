@@ -5,7 +5,7 @@ var $262 = {
   realm: null,
   global: engine262.global,
   gc() {
-    throw new Test262Error('GC not yet supported.');
+    throw new Test262Error('gc() not yet supported.');
   },
   createRealm(options) {
     options = options || {};

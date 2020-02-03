@@ -3,10 +3,10 @@ $262.source = $SOURCE;
 $262.destroy = function() {};
 $262.IsHTMLDDA = function() {};
 $262.gc = function() {
-  throw new Test262Error('gc not yet supported.');
+  throw new Test262Error('gc() not yet supported.');
 };
 $262.createRealm = function() {
-  throw new Test262Error('createRealm not yet supported.');
+  throw new Test262Error('createRealm() not yet supported.');
 };
 $262.getGlobal = function(name) {
   return this.global[name];

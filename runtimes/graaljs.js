@@ -1,4 +1,5 @@
-// No need to create $262 object as it is provided behind --experimental-options --js.test262-mode=true flags
+// No need to create $262 object as it is provided
+// behind --experimental-options --js.test262-mode=true flags
 $262.createRealm = function(options) {
   options = options || {};
   options.globals = options.globals || {};
@@ -16,7 +17,7 @@ $262.createRealm = function(options) {
   return realm.$262;
 };
 $262.gc = function() {
-  throw new Test262Error('GC not yet supported.');
+  throw new Test262Error('gc() not yet supported.');
 };
 $262.getGlobal = function(name) {
   return this.global[name];
