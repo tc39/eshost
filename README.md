@@ -35,15 +35,15 @@ npm install eshost
 | firefox | Mozilla Firefox | Browser | Any | | Requires [GeckoDriver](https://github.com/mozilla/geckodriver/releases) in your path (possibly renamed to `wires`).|
 | safari | Apple Safari | Browser | Mac | | Requires [SafariDriver browser extension](https://github.com/SeleniumHQ/selenium/wiki/SafariDriver). |
 
-* 1: `eshost` accepts JSVU style binary name values as the first argument to `eshost.createAgent(type: string, options = {}): Agent`. See [Use JSVU](#use-jsvu).
-* 2: It is possible to build jsc on other platforms, but not supported.
+* 1: `eshost` accepts `esvu` or `jsvu` style binary name values as the first argument to `eshost.createAgent(type: string, options = {}): Agent`. See [Installing Engines](#installing-engines).
+* 2: It is possible to build `jsc` on other platforms, but not supported.
 * 3: Also available on your Mac system at `/System/Library/Frameworks/JavaScriptCore.framework/Versions/A/Resources/jsc`.
 * 4: For QuickJS installation help, see [Install and Configure Hosts](https://github.com/bterlson/eshost-cli#install-and-configure-hosts).
 
 
-## Use JSVU
+## Installing Engines
 
-[JSVU](https://github.com/GoogleChromeLabs/jsvu) is the recommended tool for maintaining JavaScript engines for testing purposes. Take a look at the [Supported engines](https://github.com/GoogleChromeLabs/jsvu#supported-engines) for more information.
+[esvu](https://github.com/devsnek/esvu) or [jsvu](https://github.com/GoogleChromeLabs/jsvu) are the recommended tools for maintaining JavaScript engines for testing purposes. Take a look at the [esvu supported engines](https://github.com/devsnek/esvu#usage) or [jsvu supported engines](https://github.com/GoogleChromeLabs/jsvu#supported-engines) for more information.
 
 
 
@@ -82,6 +82,7 @@ Creates an instance of a host agent for a particular host type. See the table ab
   | ChakraCore | `chakra`, `ch` |
   | Engine262 | `engine262` |
   | GraalJS | `graaljs` |
+  | Hermes | `hermes` |
   | JavaScriptCore | `javascriptcore`, `jsc` |
   | Nashorn | `nashorn` |
   | Node | `node` |
