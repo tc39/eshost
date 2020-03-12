@@ -5,7 +5,7 @@ var $262 = {
   realm: null,
   global: engine262.global,
   gc() {
-    throw new Test262Error('gc() not yet supported.');
+    return engine262.gc();
   },
   createRealm(options) {
     options = options || {};
@@ -39,7 +39,6 @@ var $262 = {
       return { type: 'throw', value: e };
     }
   },
-
   detachArrayBuffer: engine262.detachArrayBuffer,
   getGlobal(name) {
     return this.global[name];
