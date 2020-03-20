@@ -119,83 +119,102 @@ if (typeof $262 == 'undefined') {
   $262 = {};
 }
 var monotonicNow = typeof monotonicNow === 'function' ? monotonicNow : Date.now;
-$262.agent = (function () {
+$262.agent = (function (global) {
+  var ReflectApply = global.Reflect.apply;
+  var StringCharCodeAt = global.String.prototype.charCodeAt;
+  var {
+    add: Atomics_add,
+    compareExchange: Atomics_compareExchange,
+    load: Atomics_load,
+    store: Atomics_store,
+    wait: Atomics_wait,
+  } = global.Atomics;
+
+  var {getSharedArrayBuffer} = global;
+
   var _ia = new Int32Array(getSharedArrayBuffer());
   var agent = {
     receiveBroadcast(receiver) {
       var k;
-      while (((k = Atomics.load(_ia, ${_MSG_LOC})) & 1) == 0)
+      while (((k = Atomics_load(_ia, ${_MSG_LOC})) & 1) === 0)
           ;
       var received_sab = getSharedArrayBuffer();
-      var received_id = Atomics.load(_ia, ${_ID_LOC});
-      Atomics.add(_ia, ${_ACK_LOC}, 1);
-      while (Atomics.load(_ia, ${_MSG_LOC}) == k)
+      var received_id = Atomics_load(_ia, ${_ID_LOC});
+      Atomics_add(_ia, ${_ACK_LOC}, 1);
+      while (Atomics_load(_ia, ${_MSG_LOC}) === k)
           ;
       receiver(received_sab, received_id);
     },
     report(msg) {
-      while (Atomics.compareExchange(_ia, ${_LOCKTXT_LOC}, 0, 1) == 1)
+      while (Atomics_compareExchange(_ia, ${_LOCKTXT_LOC}, 0, 1) === 1)
           ;
       msg = '' + msg;
       var i = _ia[${_NEXT_LOC}];
       _ia[i++] = msg.length;
       for ( let j=0 ; j < msg.length ; j++ )
-          _ia[i++] = msg.charCodeAt(j);
+          _ia[i++] = ReflectApply(StringCharCodeAt, msg, [j]);
       _ia[${_NEXT_LOC}] = i;
-      Atomics.add(_ia, ${_NUMTXT_LOC}, 1);
-      Atomics.store(_ia, ${_LOCKTXT_LOC}, 0);
+      Atomics_add(_ia, ${_NUMTXT_LOC}, 1);
+      Atomics_store(_ia, ${_LOCKTXT_LOC}, 0);
     },
     sleep(s) {
-      Atomics.wait(_ia, ${_SLEEP_LOC}, 0, s);
+      Atomics_wait(_ia, ${_SLEEP_LOC}, 0, s);
     },
     leaving() {},
     monotonicNow,
   };
-  Atomics.add(_ia, ${_RDY_LOC}, 1);
+  Atomics_add(_ia, ${_RDY_LOC}, 1);
   return agent;
-})();`;
+})(this);`;
 // END WORKER PREFIX
 
-    return {
-      _numWorkers: 0,
-      _numReports: 0,
-      _reportPtr: _FIRST,
+    var _numWorkers = 0;
+    var _numReports = 0;
+    var _reportPtr = _FIRST;
+    var {
+        add: Atomics_add,
+        load: Atomics_load,
+        store: Atomics_store,
+        wait: Atomics_wait,
+    } = Atomics;
+    var StringFromCharCode = String.fromCharCode;
 
+    return {
       start(script) {
         setSharedArrayBuffer(_ia.buffer);
-        var oldrdy = Atomics.load(_ia, _RDY_LOC);
+        var oldrdy = Atomics_load(_ia, _RDY_LOC);
         evalInWorker(_worker_prefix + script);
-        while (Atomics.load(_ia, _RDY_LOC) == oldrdy)
+        while (Atomics_load(_ia, _RDY_LOC) === oldrdy)
           ;
-        this._numWorkers++;
+        _numWorkers++;
       },
 
       broadcast(sab, id) {
         setSharedArrayBuffer(sab);
-        Atomics.store(_ia, _ID_LOC, id);
-        Atomics.store(_ia, _ACK_LOC, 0);
-        Atomics.add(_ia, _MSG_LOC, 1);
-        while (Atomics.load(_ia, _ACK_LOC) < this._numWorkers)
+        Atomics_store(_ia, _ID_LOC, id);
+        Atomics_store(_ia, _ACK_LOC, 0);
+        Atomics_add(_ia, _MSG_LOC, 1);
+        while (Atomics_load(_ia, _ACK_LOC) < _numWorkers)
           ;
-        Atomics.add(_ia, _MSG_LOC, 1);
+        Atomics_add(_ia, _MSG_LOC, 1);
       },
 
       getReport() {
-        if (this._numReports == Atomics.load(_ia, _NUMTXT_LOC)) {
+        if (_numReports === Atomics_load(_ia, _NUMTXT_LOC)) {
           return null;
         }
         var s = '';
-        var i = this._reportPtr;
+        var i = _reportPtr;
         var len = _ia[i++];
         for ( let j=0 ; j < len ; j++ )
-          s += String.fromCharCode(_ia[i++]);
-        this._reportPtr = i;
-        this._numReports++;
+          s += StringFromCharCode(_ia[i++]);
+        _reportPtr = i;
+        _numReports++;
         return s;
       },
 
       sleep(s) {
-        Atomics.wait(_ia, _SLEEP_LOC, 0, s);
+        Atomics_wait(_ia, _SLEEP_LOC, 0, s);
       },
 
       monotonicNow,
