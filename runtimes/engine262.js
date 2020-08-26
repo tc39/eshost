@@ -8,10 +8,10 @@
     realm.evalScript($262.source);
 
     for (const glob in options.globals) {
-      realm.$262.global[glob] = options.globals[glob];
+      realm.global[glob] = options.globals[glob];
     }
     if (options.destroy) {
-      realm.$262.destroy = options.destroy;
+      realm.destroy = options.destroy;
     }
 
     return realm;
