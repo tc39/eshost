@@ -52,7 +52,7 @@ install: |
 
     function install_hermes {
       export TMP=$(mktemp);
-      wget https://github.com/facebook/hermes/releases/download/v0.2.1/hermes-cli-linux-v0.2.1.tar.gz -O $TMP;
+      wget https://github.com/facebook/hermes/releases/download/v0.7.2/hermes-cli-linux-v0.7.2.tar.gz -O $TMP;
       tar -xvf $TMP;
       rm $TMP;
       unset TMP;
@@ -111,14 +111,14 @@ install: |
       mkdir chrome
       ln -s $(which google-chrome) chrome/chrome
 
-      wget https://chromedriver.storage.googleapis.com/2.30/chromedriver_linux64.zip
+      wget https://chromedriver.storage.googleapis.com/91.0.4472.19/chromedriver_linux64.zip
       unzip -d chrome chromedriver_linux64.zip
       PATH=$PATH:$(pwd)/chrome
       unset ESHOST_SKIP_CHROME;
     elif [[ "$ESHOST_TARGET" == "remote" ]]; then
       install_firefox;
-      wget http://selenium-release.storage.googleapis.com/3.11/selenium-server-standalone-3.11.0.jar
-      PATH=$PATH:$(pwd)/firefox java -jar selenium-server-standalone-3.11.0.jar &> selenium-server.log &
+      wget http://selenium-release.storage.googleapis.com/4.0/selenium-server-standalone-4.0.0-alpha-2.jar
+      PATH=$PATH:$(pwd)/firefox java -jar selenium-server-standalone-4.0.0-alpha-2.jar &> selenium-server.log &
 
       unset ESHOST_SKIP_REMOTE;
     else
