@@ -45,7 +45,7 @@ install: |
     }
 
     function install_engine262 {
-      git clone https://github.com/devsnek/engine262.git;
+      git clone https://github.com/engine262/engine262.git;
       cd engine262 && npm install && npm run build && npm link;
       cd $TRAVIS_BUILD_DIR;
     }
