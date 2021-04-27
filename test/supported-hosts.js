@@ -34,9 +34,9 @@ const supportedHostsMap = {
   xs: 'xs'
 };
 
-describe('Supported Hosts', function() {
-  describe('Everything is accounted for', function() {
-    it('Exports a Map and Array', () => {
+describe('Supported Hosts', () => {
+  describe('Everything is accounted for', () => {
+    it('Exports a Map and Array', async () => {
       let runs = 0;
       Object.entries(supportedHostsMap).forEach(([key, agent]) => {
         assert(hostMap[key] === agent);
@@ -48,12 +48,11 @@ describe('Supported Hosts', function() {
       assert(runs === Object.keys(supportedHostsMap).length);
       assert(runs === Object.keys(hostMap).length);
       assert(runs === hostList.length);
-      return Promise.resolve();
     });
   });
 
-  describe('Runtime Path Normalization', function() {
-    it('Will map a host type to its corresponding runtime path.', () => {
+  describe('Runtime Path Normalization', () => {
+    it('Will map a host type to its corresponding runtime path.', async () => {
       let runs = 0;
       hostList.forEach(hostType => {
         assert(runtimePath.for(hostType));
@@ -61,21 +60,18 @@ describe('Supported Hosts', function() {
         runs++;
       });
       assert(runs === hostList.length);
-      return Promise.resolve();
     });
   });
 
-  describe('JSVU Normalization', function() {
-    it('Accepts JSVU style host type names', () => {
+  describe('VU Normalization', () => {
+    it('Accepts VU style host type names', async () => {
 
       const supportedHosts = Object.keys(supportedHostsMap);
 
       supportedHosts.forEach(supportedHost => {
         assert(eshost.supportedHosts.includes(supportedHost));
-        assert.equal(eshost.normalizeHostForJSVU(supportedHost), supportedHostsMap[supportedHost]);
+        assert.strictEqual(eshost.normalizeHostForVU(supportedHost), supportedHostsMap[supportedHost]);
       });
-
-      return Promise.resolve();
     });
   });
 });

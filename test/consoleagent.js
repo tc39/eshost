@@ -18,7 +18,7 @@ describe('ConsoleAgent', function () {
         hostArguments: '-a',
       });
       return Promise.resolve(a).then(agent => {
-        assert.deepEqual(agent.args, ['-a']);
+        assert.deepStrictEqual(agent.args, ['-a']);
       });
     });
 
@@ -28,7 +28,7 @@ describe('ConsoleAgent', function () {
         hostArguments: '-a -b --c --dee',
       });
       return Promise.resolve(a).then(agent => {
-        assert.deepEqual(agent.args, ['-a', '-b', '--c', '--dee']);
+        assert.deepStrictEqual(agent.args, ['-a', '-b', '--c', '--dee']);
       });
     });
 
@@ -38,7 +38,7 @@ describe('ConsoleAgent', function () {
         hostArguments: ['-a'],
       });
       return Promise.resolve(a).then(agent => {
-        assert.deepEqual(agent.args, ['-a']);
+        assert.deepStrictEqual(agent.args, ['-a']);
       });
     });
 
@@ -48,7 +48,7 @@ describe('ConsoleAgent', function () {
         hostArguments: ['-a', '-b', '--c', '--dee'],
       });
       return Promise.resolve(a).then(agent => {
-        assert.deepEqual(agent.args, ['-a', '-b', '--c', '--dee']);
+        assert.deepStrictEqual(agent.args, ['-a', '-b', '--c', '--dee']);
       });
     });
 
@@ -58,7 +58,7 @@ describe('ConsoleAgent', function () {
         hostArguments: '-a     -b --c \t --dee',
       });
       return Promise.resolve(a).then(agent => {
-        assert.deepEqual(agent.args, ['-a', '-b', '--c', '--dee']);
+        assert.deepStrictEqual(agent.args, ['-a', '-b', '--c', '--dee']);
       });
     });
   });
