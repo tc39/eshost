@@ -4,6 +4,7 @@
   "description": "Invoke ECMAScript scripts in any command line JS engine.",
   "main": "lib/eshost.js",
   "scripts": {
+    "setup": "esvu --engines=all",
     "test": "mocha test/*.js",
     "lint": "eslint lib/* bin/* test/*"
   },
@@ -12,6 +13,7 @@
   "devDependencies": {
     "common-tags": "^1.8.0",
     "eslint": "^4.18.1",
+    "esvu": "^1.2.3",
     "hasbin": "^1.2.3",
     "mocha": "^2.3.4",
     "sinon": "^6.1.3",
