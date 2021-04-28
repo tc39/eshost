@@ -5,8 +5,7 @@
   "main": "lib/eshost.js",
   "scripts": {
     "setup": "esvu --engines=all",
-    "test": "mocha test/*.js",
-    "test:jest": "jest --runInBand --no-cache --config=./jest.config.js",
+    "test": "jest --runInBand --no-cache --config=./jest.config.js",
     "lint": "eslint lib/* bin/* test/*.js"
   },
   "author": "Brian Terlson",
