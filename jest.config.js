@@ -1,7 +1,7 @@
 module.exports = {
-  collectCoverage: true, // Only collect in CI
+  collectCoverage: true,
   collectCoverageFrom: [
-    './test/*.js',
+    '<rootDir>/lib/**/*.js',
   ],
   coverageDirectory: './coverage',
   coverageThreshold: {
