@@ -612,7 +612,6 @@ hosts.forEach(function (record) {
           [
             "engine262",
             "hermes",
-            "jsshell",
             "firefox",
             "chrome",
             "remote",
@@ -650,8 +649,8 @@ hosts.forEach(function (record) {
         }
 
         if (type === "jsshell") {
-          hostArguments = "--shared-memory=off";
-          source = 'print(typeof SharedArrayBuffer === "undefined");';
+          hostArguments = "--disable-weak-refs";
+          source = 'print(typeof WeakRef === "undefined");';
         }
 
         if (type === "node") {
@@ -701,20 +700,10 @@ hosts.forEach(function (record) {
           }
         });
 
-        let pTests = new Promise((resolve) => {
+        records = await new Promise((resolve) => {
           stream.on("end", () => resolve(captured));
         });
-
-        records = await pTests;
         agent = await eshost.createAgent(type, options);
-
-        // return Promise.all([
-        //   pTests,
-        //   pAgent,
-        // ]).then(([r, a]) => {
-        //   records = r;
-        //   agent = a;
-        // });
       });
 
       afterEach(() => {
