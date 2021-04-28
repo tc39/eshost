@@ -64,7 +64,7 @@ describe('Agent', function () {
         out
       });
       return Promise.resolve(a).then(agent => {
-        assert.equal(agent.out, out);
+        expect(agent.out).toEqual(out);
       });
     });
   });

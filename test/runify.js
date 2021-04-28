@@ -27,13 +27,13 @@ const makeHostPath = (binName) => {
 };
 
 const hosts = [
-  // ['ch', { hostPath: makeHostPath('chakra') }],
+  ['ch', { hostPath: makeHostPath('chakra') }],
   // // ['hermes', { hostPath: makeHostPath('hermes') }],
-  // ['d8', { hostPath: makeHostPath('v8') }],
-  // ['engine262', { hostPath: makeHostPath('engine262') }],
+  ['d8', { hostPath: makeHostPath('v8') }],
+  ['engine262', { hostPath: makeHostPath('engine262') }],
   ['jsshell', { hostPath: makeHostPath('sm') }],
   ["jsc", { hostPath: makeHostPath("jsc") }],
-  // ['node', { hostPath: 'node' }], // Not provided by esvu
+  ['node', { hostPath: 'node' }], // Not provided by esvu
   // // ['chrome', { hostPath: 'chrome' }], // Not provided by esvu
   // // ['firefox', { hostPath: 'firefox' }], // Not provided by esvu
   // // ['remote', { webdriverServer, capabilities }],
@@ -128,25 +128,25 @@ hosts.forEach(function (record) {
     describe("normal script evaluation", function () {
       it("runs SyntaxErrors", async () => {
         const result = await agent.evalScript("foo x++");
-        assert(result.error, "error is present");
-        assert.strictEqual(result.error.name, "SyntaxError");
-        assert.strictEqual(result.stdout, "", "stdout not present");
+        expect(result.error).toBeTruthy();
+        expect(result.error.name).toBe("SyntaxError");
+        expect(result.stdout).toBe("");
       });
 
       it("runs thrown SyntaxErrors", async () => {
         const result = await agent.evalScript(
           'throw new SyntaxError("Custom Message");'
         );
-        assert(result.error, "error is present");
-        assert.strictEqual(result.stdout, "", "stdout not present");
+        expect(result.error).toBeTruthy();
+        expect(result.stdout).toBe("");
 
-        assert.strictEqual(result.error.message, "Custom Message");
-        assert.strictEqual(result.error.name, "SyntaxError");
+        expect(result.error.message).toBe("Custom Message");
+        expect(result.error.name).toBe("SyntaxError");
 
         // Some engines do not provide enough information to
         // create a complete stack array for all errors
         if (result.error.stack.length) {
-          assert.strictEqual(Number(result.error.stack[0].lineNumber), 1);
+          expect(Number(result.error.stack[0].lineNumber)).toBe(1);
         }
       });
 
@@ -154,15 +154,15 @@ hosts.forEach(function (record) {
         const result = await agent.evalScript(
           'throw new TypeError("Custom Message");'
         );
-        assert(result.error, "error is present");
-        assert.strictEqual(result.stdout, "", "stdout not present");
-        assert.strictEqual(result.error.message, "Custom Message");
-        assert.strictEqual(result.error.name, "TypeError");
+        expect(result.error).toBeTruthy();
+        expect(result.stdout).toBe("");
+        expect(result.error.message).toBe("Custom Message");
+        expect(result.error.name).toBe("TypeError");
 
         // Some engines do not provide enough information to
         // create a complete stack array for all errors
         if (result.error.stack.length) {
-          assert.strictEqual(Number(result.error.stack[0].lineNumber), 1);
+          expect(Number(result.error.stack[0].lineNumber)).toBe(1);
         }
       });
 
@@ -170,16 +170,16 @@ hosts.forEach(function (record) {
         const result = await agent.evalScript(
           'throw new RangeError("Custom Message");'
         );
-        assert(result.error, "error is present");
-        assert.strictEqual(result.stdout, "", "stdout not present");
+        expect(result.error).toBeTruthy();
+        expect(result.stdout).toBe("");
 
-        assert.strictEqual(result.error.message, "Custom Message");
-        assert.strictEqual(result.error.name, "RangeError");
+        expect(result.error.message).toBe("Custom Message");
+        expect(result.error.name).toBe("RangeError");
 
         // Some engines do not provide enough information to
         // create a complete stack array for all errors
         if (result.error.stack.length) {
-          assert.strictEqual(Number(result.error.stack[0].lineNumber), 1);
+          expect(Number(result.error.stack[0].lineNumber)).toBe(1);
         }
       });
 
@@ -187,21 +187,21 @@ hosts.forEach(function (record) {
         const result = await agent.evalScript(
           'throw new Error("Custom Message");'
         );
-        assert.strictEqual(result.stdout, "", "stdout not present");
-        assert(result.error, "error is present");
-        assert.strictEqual(result.error.message, "Custom Message");
-        assert.strictEqual(result.error.name, "Error");
+        expect(result.stdout).toBe("");
+        expect(result.error).toBeTruthy();
+        expect(result.error.message).toBe("Custom Message");
+        expect(result.error.name).toBe("Error");
       });
 
       it("runs thrown custom Errors", async () => {
         const result = await agent.evalScript(
           'function Foo1Error(msg) { this.name = "Foo1Error"; this.message = msg }; Foo1Error.prototype = Error.prototype; throw new Foo1Error("Custom Message");'
         );
-        assert.strictEqual(result.stdout, "", "stdout not present");
+        expect(result.stdout).toBe("");
 
-        assert(result.error, "error is present");
-        assert.strictEqual(result.error.message, "Custom Message");
-        assert.strictEqual(result.error.name, "Foo1Error");
+        expect(result.error).toBeTruthy();
+        expect(result.error.message).toBe("Custom Message");
+        expect(result.error.name).toBe("Foo1Error");
       });
 
       it("runs thrown custom Errors that don't have Error.prototype", async () => {
@@ -217,43 +217,40 @@ hosts.forEach(function (record) {
           throw new Foo2Error('FAIL!');
         `);
 
-        assert.strictEqual(result.stdout, "", "stdout not present");
-        assert(result.error, "error is present");
-        assert.strictEqual(result.error.message, "FAIL!");
-        assert.strictEqual(result.error.name, "Foo2Error");
+        expect(result.stdout).toBe("");
+        expect(result.error).toBeTruthy();
+        expect(result.error.message).toBe("FAIL!");
+        expect(result.error.name).toBe("Foo2Error");
       });
 
       it("runs thrown Errors without messages", async () => {
         const result = await agent.evalScript("throw new Error();");
-        assert.strictEqual(result.stdout, "", "stdout not present");
-        assert(result.error, "error is present");
-        assert.strictEqual(result.error.message, undefined);
-        assert.strictEqual(result.error.name, "Error");
+        expect(result.stdout).toBe("");
+        expect(result.error).toBeTruthy();
+        expect(result.error.message).toBe(undefined);
+        expect(result.error.name).toBe("Error");
       });
 
       it("runs thrown errors from eval", async () => {
         const result = await agent.evalScript(
           'eval("\'\\u000Astr\\u000Aing\\u000A\'") === "\\u000Astr\\u000Aing\\u000A"'
         );
-        assert.strictEqual(result.stdout, "", "stdout not present");
+        expect(result.stdout).toBe("");
 
-        assert(result.error, "error is present");
-        assert.strictEqual(result.error.name, "SyntaxError");
+        expect(result.error).toBeTruthy();
+        expect(result.error.name).toBe("SyntaxError");
 
         // Some engines do not provide enough information to
         // create a complete stack array for all errors
         if (result.error.stack.length) {
           // message should be present (but is implementation defined)
-          assert(result.error.message);
+          expect(result.error.message).toBeTruthy();
         }
       });
 
       it("gathers stdout", async () => {
         const result = await agent.evalScript('print("foo")');
-        assert(
-          result.stdout.match(/^foo\r?\n/),
-          `Unexpected stdout: ${result.stdout}`
-        );
+        expect(result.stdout.match(/^foo\r?\n/)).toBeTruthy();
       });
 
       it("can create new realms", async () => {
@@ -270,11 +267,8 @@ hosts.forEach(function (record) {
           subRealm.evalScript("print(2)");
         `);
 
-        assert.strictEqual(result.stderr, "", "stderr not present");
-        assert(
-          result.stdout.match(/^1\r?\n2\r?\n/m),
-          `Unexpected stdout: ${result.stdout}${result.stderr}`
-        );
+        expect(result.stderr).toBe("");
+        expect(result.stdout.match(/^1\r?\n2\r?\n/m)).toBeTruthy();
       });
 
       it("can eval in new realms", async () => {
@@ -289,11 +283,8 @@ hosts.forEach(function (record) {
           print(x);
         `);
 
-        assert.strictEqual(result.stderr, "", "stderr not present");
-        assert(
-          result.stdout.match(/^1\r?\n2\r?\n/m),
-          `Unexpected stdout: ${result.stdout}${result.stderr}`
-        );
+        expect(result.stderr).toBe("");
+        expect(result.stdout.match(/^1\r?\n2\r?\n/m)).toBeTruthy();
       });
 
       it("can set globals in new realms", async () => {
@@ -306,10 +297,7 @@ hosts.forEach(function (record) {
           realm = $262.createRealm({globals: {x: 2}});
           realm.evalScript("print(x);");
         `);
-        assert(
-          result.stdout.match(/^2\r?\n/m),
-          `Unexpected stdout: ${result.stdout}${result.stderr}`
-        );
+        expect(result.stdout.match(/^2\r?\n/m)).toBeTruthy();
       });
 
       it("can eval in new scripts", async () => {
@@ -323,10 +311,7 @@ hosts.forEach(function (record) {
           print(x);
         `);
 
-        assert(
-          result.stdout.match(/^3\r?\n/m),
-          `Unexpected stdout: ${result.stdout}${result.stderr}`
-        );
+        expect(result.stdout.match(/^3\r?\n/m)).toBeTruthy();
       });
 
       it("returns errors from evaling in new script", async () => {
@@ -339,10 +324,7 @@ hosts.forEach(function (record) {
           print(completion.value.name);
         `);
 
-        assert(
-          (result.stdout || result.stderr).match(/SyntaxError/m),
-          `Unexpected stdout: ${result.stdout}${result.stderr}`
-        );
+        expect((result.stdout || result.stderr).match(/SyntaxError/m)).toBeTruthy();
       });
 
       it("can eval lexical bindings in new scripts", async () => {
@@ -355,10 +337,7 @@ hosts.forEach(function (record) {
           print(x);
         `);
 
-        assert(
-          result.stdout.match(/^3\r?\n/m),
-          `Unexpected stdout: ${result.stdout}${result.stderr}`
-        );
+        expect(result.stdout.match(/^3\r?\n/m)).toBeTruthy();
       });
 
       it("can set properties in new realms", async () => {
@@ -376,11 +355,8 @@ hosts.forEach(function (record) {
           realm.evalScript("print(x)");
         `);
 
-        assert.strictEqual(result.stderr, "", "stderr not present");
-        assert(
-          result.stdout.match(/^1\r?\n2\r?\n/m),
-          `Unexpected stdout: ${result.stdout}${result.stderr}`
-        );
+        expect(result.stderr).toBe("");
+        expect(result.stdout.match(/^1\r?\n2\r?\n/m)).toBeTruthy();
       });
 
       it("can access properties from new realms", async () => {
@@ -395,11 +371,8 @@ hosts.forEach(function (record) {
           print(realm.getGlobal("x"));
         `);
 
-        assert.strictEqual(result.stderr, "", "stderr not present");
-        assert(
-          result.stdout.match(/^1\r?\n/m),
-          `Unexpected stdout: ${result.stdout}${result.stderr}`
-        );
+        expect(result.stderr).toBe("");
+        expect(result.stdout.match(/^1\r?\n/m)).toBeTruthy();
       });
 
       it("runs async code", async () => {
@@ -418,11 +391,8 @@ hosts.forEach(function (record) {
           { async: true }
         );
 
-        assert.strictEqual(result.stderr, "", "stderr not present");
-        assert(
-          result.stdout.match(/async result/),
-          `Unexpected stdout: ${result.stdout}${result.stderr}`
-        );
+        expect(result.stderr).toBe("");
+        expect(result.stdout.match(/async result/)).toBeTruthy();
       });
 
       it("accepts destroy callbacks", async () => {
@@ -434,11 +404,8 @@ hosts.forEach(function (record) {
           realm = $262.createRealm({ destroy() { print("destroyed") }});
           realm.destroy();
         `);
-        assert.strictEqual(result.stderr, "", "stderr not present");
-        assert(
-          result.stdout.match(/destroyed/),
-          `Unexpected stdout: ${result.stdout}${result.stderr}`
-        );
+        expect(result.stderr).toBe("");
+        expect(result.stdout.match(/destroyed/)).toBeTruthy();
       });
 
       it("runs in the proper mode", async () => {
@@ -447,29 +414,20 @@ hosts.forEach(function (record) {
           function foo() { print(this === undefined) }
           foo();
         `);
-        assert(
-          result.stdout.match(/^true\r?\n/m),
-          `Unexpected stdout: ${result.stdout}${result.stderr}`
-        );
+        expect(result.stdout.match(/^true\r?\n/m)).toBeTruthy();
 
         result = await agent.evalScript(stripIndent`
           'use strict'
           function foo() { print(this === undefined) }
           foo();
         `);
-        assert(
-          result.stdout.match(/^true\r?\n/m),
-          `Unexpected stdout: ${result.stdout}${result.stderr}`
-        );
+        expect(result.stdout.match(/^true\r?\n/m)).toBeTruthy();
 
         result = await agent.evalScript(stripIndent`
           function foo() { print(this === Function('return this;')()) }
           foo();
         `);
-        assert(
-          result.stdout.match(/^true\r?\n/m),
-          `Unexpected stdout: ${result.stdout}${result.stderr}`
-        );
+        expect(result.stdout.match(/^true\r?\n/m)).toBeTruthy();
 
         result = await agent.evalScript(stripIndent`
           /*---
@@ -478,10 +436,7 @@ hosts.forEach(function (record) {
           function foo() { print(this === undefined) }
           foo();
         `);
-        assert(
-          result.stdout.match(/^true\r?\n/m),
-          `Unexpected stdout: ${result.stdout}${result.stderr}`
-        );
+        expect(result.stdout.match(/^true\r?\n/m)).toBeTruthy();
 
         result = await agent.evalScript(stripIndent`
           /*---
@@ -491,10 +446,7 @@ hosts.forEach(function (record) {
           function foo() { print(this === undefined) }
           foo();
         `);
-        assert(
-          result.stdout.match(/^true\r?\n/m),
-          `Unexpected stdout: ${result.stdout}${result.stderr}`
-        );
+        expect(result.stdout.match(/^true\r?\n/m)).toBeTruthy();
 
         result = await agent.evalScript(stripIndent`
           // normal comment
@@ -506,10 +458,7 @@ hosts.forEach(function (record) {
           function foo() { print(this === undefined) }
           foo();
         `);
-        assert(
-          result.stdout.match(/^true\r?\n/m),
-          `Unexpected stdout: ${result.stdout}${result.stderr}`
-        );
+        expect(result.stdout.match(/^true\r?\n/m)).toBeTruthy();
       });
 
       it("prints values correctly", async () => {
@@ -525,18 +474,18 @@ hosts.forEach(function (record) {
           print(-1);
         `);
 
-        assert.strictEqual(result.stderr, "");
+        expect(result.stderr).toBe("");
 
         const values = result.stdout.split(/\r?\n/);
-        assert.strictEqual(values[0], "undefined");
-        assert.strictEqual(values[1], "null");
-        assert.strictEqual(values[2], "string");
-        assert.strictEqual(values[3], "true");
-        assert.strictEqual(values[4], "false");
-        assert.strictEqual(values[5], "0");
-        assert.strictEqual(values[6], "1");
-        assert.strictEqual(values[7], "1.2");
-        assert.strictEqual(values[8], "-1");
+        expect(values[0]).toBe("undefined");
+        expect(values[1]).toBe("null");
+        expect(values[2]).toBe("string");
+        expect(values[3]).toBe("true");
+        expect(values[4]).toBe("false");
+        expect(values[5]).toBe("0");
+        expect(values[6]).toBe("1");
+        expect(values[7]).toBe("1.2");
+        expect(values[8]).toBe("-1");
       });
 
       it("tolerates broken execution environments", async () => {
@@ -550,8 +499,8 @@ hosts.forEach(function (record) {
 
           print('okay');
         `);
-        assert.strictEqual(result.stderr, "");
-        assert(result.stdout.match(/^okay\r?\n/m));
+        expect(result.stderr).toBe("");
+        expect(result.stdout.match(/^okay\r?\n/m)).toBeTruthy();
       });
 
       it("supports realm nesting", async () => {
@@ -571,8 +520,8 @@ hosts.forEach(function (record) {
           \`);
           print(typeof x);
         `);
-        assert.strictEqual(result.stderr, "");
-        assert(result.stdout.match(/^object\r?\nstring\r?\nnumber\r?\n/m));
+        expect(result.stderr).toBe("");
+        expect(result.stdout.match(/^object\r?\nstring\r?\nnumber\r?\n/m)).toBeTruthy();
       });
 
       it("observes correct cross-script interaction semantics", async () => {
@@ -585,8 +534,8 @@ hosts.forEach(function (record) {
           print($262.evalScript('let eshost;').type);
         `);
 
-        assert.strictEqual(result.stderr, "");
-        assert(result.stdout.match(/^normal\r?\nthrow/m));
+        expect(result.stderr).toBe("");
+        expect(result.stdout.match(/^normal\r?\nthrow/m)).toBeTruthy();
       });
 
       // The host may need to perform a number of asynchronous operations in
@@ -600,7 +549,7 @@ hosts.forEach(function (record) {
 
         const result = await evalScript;
 
-        assert.strictEqual(result.stdout, "");
+        expect(result.stdout).toBe("");
       });
 
       // mostly this test shouldn't hang (if it hangs, it's a bug)
@@ -622,10 +571,7 @@ hosts.forEach(function (record) {
         const outcomes = await Promise.all([resultP, stopP]);
         const result = outcomes[0];
 
-        assert(
-          !result.stdout.match(/2/),
-          `Unexpected stdout: ${result.stdout}`
-        );
+        expect(!result.stdout.match(/2/)).toBeTruthy();
       });
 
       it("tolerates LINE SEPARATOR and PARAGRAPH SEPARATOR", async () => {
@@ -643,35 +589,20 @@ hosts.forEach(function (record) {
 
         const results = await Promise.all(operations);
 
-        assert.strictEqual(results[0].stderr, "");
-        assert(
-          results[0].stdout.match(/^U\+2028 once\r?\n/),
-          `Unexpected stdout: ${results[0].stdout}`
-        );
+        expect(results[0].stderr).toBe("");
+        expect(results[0].stdout.match(/^U\+2028 once\r?\n/)).toBeTruthy();
 
-        assert.strictEqual(results[1].stderr, "");
-        assert(
-          results[1].stdout.match(/^U\+2029 once\r?\n/),
-          `Unexpected stdout: ${results[1].stdout}`
-        );
+        expect(results[1].stderr).toBe("");
+        expect(results[1].stdout.match(/^U\+2029 once\r?\n/)).toBeTruthy();
 
-        assert.strictEqual(results[2].stderr, "");
-        assert(
-          results[2].stdout.match(/^both U\+2028 and U\+2029\r?\n/),
-          `Unexpected stdout: ${results[2].stdout}`
-        );
+        expect(results[2].stderr).toBe("");
+        expect(results[2].stdout.match(/^both U\+2028 and U\+2029\r?\n/)).toBeTruthy();
 
-        assert.strictEqual(results[3].stderr, "");
-        assert(
-          results[3].stdout.match(/^U\+2028 twice\r?\n/),
-          `Unexpected stdout: ${results[3].stdout}`
-        );
+        expect(results[3].stderr).toBe("");
+        expect(results[3].stdout.match(/^U\+2028 twice\r?\n/)).toBeTruthy();
 
-        assert.strictEqual(results[4].stderr, "");
-        assert(
-          results[4].stdout.match(/^U\+2029 twice\r?\n/),
-          `Unexpected stdout: ${results[4].stdout}`
-        );
+        expect(results[4].stderr).toBe("");
+        expect(results[4].stdout.match(/^U\+2029 twice\r?\n/)).toBeTruthy();
       });
 
       it('creates "optional" environments correctly (hostArgs)', async () => {
@@ -687,6 +618,10 @@ hosts.forEach(function (record) {
             "remote",
           ].includes(type)
         ) {
+          return;
+        }
+
+        if (type === "ch" && !process.env.CI) {
           return;
         }
 
@@ -729,7 +664,7 @@ hosts.forEach(function (record) {
           ...options,
         });
         const result = await agent.evalScript(source);
-        assert.strictEqual(result.stdout.trim(), "true");
+        expect(result.stdout.trim()).toBe("true");
       });
     });
 
@@ -804,17 +739,13 @@ hosts.forEach(function (record) {
               : "";
 
             if (negative) {
-              assert(result.error, "error is not null");
-              assert.strictEqual(result.stdout, "", "stdout is empty");
+              expect(result.error).toBeTruthy();
+              expect(result.stdout).toBe("");
             } else {
               let stdout = result.stdout.trim();
-              assert(!result.error, "error is null");
-              assert(!result.stderr, "stderr is empty string");
-              assert.strictEqual(
-                stdout,
-                expectedStdout,
-                `stdout is "${expectedStdout}"`
-              );
+              expect(!result.error).toBeTruthy();
+              expect(!result.stderr).toBeTruthy();
+              expect(stdout).toBe(expectedStdout);
             }
           })
         );
@@ -831,8 +762,8 @@ hosts.forEach(function (record) {
         const result = await agent.evalScript(
           '$testing.evalScript("print(1)")'
         );
-        assert(result.error === null, "no error");
-        assert.strictEqual(result.stdout.indexOf("1"), 0);
+        expect(result.error === null).toBeTruthy();
+        expect(result.stdout.indexOf("1")).toBe(0);
         agent.destroy();
       });
     });
@@ -861,8 +792,8 @@ hosts.forEach(function (record) {
       it("has a default IsHTMLDDA", async () => {
         const agent = await eshost.createAgent(type, options);
         const result = await agent.evalScript("print(typeof $262.IsHTMLDDA);");
-        assert(result.error === null, "no error");
-        assert.strictEqual(result.stdout.indexOf("function"), 0);
+        expect(result.error === null).toBeTruthy();
+        expect(result.stdout.indexOf("function")).toBe(0);
         agent.destroy();
       });
     });

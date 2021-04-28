@@ -326,7 +326,7 @@ describe("ConsoleAgent", () => {
             }, 100);
           }),
         ]).then(() => {
-          assert.equal(compile.callCount, 0);
+          expect(compile.callCount).toEqual(0);
         });
       });
     });

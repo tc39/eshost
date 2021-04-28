@@ -39,15 +39,15 @@ describe('Supported Hosts', () => {
     it('Exports a Map and Array', async () => {
       let runs = 0;
       Object.entries(supportedHostsMap).forEach(([key, agent]) => {
-        assert(hostMap[key] === agent);
-        assert(hostList.includes(key));
-        assert(eshost.supportedHosts.includes(key));
+        expect(hostMap[key] === agent).toBeTruthy();
+        expect(hostList.includes(key)).toBeTruthy();
+        expect(eshost.supportedHosts.includes(key)).toBeTruthy();
         runs++;
       });
 
-      assert(runs === Object.keys(supportedHostsMap).length);
-      assert(runs === Object.keys(hostMap).length);
-      assert(runs === hostList.length);
+      expect(runs === Object.keys(supportedHostsMap).length).toBeTruthy();
+      expect(runs === Object.keys(hostMap).length).toBeTruthy();
+      expect(runs === hostList.length).toBeTruthy();
     });
   });
 
@@ -55,11 +55,11 @@ describe('Supported Hosts', () => {
     it('Will map a host type to its corresponding runtime path.', async () => {
       let runs = 0;
       hostList.forEach(hostType => {
-        assert(runtimePath.for(hostType));
-        assert(fs.accessSync(runtimePath.for(hostType), fs.constants.R_OK) === undefined);
+        expect(runtimePath.for(hostType)).toBeTruthy();
+        expect(fs.accessSync(runtimePath.for(hostType), fs.constants.R_OK) === undefined).toBeTruthy();
         runs++;
       });
-      assert(runs === hostList.length);
+      expect(runs === hostList.length).toBeTruthy();
     });
   });
 
@@ -69,8 +69,8 @@ describe('Supported Hosts', () => {
       const supportedHosts = Object.keys(supportedHostsMap);
 
       supportedHosts.forEach(supportedHost => {
-        assert(eshost.supportedHosts.includes(supportedHost));
-        assert.strictEqual(eshost.normalizeHostForVU(supportedHost), supportedHostsMap[supportedHost]);
+        expect(eshost.supportedHosts.includes(supportedHost)).toBeTruthy();
+        expect(eshost.normalizeHostForVU(supportedHost)).toBe(supportedHostsMap[supportedHost]);
       });
     });
   });
