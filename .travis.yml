@@ -27,6 +27,7 @@ install: |
     export ESHOST_SKIP_CH=1
     export ESHOST_SKIP_D8=1
     export ESHOST_SKIP_ENGINE262=1
+    export ESHOST_SKIP_GRAALJS=1
     export ESHOST_SKIP_HERMES=1
     export ESHOST_SKIP_JSC=1
     export ESHOST_SKIP_JSSHELL=1
@@ -50,43 +51,16 @@ install: |
       unset TMP;
     }
 
-    # function install_engine262 {
-    #   git clone https://github.com/engine262/engine262.git;
-    #   cd engine262 && npm install && npm run build && npm link;
-    #   cd $TRAVIS_BUILD_DIR;
-    # }
-
-    function install_hermes {
-      export TMP=$(mktemp);
-      wget https://github.com/facebook/hermes/releases/download/v0.7.2/hermes-cli-linux-v0.7.2.tar.gz -O $TMP;
-      tar -xvf $TMP;
-      rm $TMP;
-      unset TMP;
-      export PATH=$PATH:$(pwd)/hermes;
-    }
-
     if [[ "$ESHOST_TARGET" == "node" ]]; then
       unset ESHOST_SKIP_NODE;
-    elif [[ "$ESHOST_TARGET" == "engine262" ]]; then
-      # install_engine262;
-      unset ESHOST_SKIP_ENGINE262;
+    elif [[ "$ESHOST_TARGET" == "graaljs" ]]; then
+      unset ESHOST_SKIP_GRAALJS;
+    elif [[ "$ESHOST_TARGET" == "hermes" ]]; then
+      unset ESHOST_SKIP_HERMES;
     elif [[ "$ESHOST_TARGET" == "firefox" ]]; then
       install_firefox;
       export PATH=$(pwd)/firefox:$PATH;
       unset ESHOST_SKIP_FIREFOX;
-    elif [[ "$ESHOST_TARGET" == "hermes" ]]; then
-      install_hermes;
-      export PATH=$PATH:$(pwd)/hermes;
-      unset ESHOST_SKIP_HERMES;
-    elif [[ "$ESHOST_TARGET" == "jsshell" ]]; then
-      export TMP=$(mktemp);
-      wget https://archive.mozilla.org/pub/firefox/nightly/latest-mozilla-central/jsshell-linux-x86_64.zip -O $TMP;
-      mkdir jsshell;
-      unzip -d jsshell $TMP;
-      rm $TMP;
-      unset TMP;
-      export PATH=$PATH:$(pwd)/jsshell;
-      unset ESHOST_SKIP_JSSHELL;
     elif [[ "$ESHOST_TARGET" == "chakra_debug" ]]; then
       wget https://s3.amazonaws.com/eshost-builds/ChakraCore-Debug_linux_1_7_0.tar.gz;
       tar -xvf ChakraCore-Debug_linux_1_7_0.tar.gz;
