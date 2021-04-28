@@ -4,7 +4,8 @@ node_js:
   - 12
   - 14
   - 16
-dist: trusty
+dist: focal
+arch: arm64
 sudo: false
 before_install:
   - export DISPLAY=:99.0
