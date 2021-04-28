@@ -26,12 +26,12 @@ const makeHostPath = (binName) => {
 };
 
 const hosts = [
-  // ["ch", { hostPath: makeHostPath("chakra") }],
-  // ["d8", { hostPath: makeHostPath("v8") }],
-  // ["engine262", { hostPath: makeHostPath("engine262") }],
-  // ["graaljs", { hostPath: makeHostPath("graaljs") }],
-  // ["hermes", { hostPath: makeHostPath("hermes") }],
-  // ["jsshell", { hostPath: makeHostPath("sm") }],
+  ["ch", { hostPath: makeHostPath("chakra") }],
+  ["d8", { hostPath: makeHostPath("v8") }],
+  ["engine262", { hostPath: makeHostPath("engine262") }],
+  ["graaljs", { hostPath: makeHostPath("graaljs") }],
+  ["hermes", { hostPath: makeHostPath("hermes") }],
+  ["jsshell", { hostPath: makeHostPath("sm") }],
   ["jsc", { hostPath: makeHostPath("jsc") }],
   ["node", { hostPath: "node" }], // Not provided by esvu
   ["qjs", { hostPath: makeHostPath("quickjs-run-test262") }],
