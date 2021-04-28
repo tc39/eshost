@@ -1,9 +1,9 @@
-/* JavaScriptCore exposes a $ & $ object to its runtime */
+/* JavaScriptCore exposes a $ & $262 object to its runtime */
 const jsc = globalThis["\x24"];
 const DollarCreateRealm = jsc.createRealm;
 const DollarEvalScript = jsc.evalScript.bind(jsc);
 
-const $262 = {};
+const $262 = Object.assign({}, jsc);
 $262.global = globalThis;
 $262.source = $SOURCE;
 $262.destroy = function() {};

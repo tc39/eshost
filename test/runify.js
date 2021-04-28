@@ -13,47 +13,57 @@ const isWindows =
   process.env.OSTYPE === "cygwin" ||
   process.env.OSTYPE === "msys";
 
-// const capabilities = {
-//   browserName: process.env.ESHOST_REMOTE_BROWSERNAME || 'firefox',
-//   platform: process.env.ESHOST_REMOTE_PLATFORM || 'ANY',
-//   version: process.env.ESHOST_REMOTE_VERSION || ''
-// };
+const capabilities = {
+  browserName: process.env.ESHOST_REMOTE_BROWSERNAME || "firefox",
+  platform: process.env.ESHOST_REMOTE_PLATFORM || "ANY",
+  version: process.env.ESHOST_REMOTE_VERSION || "",
+};
 
-// const webdriverServer = 'http://localhost:4444/wd/hub';
+const webdriverServer = "http://localhost:4444/wd/hub";
 
 const makeHostPath = (binName) => {
   return path.join(os.homedir(), ".esvu/bin", binName);
 };
 
 const hosts = [
-  ['ch', { hostPath: makeHostPath('chakra') }],
-  // // ['hermes', { hostPath: makeHostPath('hermes') }],
-  ['d8', { hostPath: makeHostPath('v8') }],
-  ['engine262', { hostPath: makeHostPath('engine262') }],
-  ['jsshell', { hostPath: makeHostPath('sm') }],
+  // ["ch", { hostPath: makeHostPath("chakra") }],
+  // ["d8", { hostPath: makeHostPath("v8") }],
+  // ["engine262", { hostPath: makeHostPath("engine262") }],
+  // ["graaljs", { hostPath: makeHostPath("graaljs") }],
+  // ["hermes", { hostPath: makeHostPath("hermes") }],
+  // ["jsshell", { hostPath: makeHostPath("sm") }],
   ["jsc", { hostPath: makeHostPath("jsc") }],
-  ['node', { hostPath: 'node' }], // Not provided by esvu
-  // // ['chrome', { hostPath: 'chrome' }], // Not provided by esvu
-  // // ['firefox', { hostPath: 'firefox' }], // Not provided by esvu
-  // // ['remote', { webdriverServer, capabilities }],
+  ["node", { hostPath: "node" }], // Not provided by esvu
+  ["qjs", { hostPath: makeHostPath("quickjs-run-test262") }],
+  ["xs", { hostPath: makeHostPath("xs") }],
 ];
-
-if (process.env.CI) {
-  hosts.unshift(["ch", { hostPath: "ch" }]);
-}
 
 const hostsOnWindows = [
   ["ch", { hostPath: makeHostPath("chakra.exe") }],
-  ["hermes", { hostPath: makeHostPath("hermes.exe") }],
   ["d8", { hostPath: makeHostPath("v8.exe") }],
   ["engine262", { hostPath: makeHostPath("engine262.cmd") }],
+  ["hermes", { hostPath: makeHostPath("hermes.exe") }],
   ["jsshell", { hostPath: makeHostPath("sm.exe") }],
   ["jsc", { hostPath: makeHostPath("jsc.exe") }],
   ["node", { hostPath: "node.exe" }], // Not provided by esvu
-  ["chrome", { hostPath: "chrome.exe" }], // Not provided by esvu
-  ["firefox", { hostPath: "firefox.exe" }], // Not provided by esvu
-  ["remote", {}],
 ];
+
+if (process.env.CI) {
+  // This is for testing the specially built version of Chakra in CI
+  hosts[0] = ["ch", { hostPath: "ch" }];
+  hosts.push(
+    ["chrome", { hostPath: "chrome" }], // Not provided by esvu
+    ["firefox", { hostPath: "firefox" }], // Not provided by esvu
+    ["remote", { webdriverServer, capabilities }]
+  );
+
+  hostsOnWindows[0] = ["ch", { hostPath: "ch.exe" }];
+  hostsOnWindows.push(
+    ["chrome", { hostPath: "chrome.exe" }], // Not provided by esvu
+    ["firefox", { hostPath: "firefox.exe" }], // Not provided by esvu
+    ["remote", {}]
+  );
+}
 
 // console.log(`isWindows: ${isWindows}`);
 if (isWindows) {
@@ -224,7 +234,7 @@ hosts.forEach(function (record) {
         const result = await agent.evalScript("throw new Error();");
         expect(result.stdout).toBe("");
         expect(result.error).toBeTruthy();
-        expect(result.error.message).toBe(undefined);
+        expect(result.error.message).toBeFalsy();
         expect(result.error.name).toBe("Error");
       });
 
@@ -269,7 +279,7 @@ hosts.forEach(function (record) {
       });
 
       it("can eval in new realms", async () => {
-        if (["hermes"].includes(type)) {
+        if (["hermes", "xs"].includes(type)) {
           return;
         }
 
@@ -285,7 +295,7 @@ hosts.forEach(function (record) {
       });
 
       it("can set globals in new realms", async () => {
-        if (["hermes"].includes(type)) {
+        if (["hermes", "xs"].includes(type)) {
           return;
         }
 
@@ -298,7 +308,7 @@ hosts.forEach(function (record) {
       });
 
       it("can eval in new scripts", async () => {
-        if (["hermes"].includes(type)) {
+        if (["hermes", "xs"].includes(type)) {
           return;
         }
 
@@ -321,7 +331,9 @@ hosts.forEach(function (record) {
           print(completion.value.name);
         `);
 
-        expect((result.stdout || result.stderr).match(/SyntaxError/m)).toBeTruthy();
+        expect(
+          (result.stdout || result.stderr).match(/SyntaxError/m)
+        ).toBeTruthy();
       });
 
       it("can eval lexical bindings in new scripts", async () => {
@@ -393,7 +405,7 @@ hosts.forEach(function (record) {
       });
 
       it("accepts destroy callbacks", async () => {
-        if (["hermes"].includes(type)) {
+        if (["hermes", "xs"].includes(type)) {
           return;
         }
 
@@ -501,7 +513,7 @@ hosts.forEach(function (record) {
       });
 
       it("supports realm nesting", async () => {
-        if (["hermes"].includes(type)) {
+        if (["hermes", "xs"].includes(type)) {
           return;
         }
 
@@ -518,11 +530,13 @@ hosts.forEach(function (record) {
           print(typeof x);
         `);
         expect(result.stderr).toBe("");
-        expect(result.stdout.match(/^object\r?\nstring\r?\nnumber\r?\n/m)).toBeTruthy();
+        expect(
+          result.stdout.match(/^object\r?\nstring\r?\nnumber\r?\n/m)
+        ).toBeTruthy();
       });
 
       it("observes correct cross-script interaction semantics", async () => {
-        if (["hermes", "engine262"].includes(type)) {
+        if (["hermes", "engine262", "xs"].includes(type)) {
           return;
         }
 
@@ -593,7 +607,9 @@ hosts.forEach(function (record) {
         expect(results[1].stdout.match(/^U\+2029 once\r?\n/)).toBeTruthy();
 
         expect(results[2].stderr).toBe("");
-        expect(results[2].stdout.match(/^both U\+2028 and U\+2029\r?\n/)).toBeTruthy();
+        expect(
+          results[2].stdout.match(/^both U\+2028 and U\+2029\r?\n/)
+        ).toBeTruthy();
 
         expect(results[3].stderr).toBe("");
         expect(results[3].stdout.match(/^U\+2028 twice\r?\n/)).toBeTruthy();
@@ -606,13 +622,9 @@ hosts.forEach(function (record) {
         // browsers are irrelevant to this test
         // jsshell is not working correctly on travis
         if (
-          [
-            "engine262",
-            "hermes",
-            "firefox",
-            "chrome",
-            "remote",
-          ].includes(type)
+          ["engine262", "hermes", "firefox", "chrome", "qjs", "remote", "xs"].includes(
+            type
+          )
         ) {
           return;
         }
@@ -745,11 +757,9 @@ hosts.forEach(function (record) {
       it("allows custom shortNames", async () => {
         const optionsWithShortname = { ...options, shortName: "$testing" };
         const agent = await eshost.createAgent(type, optionsWithShortname);
-        const result = await agent.evalScript(
-          '$testing.evalScript("print(1)")'
-        );
+        const result = await agent.evalScript("print(typeof $testing)");
         expect(result.error === null).toBeTruthy();
-        expect(result.stdout.indexOf("1")).toBe(0);
+        expect(result.stdout.trim()).toMatchInlineSnapshot(`"object"`);
         agent.destroy();
       });
     });
