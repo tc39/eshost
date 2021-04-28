@@ -1,6 +1,5 @@
 "use strict";
 
-const assert = require("assert");
 const { ChildProcess } = require("child_process");
 const Emitter = require("events");
 const os = require("os");
@@ -201,7 +200,7 @@ describe("ConsoleAgent", () => {
           child.emit("close");
           resolve();
         }, 100);
-      }),
+      });
       expect(path.dirname(ccp.lastCall.args[0][0])).toBe(out);
     });
   });
@@ -354,6 +353,7 @@ describe("ConsoleAgent", () => {
       child.emit("close");
 
       expect(compile.callCount).toBe(1);
+      expect(result).toMatchInlineSnapshot(`Promise {}`);
     });
   });
 });

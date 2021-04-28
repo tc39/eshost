@@ -1,7 +1,6 @@
 "use strict";
 
 const eshost = require("../");
-const assert = require("assert");
 const { stripIndent } = require("common-tags");
 const hasbin = require("hasbin");
 const fs = require("fs");
@@ -100,9 +99,7 @@ hosts.forEach(function (record) {
   }
 
   describe(`${type} (${options.hostPath || type})`, function () {
-    let run;
     let agent;
-    // this.timeout(20000);
 
     if (isSkipped) {
       return;
