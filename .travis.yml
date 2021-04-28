@@ -4,15 +4,18 @@ node_js:
   - 12
   - 14
   - 16
-dist: trusty
-sudo: false
+dist: xenial
+arch: arm64
+services:
+  - xvfb
 before_install:
   - export DISPLAY=:99.0
-  - sh -e /etc/init.d/xvfb start
+  - export PATH=$PATH:"$HOME/.esvu/bin"
+  # - sh -e /etc/init.d/xvfb start
 env:
   # Shells
-  - ESHOST_TARGET=ch
-  # - ESHOST_TARGET=engine262
+  # - ESHOST_TARGET=ch
+  - ESHOST_TARGET=engine262
   # # - ESHOST_TARGET=hermes
   # - ESHOST_TARGET=jsshell
   # - ESHOST_TARGET=node
@@ -36,9 +39,6 @@ install: |
     export ESHOST_SKIP_FIREFOX=1
     export ESHOST_SKIP_REMOTE=1
 
-    npm install esvu -g;
-    esvu --engines=all;
-
     function install_firefox {
       export TMP=$(mktemp);
       wget https://archive.mozilla.org/pub/firefox/nightly/2018/12/2018-12-01-05-49-36-mozilla-central/firefox-65.0a1.en-US.linux-x86_64.tar.bz2 -O $TMP;
@@ -60,9 +60,9 @@ install: |
       export PATH=$(pwd)/firefox:$PATH;
       unset ESHOST_SKIP_FIREFOX;
     elif [[ "$ESHOST_TARGET" == "ch" ]]; then
-      wget https://s3.amazonaws.com/eshost-builds/ChakraCore-Debug_linux_1_7_0.tar.gz;
-      tar -xvf ChakraCore-Debug_linux_1_7_0.tar.gz;
-      export PATH=$PATH:$(pwd)/out/Debug;
+      # wget https://s3.amazonaws.com/eshost-builds/ChakraCore-Debug_linux_1_7_0.tar.gz;
+      # tar -xvf ChakraCore-Debug_linux_1_7_0.tar.gz;
+      # export PATH=$PATH:$(pwd)/out/Debug;
       unset ESHOST_SKIP_CH;
     elif [[ "$ESHOST_TARGET" == "chrome" ]]; then
       channel=unstable
@@ -103,7 +103,7 @@ install: |
       exit 1;
     fi
 
-    npm install --ignore-scripts
+    npm run build:env;
 
 script:
   - npm run lint

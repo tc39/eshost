@@ -4,8 +4,8 @@
   "description": "Invoke ECMAScript scripts in any command line JS engine.",
   "main": "lib/eshost.js",
   "scripts": {
-    "setup": "esvu --engines=all",
-    "test": "jest --runInBand --no-cache --config=./jest.config.js",
+    "build:env": "./scripts/prepare-environment.sh",
+    "test": "export $(./scripts/prepare-environment.sh); jest --runInBand --no-cache --config=./jest.config.js",
     "lint": "eslint lib/* bin/* test/*.js"
   },
   "author": "Brian Terlson",

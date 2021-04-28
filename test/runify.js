@@ -26,7 +26,7 @@ const makeHostPath = (binName) => {
 };
 
 const hosts = [
-  ["ch", { hostPath: makeHostPath("chakra") }],
+  // ["ch", { hostPath: makeHostPath("chakra") }],
   ["d8", { hostPath: makeHostPath("v8") }],
   ["engine262", { hostPath: makeHostPath("engine262") }],
   ["graaljs", { hostPath: makeHostPath("graaljs") }],
@@ -39,7 +39,7 @@ const hosts = [
 ];
 
 const hostsOnWindows = [
-  ["ch", { hostPath: makeHostPath("chakra.exe") }],
+  // ["ch", { hostPath: makeHostPath("chakra.exe") }],
   ["d8", { hostPath: makeHostPath("v8.exe") }],
   ["engine262", { hostPath: makeHostPath("engine262.cmd") }],
   ["hermes", { hostPath: makeHostPath("hermes.exe") }],
