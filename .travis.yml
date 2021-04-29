@@ -103,9 +103,8 @@ install: |
       exit 1;
     fi
 
-    npm run build:env;
-
 script:
+  - npm run build:env;
   - npm run lint
   - npm run test
 
