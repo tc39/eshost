@@ -5,7 +5,6 @@ node_js:
   - 14
   - 16
 dist: xenial
-arch: arm64
 services:
   - xvfb
 before_install:
@@ -18,7 +17,8 @@ env:
   - ESHOST_TARGET=engine262
   # # - ESHOST_TARGET=hermes
   # - ESHOST_TARGET=jsshell
-  # - ESHOST_TARGET=node
+  - ESHOST_TARGET=node
+  - ESHOST_TARGET=qjs
   # # Browsers
   # - ESHOST_TARGET=firefox
   # - ESHOST_TARGET=chrome
@@ -32,6 +32,7 @@ install: |
     export ESHOST_SKIP_HERMES=1
     export ESHOST_SKIP_JSC=1
     export ESHOST_SKIP_JSSHELL=1
+    export ESHOST_SKIP_QJS=1
     export ESHOST_SKIP_NODE=1
 
     # Browsers
@@ -39,18 +40,22 @@ install: |
     export ESHOST_SKIP_FIREFOX=1
     export ESHOST_SKIP_REMOTE=1
 
-    function install_firefox {
-      export TMP=$(mktemp);
-      wget https://archive.mozilla.org/pub/firefox/nightly/2018/12/2018-12-01-05-49-36-mozilla-central/firefox-65.0a1.en-US.linux-x86_64.tar.bz2 -O $TMP;
-      tar -xvf $TMP;
-      wget https://github.com/mozilla/geckodriver/releases/download/v0.24.0/geckodriver-v0.24.0-linux64.tar.gz -O $TMP;
-      tar --directory firefox -xvf $TMP;
-      rm $TMP;
-      unset TMP;
-    }
+    # function install_firefox {
+    #   export TMP=$(mktemp);
+    #   wget https://archive.mozilla.org/pub/firefox/nightly/2018/12/2018-12-01-05-49-36-mozilla-central/firefox-65.0a1.en-US.linux-x86_64.tar.bz2 -O $TMP;
+    #   tar -xvf $TMP;
+    #   wget https://github.com/mozilla/geckodriver/releases/download/v0.24.0/geckodriver-v0.24.0-linux64.tar.gz -O $TMP;
+    #   tar --directory firefox -xvf $TMP;
+    #   rm $TMP;
+    #   unset TMP;
+    # }
 
     if [[ "$ESHOST_TARGET" == "node" ]]; then
       unset ESHOST_SKIP_NODE;
+    elif [[ "$ESHOST_TARGET" == "engine262" ]]; then
+      unset ESHOST_SKIP_ENGINE262;
+    elif [[ "$ESHOST_TARGET" == "qjs" ]]; then
+      unset ESHOST_SKIP_QJS;
     elif [[ "$ESHOST_TARGET" == "graaljs" ]]; then
       unset ESHOST_SKIP_GRAALJS;
     elif [[ "$ESHOST_TARGET" == "hermes" ]]; then
@@ -60,9 +65,9 @@ install: |
       export PATH=$(pwd)/firefox:$PATH;
       unset ESHOST_SKIP_FIREFOX;
     elif [[ "$ESHOST_TARGET" == "ch" ]]; then
-      # wget https://s3.amazonaws.com/eshost-builds/ChakraCore-Debug_linux_1_7_0.tar.gz;
-      # tar -xvf ChakraCore-Debug_linux_1_7_0.tar.gz;
-      # export PATH=$PATH:$(pwd)/out/Debug;
+      wget https://s3.amazonaws.com/eshost-builds/ChakraCore-Debug_linux_1_7_0.tar.gz;
+      tar -xvf ChakraCore-Debug_linux_1_7_0.tar.gz;
+      export PATH=$PATH:$(pwd)/out/Debug;
       unset ESHOST_SKIP_CH;
     elif [[ "$ESHOST_TARGET" == "chrome" ]]; then
       channel=unstable
@@ -103,8 +108,12 @@ install: |
       exit 1;
     fi
 
+    npm install --ignore-scripts;
+    npm install esvu -g;
+    # esvu --engines=all;
+    esvu --engines=engine262,quickjs,spidermonkey,v8,xs;
+
 script:
-  - npm run build:env;
   - npm run lint
   - npm run test
 
