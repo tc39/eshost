@@ -26,11 +26,11 @@ const makeHostPath = (binName) => {
 };
 
 const hosts = [
-  // ["ch", { hostPath: makeHostPath("chakra") }],
+  ["ch", { hostPath: makeHostPath("chakra") }],
   ["d8", { hostPath: makeHostPath("v8") }],
   ["engine262", { hostPath: makeHostPath("engine262") }],
   ["graaljs", { hostPath: makeHostPath("graaljs") }],
-  ["hermes", { hostPath: makeHostPath("hermes") }],
+  // ["hermes", { hostPath: makeHostPath("hermes") }],
   ["jsshell", { hostPath: makeHostPath("sm") }],
   ["jsc", { hostPath: makeHostPath("jsc") }],
   ["node", { hostPath: "node" }], // Not provided by esvu
@@ -39,7 +39,7 @@ const hosts = [
 ];
 
 const hostsOnWindows = [
-  // ["ch", { hostPath: makeHostPath("chakra.exe") }],
+  ["ch", { hostPath: makeHostPath("chakra.exe") }],
   ["d8", { hostPath: makeHostPath("v8.exe") }],
   ["engine262", { hostPath: makeHostPath("engine262.cmd") }],
   ["hermes", { hostPath: makeHostPath("hermes.exe") }],
@@ -133,14 +133,14 @@ hosts.forEach(function (record) {
     });
 
     describe("normal script evaluation", function () {
-      it("runs SyntaxErrors", async () => {
+      it("handles real SyntaxErrors", async () => {
         const result = await agent.evalScript("foo x++");
         expect(result.error).toBeTruthy();
         expect(result.error.name).toBe("SyntaxError");
         expect(result.stdout).toBe("");
       });
 
-      it("runs thrown SyntaxErrors", async () => {
+      it("handles thrown SyntaxErrors", async () => {
         const result = await agent.evalScript(
           'throw new SyntaxError("Custom Message");'
         );
@@ -157,7 +157,7 @@ hosts.forEach(function (record) {
         }
       });
 
-      it("runs thrown TypeErrors", async () => {
+      it("handles thrown TypeErrors", async () => {
         const result = await agent.evalScript(
           'throw new TypeError("Custom Message");'
         );
@@ -173,7 +173,7 @@ hosts.forEach(function (record) {
         }
       });
 
-      it("runs thrown RangeErrors", async () => {
+      it("handles thrown RangeErrors", async () => {
         const result = await agent.evalScript(
           'throw new RangeError("Custom Message");'
         );
@@ -190,7 +190,7 @@ hosts.forEach(function (record) {
         }
       });
 
-      it("runs thrown Errors", async () => {
+      it("handles thrown Errors", async () => {
         const result = await agent.evalScript(
           'throw new Error("Custom Message");'
         );
@@ -200,7 +200,7 @@ hosts.forEach(function (record) {
         expect(result.error.name).toBe("Error");
       });
 
-      it("runs thrown custom Errors", async () => {
+      it("handles thrown custom Errors", async () => {
         const result = await agent.evalScript(
           'function Foo1Error(msg) { this.name = "Foo1Error"; this.message = msg }; Foo1Error.prototype = Error.prototype; throw new Foo1Error("Custom Message");'
         );
@@ -208,10 +208,14 @@ hosts.forEach(function (record) {
 
         expect(result.error).toBeTruthy();
         expect(result.error.message).toBe("Custom Message");
-        expect(result.error.name).toBe("Foo1Error");
+
+        // graaljs gets this wrong, there's nothing eshost can do about it
+        if (type !== "graaljs") {
+          expect(result.error.name).toBe("Foo1Error");
+        }
       });
 
-      it("runs thrown custom Errors that don't have Error.prototype", async () => {
+      it("handles thrown custom Errors that don't have Error.prototype", async () => {
         const result = await agent.evalScript(stripIndent`
           function Foo2Error(msg) {
             this.message = msg;
@@ -230,7 +234,7 @@ hosts.forEach(function (record) {
         expect(result.error.name).toBe("Foo2Error");
       });
 
-      it("runs thrown Errors without messages", async () => {
+      it("handles thrown Errors without messages", async () => {
         const result = await agent.evalScript("throw new Error();");
         expect(result.stdout).toBe("");
         expect(result.error).toBeTruthy();
@@ -238,7 +242,7 @@ hosts.forEach(function (record) {
         expect(result.error.name).toBe("Error");
       });
 
-      it("runs thrown errors from eval", async () => {
+      it("handles thrown errors from eval", async () => {
         const result = await agent.evalScript(
           'eval("\'\\u000Astr\\u000Aing\\u000A\'") === "\\u000Astr\\u000Aing\\u000A"'
         );
@@ -260,6 +264,229 @@ hosts.forEach(function (record) {
         expect(result.stdout.match(/^foo\r?\n/)).toBeTruthy();
       });
 
+      it("runs in the proper mode", async () => {
+        let result = await agent.evalScript(stripIndent`
+          "use strict"
+          function foo() { print(this === undefined) }
+          foo();
+        `);
+        expect(result.stdout.match(/^true\r?\n/m)).toBeTruthy();
+
+        result = await agent.evalScript(stripIndent`
+          'use strict'
+          function foo() { print(this === undefined) }
+          foo();
+        `);
+        expect(result.stdout.match(/^true\r?\n/m)).toBeTruthy();
+
+        result = await agent.evalScript(stripIndent`
+          function foo() { print(this === Function('return this;')()) }
+          foo();
+        `);
+        expect(result.stdout.match(/^true\r?\n/m)).toBeTruthy();
+
+        result = await agent.evalScript(stripIndent`
+          /*---
+          ---*/
+          "use strict";
+          function foo() { print(this === undefined) }
+          foo();
+        `);
+        expect(result.stdout.match(/^true\r?\n/m)).toBeTruthy();
+
+        result = await agent.evalScript(stripIndent`
+          /*---
+          ---*/
+          " some other prolog "
+          "use strict";
+          function foo() { print(this === undefined) }
+          foo();
+        `);
+        expect(result.stdout.match(/^true\r?\n/m)).toBeTruthy();
+
+        result = await agent.evalScript(stripIndent`
+          // normal comment
+          /*---
+          ---*/
+          " some other prolog "
+          // another comment
+          "use strict";
+          function foo() { print(this === undefined) }
+          foo();
+        `);
+        expect(result.stdout.match(/^true\r?\n/m)).toBeTruthy();
+      });
+
+      it("prints values correctly", async () => {
+        const result = await agent.evalScript(stripIndent`
+          print(undefined);
+          print(null);
+          print('string');
+          print(true);
+          print(false);
+          print(0);
+          print(1);
+          print(1.2);
+          print(-1);
+        `);
+
+        expect(result.stderr).toBe("");
+
+        const values = result.stdout.split(/\r?\n/);
+        expect(values[0]).toBe("undefined");
+        expect(values[1]).toBe("null");
+        expect(values[2]).toBe("string");
+        expect(values[3]).toBe("true");
+        expect(values[4]).toBe("false");
+        expect(values[5]).toBe("0");
+        expect(values[6]).toBe("1");
+        expect(values[7]).toBe("1.2");
+        expect(values[8]).toBe("-1");
+      });
+
+      it("tolerates broken execution environments", async () => {
+        const result = await agent.evalScript(stripIndent`
+          Object.defineProperty(Object.prototype, "length", {
+            get() {
+              return 1;
+            },
+            configurable: true
+          });
+
+          print('okay');
+        `);
+        expect(result.stderr).toBe("");
+        expect(result.stdout.match(/^okay\r?\n/m)).toBeTruthy();
+      });
+
+      // The host may need to perform a number of asynchronous operations in
+      // order to evaluate a script. If the `stop` method is invoked while
+      // these operations are taking place, the host should not evaluate the
+      // script.
+      it("avoids race conditions in `stop`", async () => {
+        const evalScript = agent.evalScript("print(1);");
+
+        agent.stop();
+
+        const result = await evalScript;
+
+        expect(result.stdout).toBe("");
+      });
+
+      // mostly this test shouldn't hang (if it hangs, it's a bug)
+      it("can kill infinite loops", async () => {
+        // The GeckoDriver project cannot currently destroy browsing sessions
+        // whose main thread is blocked.
+        // https://github.com/mozilla/geckodriver/issues/825
+        if (effectiveType === "firefox") {
+          return;
+        }
+
+        const resultP = agent.evalScript(
+          stripIndent`while (true) { }; print(2);`
+        );
+        await timeout(10);
+
+        const stopP = agent.stop();
+
+        const outcomes = await Promise.all([resultP, stopP]);
+        const result = outcomes[0];
+
+        expect(!result.stdout.match(/2/)).toBeTruthy();
+      });
+
+      it("tolerates LINE SEPARATOR and PARAGRAPH SEPARATOR", async () => {
+        if (!["node"].includes(type)) {
+          return;
+        }
+
+        const operations = [
+          '\u2028print("U+2028 once");',
+          '\u2029print("U+2029 once");',
+          '\u2028\u2029print("both U+2028 and U+2029");',
+          '\u2028\u2028print("U+2028 twice");',
+          '\u2029\u2029print("U+2029 twice");',
+        ].map((src) => agent.evalScript(src));
+
+        const results = await Promise.all(operations);
+
+        expect(results[0].stderr).toBe("");
+        expect(results[0].stdout.match(/^U\+2028 once\r?\n/)).toBeTruthy();
+
+        expect(results[1].stderr).toBe("");
+        expect(results[1].stdout.match(/^U\+2029 once\r?\n/)).toBeTruthy();
+
+        expect(results[2].stderr).toBe("");
+        expect(
+          results[2].stdout.match(/^both U\+2028 and U\+2029\r?\n/)
+        ).toBeTruthy();
+
+        expect(results[3].stderr).toBe("");
+        expect(results[3].stdout.match(/^U\+2028 twice\r?\n/)).toBeTruthy();
+
+        expect(results[4].stderr).toBe("");
+        expect(results[4].stdout.match(/^U\+2029 twice\r?\n/)).toBeTruthy();
+      });
+
+      it('creates "optional" environments correctly (hostArgs)', async () => {
+        // browsers are irrelevant to this test
+        // jsshell is not working correctly on travis
+        if (
+          ["engine262", "firefox", "graaljs", "hermes", "chrome", "qjs", "remote", "xs"].includes(
+            type
+          )
+        ) {
+          return;
+        }
+
+        if (type === "ch" && !process.env.CI) {
+          return;
+        }
+
+        let source = "";
+        let hostArguments = "";
+
+        // Setup special cases
+        if (type === "ch") {
+          // Hello! If you come here wondering why this fails
+          // on your local machine, it's because you're using a
+          // version of Chakra that was not compiled with support
+          // for development flags. That's ok! The CI machine
+          // will check this for you, so don't sweat it.
+          hostArguments = "-Intl-";
+          source = 'print(typeof Intl === "undefined");';
+        }
+
+        if (type === "d8") {
+          hostArguments = "--expose_gc";
+          source = 'print(typeof gc === "function");';
+        }
+
+        if (type === "jsc") {
+          hostArguments = "--useDollarVM=true";
+          source = 'print(typeof $vm === "object");';
+        }
+
+        if (type === "jsshell") {
+          hostArguments = "--disable-weak-refs";
+          source = 'print(typeof WeakRef === "undefined");';
+        }
+
+        if (type === "node") {
+          hostArguments = "--expose_gc";
+          source = 'print(typeof gc === "function");';
+        }
+
+        const agent = await eshost.createAgent(type, {
+          hostArguments,
+          ...options,
+        });
+        const result = await agent.evalScript(source);
+        expect(result.stdout.trim()).toBe("true");
+      });
+    });
+
+    describe("realm evaluation", function() {
       it("can create new realms", async () => {
         if (["hermes"].includes(type)) {
           return;
@@ -417,101 +644,6 @@ hosts.forEach(function (record) {
         expect(result.stdout.match(/destroyed/)).toBeTruthy();
       });
 
-      it("runs in the proper mode", async () => {
-        let result = await agent.evalScript(stripIndent`
-          "use strict"
-          function foo() { print(this === undefined) }
-          foo();
-        `);
-        expect(result.stdout.match(/^true\r?\n/m)).toBeTruthy();
-
-        result = await agent.evalScript(stripIndent`
-          'use strict'
-          function foo() { print(this === undefined) }
-          foo();
-        `);
-        expect(result.stdout.match(/^true\r?\n/m)).toBeTruthy();
-
-        result = await agent.evalScript(stripIndent`
-          function foo() { print(this === Function('return this;')()) }
-          foo();
-        `);
-        expect(result.stdout.match(/^true\r?\n/m)).toBeTruthy();
-
-        result = await agent.evalScript(stripIndent`
-          /*---
-          ---*/
-          "use strict";
-          function foo() { print(this === undefined) }
-          foo();
-        `);
-        expect(result.stdout.match(/^true\r?\n/m)).toBeTruthy();
-
-        result = await agent.evalScript(stripIndent`
-          /*---
-          ---*/
-          " some other prolog "
-          "use strict";
-          function foo() { print(this === undefined) }
-          foo();
-        `);
-        expect(result.stdout.match(/^true\r?\n/m)).toBeTruthy();
-
-        result = await agent.evalScript(stripIndent`
-          // normal comment
-          /*---
-          ---*/
-          " some other prolog "
-          // another comment
-          "use strict";
-          function foo() { print(this === undefined) }
-          foo();
-        `);
-        expect(result.stdout.match(/^true\r?\n/m)).toBeTruthy();
-      });
-
-      it("prints values correctly", async () => {
-        const result = await agent.evalScript(stripIndent`
-          print(undefined);
-          print(null);
-          print('string');
-          print(true);
-          print(false);
-          print(0);
-          print(1);
-          print(1.2);
-          print(-1);
-        `);
-
-        expect(result.stderr).toBe("");
-
-        const values = result.stdout.split(/\r?\n/);
-        expect(values[0]).toBe("undefined");
-        expect(values[1]).toBe("null");
-        expect(values[2]).toBe("string");
-        expect(values[3]).toBe("true");
-        expect(values[4]).toBe("false");
-        expect(values[5]).toBe("0");
-        expect(values[6]).toBe("1");
-        expect(values[7]).toBe("1.2");
-        expect(values[8]).toBe("-1");
-      });
-
-      it("tolerates broken execution environments", async () => {
-        const result = await agent.evalScript(stripIndent`
-          Object.defineProperty(Object.prototype, "length", {
-            get() {
-              return 1;
-            },
-            configurable: true
-          });
-
-          print('okay');
-        `);
-        expect(result.stderr).toBe("");
-        expect(result.stdout.match(/^okay\r?\n/m)).toBeTruthy();
-      });
-
       it("supports realm nesting", async () => {
         if (["hermes", "xs"].includes(type)) {
           return;
@@ -536,7 +668,7 @@ hosts.forEach(function (record) {
       });
 
       it("observes correct cross-script interaction semantics", async () => {
-        if (["hermes", "engine262", "xs"].includes(type)) {
+        if (["engine262", "graaljs", "hermes", "xs"].includes(type)) {
           return;
         }
 
@@ -547,132 +679,6 @@ hosts.forEach(function (record) {
 
         expect(result.stderr).toBe("");
         expect(result.stdout.match(/^normal\r?\nthrow/m)).toBeTruthy();
-      });
-
-      // The host may need to perform a number of asynchronous operations in
-      // order to evaluate a script. If the `stop` method is invoked while
-      // these operations are taking place, the host should not evaluate the
-      // script.
-      it("avoids race conditions in `stop`", async () => {
-        const evalScript = agent.evalScript("print(1);");
-
-        agent.stop();
-
-        const result = await evalScript;
-
-        expect(result.stdout).toBe("");
-      });
-
-      // mostly this test shouldn't hang (if it hangs, it's a bug)
-      it("can kill infinite loops", async () => {
-        // The GeckoDriver project cannot currently destroy browsing sessions
-        // whose main thread is blocked.
-        // https://github.com/mozilla/geckodriver/issues/825
-        if (effectiveType === "firefox") {
-          return;
-        }
-
-        const resultP = agent.evalScript(
-          stripIndent`while (true) { }; print(2);`
-        );
-        await timeout(10);
-
-        const stopP = agent.stop();
-
-        const outcomes = await Promise.all([resultP, stopP]);
-        const result = outcomes[0];
-
-        expect(!result.stdout.match(/2/)).toBeTruthy();
-      });
-
-      it("tolerates LINE SEPARATOR and PARAGRAPH SEPARATOR", async () => {
-        if (!["node"].includes(type)) {
-          return;
-        }
-
-        const operations = [
-          '\u2028print("U+2028 once");',
-          '\u2029print("U+2029 once");',
-          '\u2028\u2029print("both U+2028 and U+2029");',
-          '\u2028\u2028print("U+2028 twice");',
-          '\u2029\u2029print("U+2029 twice");',
-        ].map((src) => agent.evalScript(src));
-
-        const results = await Promise.all(operations);
-
-        expect(results[0].stderr).toBe("");
-        expect(results[0].stdout.match(/^U\+2028 once\r?\n/)).toBeTruthy();
-
-        expect(results[1].stderr).toBe("");
-        expect(results[1].stdout.match(/^U\+2029 once\r?\n/)).toBeTruthy();
-
-        expect(results[2].stderr).toBe("");
-        expect(
-          results[2].stdout.match(/^both U\+2028 and U\+2029\r?\n/)
-        ).toBeTruthy();
-
-        expect(results[3].stderr).toBe("");
-        expect(results[3].stdout.match(/^U\+2028 twice\r?\n/)).toBeTruthy();
-
-        expect(results[4].stderr).toBe("");
-        expect(results[4].stdout.match(/^U\+2029 twice\r?\n/)).toBeTruthy();
-      });
-
-      it('creates "optional" environments correctly (hostArgs)', async () => {
-        // browsers are irrelevant to this test
-        // jsshell is not working correctly on travis
-        if (
-          ["engine262", "hermes", "firefox", "chrome", "qjs", "remote", "xs"].includes(
-            type
-          )
-        ) {
-          return;
-        }
-
-        if (type === "ch" && !process.env.CI) {
-          return;
-        }
-
-        let source = "";
-        let hostArguments = "";
-
-        // Setup special cases
-        if (type === "ch") {
-          // Hello! If you come here wondering why this fails
-          // on your local machine, it's because you're using a
-          // version of Chakra that was not compiled with support
-          // for development flags. That's ok! The CI machine
-          // will check this for you, so don't sweat it.
-          hostArguments = "-Intl-";
-          source = 'print(typeof Intl === "undefined");';
-        }
-
-        if (type === "d8") {
-          hostArguments = "--expose_gc";
-          source = 'print(typeof gc === "function");';
-        }
-
-        if (type === "jsc") {
-          hostArguments = "--useDollarVM=true";
-          source = 'print(typeof $vm === "object");';
-        }
-
-        if (type === "jsshell") {
-          hostArguments = "--disable-weak-refs";
-          source = 'print(typeof WeakRef === "undefined");';
-        }
-
-        if (type === "node") {
-          hostArguments = "--expose_gc";
-          source = 'print(typeof gc === "function");';
-        }
-
-        const agent = await eshost.createAgent(type, {
-          hostArguments,
-          ...options,
-        });
-        const result = await agent.evalScript(source);
-        expect(result.stdout.trim()).toBe("true");
       });
     });
 
@@ -758,7 +764,7 @@ hosts.forEach(function (record) {
         const optionsWithShortname = { ...options, shortName: "$testing" };
         const agent = await eshost.createAgent(type, optionsWithShortname);
         const result = await agent.evalScript("print(typeof $testing)");
-        expect(result.error === null).toBeTruthy();
+        expect(result.error).toBe(null);
         expect(result.stdout.trim()).toMatchInlineSnapshot(`"object"`);
         agent.destroy();
       });
