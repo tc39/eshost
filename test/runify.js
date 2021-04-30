@@ -13,13 +13,13 @@ const isWindows =
   process.env.OSTYPE === "cygwin" ||
   process.env.OSTYPE === "msys";
 
-const capabilities = {
-  browserName: process.env.ESHOST_REMOTE_BROWSERNAME || "firefox",
-  platform: process.env.ESHOST_REMOTE_PLATFORM || "ANY",
-  version: process.env.ESHOST_REMOTE_VERSION || "",
-};
+// const capabilities = {
+//   browserName: process.env.ESHOST_REMOTE_BROWSERNAME || "firefox",
+//   platform: process.env.ESHOST_REMOTE_PLATFORM || "ANY",
+//   version: process.env.ESHOST_REMOTE_VERSION || "",
+// };
 
-const webdriverServer = "http://localhost:4444/wd/hub";
+// const webdriverServer = "http://localhost:4444/wd/hub";
 
 const makeHostPath = (binName) => {
   return path.join(os.homedir(), ".esvu/bin", binName);
@@ -30,7 +30,7 @@ const hosts = [
   ["d8", { hostPath: makeHostPath("v8") }],
   ["engine262", { hostPath: makeHostPath("engine262") }],
   ["graaljs", { hostPath: makeHostPath("graaljs") }],
-  // ["hermes", { hostPath: makeHostPath("hermes") }],
+  ["hermes", { hostPath: makeHostPath("hermes") }],
   ["jsshell", { hostPath: makeHostPath("sm") }],
   ["jsc", { hostPath: makeHostPath("jsc") }],
   ["node", { hostPath: "node" }], // Not provided by esvu
@@ -51,18 +51,18 @@ const hostsOnWindows = [
 if (process.env.CI) {
   // This is for testing the specially built version of Chakra in CI
   hosts[0] = ["ch", { hostPath: "ch" }];
-  hosts.push(
-    ["chrome", { hostPath: "chrome" }], // Not provided by esvu
-    ["firefox", { hostPath: "firefox" }], // Not provided by esvu
-    ["remote", { webdriverServer, capabilities }]
-  );
+  // hosts.push(
+  //   ["chrome", { hostPath: "chrome" }], // Not provided by esvu
+  //   ["firefox", { hostPath: "firefox" }], // Not provided by esvu
+  //   ["remote", { webdriverServer, capabilities }]
+  // );
 
   hostsOnWindows[0] = ["ch", { hostPath: "ch.exe" }];
-  hostsOnWindows.push(
-    ["chrome", { hostPath: "chrome.exe" }], // Not provided by esvu
-    ["firefox", { hostPath: "firefox.exe" }], // Not provided by esvu
-    ["remote", {}]
-  );
+  // hostsOnWindows.push(
+  //   ["chrome", { hostPath: "chrome.exe" }], // Not provided by esvu
+  //   ["firefox", { hostPath: "firefox.exe" }], // Not provided by esvu
+  //   ["remote", {}]
+  // );
 }
 
 // console.log(`isWindows: ${isWindows}`);
