@@ -4,7 +4,7 @@
   "description": "Invoke ECMAScript scripts in any command line JS engine.",
   "main": "lib/eshost.js",
   "scripts": {
-    "build:env": "./scripts/prepare-environment.sh",
+    "build:env": "./node_modules/.bin/esvu",
     "test": "export $(./scripts/prepare-environment.sh); jest --runInBand --no-cache --config=./jest.config.js",
     "lint": "eslint lib/* bin/* test/*.js"
   },
