@@ -30,7 +30,7 @@ const hosts = [
   ["d8", { hostPath: makeHostPath("v8") }],
   ["engine262", { hostPath: makeHostPath("engine262") }],
   ["graaljs", { hostPath: makeHostPath("graaljs") }],
-  // ["hermes", { hostPath: makeHostPath("hermes") }],
+  ["hermes", { hostPath: makeHostPath("hermes") }],
   ["jsshell", { hostPath: makeHostPath("sm") }],
   ["jsc", { hostPath: makeHostPath("jsc") }],
   ["node", { hostPath: "node" }], // Not provided by esvu
