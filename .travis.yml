@@ -62,6 +62,8 @@ install: |
       unset ESHOST_SKIP_JSSHELL;
     elif [[ "$ESHOST_TARGET" == "hermes" ]]; then
       unset ESHOST_SKIP_HERMES;
+    elif [[ "$ESHOST_TARGET" == "xs" ]]; then
+      unset ESHOST_SKIP_XS;
     elif [[ "$ESHOST_TARGET" == "firefox" ]]; then
       install_firefox;
       export PATH=$(pwd)/firefox:$PATH;
