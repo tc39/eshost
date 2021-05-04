@@ -16,10 +16,6 @@ try {
 const ConsoleAgent = require("../lib/ConsoleAgent");
 const sinon = require("sinon");
 
-const timeout = function (ms) {
-  return new Promise((resolve) => setTimeout(resolve, ms));
-};
-
 describe("ConsoleAgent", () => {
   describe("ConsoleAgent({ hostArguments })", () => {
     it("accepts a single item string of hostArguments", async () => {
