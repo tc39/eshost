@@ -2,8 +2,8 @@
 const qjs = globalThis["\x24262"];
 const DollarCreateRealm = qjs.createRealm;
 const DollarEvalScript = qjs.evalScript.bind(qjs);
-const $262 = Object.assign({}, qjs);
 
+var $262 = Object.assign({}, qjs);
 $262.source = $SOURCE;
 $262.destroy = function() {};
 $262.gc = function() {
