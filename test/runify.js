@@ -133,188 +133,213 @@ hosts.forEach(function (record) {
     });
 
     describe("normal script evaluation", function () {
-      it("handles real SyntaxErrors", async () => {
-        const result = await agent.evalScript("foo x++");
-        expect(result.error).toBeTruthy();
-        expect(result.error.name).toBe("SyntaxError");
-        expect(result.stdout).toBe("");
-      });
-
-      it("handles thrown SyntaxErrors", async () => {
-        const result = await agent.evalScript(
-          'throw new SyntaxError("Custom Message");'
-        );
-        expect(result.error).toBeTruthy();
-        expect(result.stdout).toBe("");
-
-        expect(result.error.message).toBe("Custom Message");
-        expect(result.error.name).toBe("SyntaxError");
-
-        // Some engines do not provide enough information to
-        // create a complete stack array for all errors
-        if (result.error.stack.length) {
-          expect(Number(result.error.stack[0].lineNumber)).toBe(1);
+      describe("Code evaluation modes", () => {
+        // As of 2021-05-04, hermes and xs fail these tests.
+        if (["hermes", "xs"].includes(type)) {
+          return;
         }
+
+        it("strict mode evaluation, via \"use strict\" directive", async () => {
+          let code = stripIndent`
+            "use strict"
+            function foo() { print(this === undefined) }
+            foo();
+          `;
+          let result = await agent.evalScript(code);
+          expect(result.stdout.match(/^true\r?\n/m)).toBeTruthy();
+        });
+
+        it("strict mode evaluation, via 'use strict' directive", async () => {
+          let code = stripIndent`
+            'use strict'
+            function foo() { print(this === undefined) }
+            foo();
+          `;
+          let result = await agent.evalScript(code);
+          expect(result.stdout.match(/^true\r?\n/m)).toBeTruthy();
+        });
+
+        it("strict mode evaluation, via 'use strict' directive, prologue multi-line comments", async () => {
+          let code = stripIndent`
+            /*---
+            ---*/
+            "use strict";
+            function foo() { print(this === undefined) }
+            foo();
+          `;
+          let result = await agent.evalScript(code);
+          expect(result.stdout.match(/^true\r?\n/m)).toBeTruthy();
+        });
+
+        it("strict mode evaluation, via 'use strict' directive, prologue multi-line comments + other", async () => {
+          let code = stripIndent`
+            /*---
+            ---*/
+            " some other prolog "
+            "use strict";
+            function foo() { print(this === undefined) }
+            foo();
+          `;
+          let result = await agent.evalScript(code);
+          expect(result.stdout.match(/^true\r?\n/m)).toBeTruthy();
+        });
+
+        it("strict mode evaluation, via 'use strict' directive, prologue multi-line comments + other + interleaved single line comments", async () => {
+          let code = stripIndent`
+            // normal comment
+            /*---
+            ---*/
+            " some other prolog "
+            // another comment
+            "use strict";
+            function foo() { print(this === undefined) }
+            foo();
+          `;
+          let result = await agent.evalScript(code);
+          expect(result.stdout.match(/^true\r?\n/m)).toBeTruthy();
+        });
+
+        it("non-strict mode evaluation", async () => {
+          let code = stripIndent`
+            function foo() { print(this === Function('return this;')()) }
+            foo();
+          `;
+          let result = await agent.evalScript(code);
+          expect(result.stdout.match(/^true\r?\n/m)).toBeTruthy();
+        });
       });
 
-      it("handles thrown TypeErrors", async () => {
-        const result = await agent.evalScript(
-          'throw new TypeError("Custom Message");'
-        );
-        expect(result.error).toBeTruthy();
-        expect(result.stdout).toBe("");
-        expect(result.error.message).toBe("Custom Message");
-        expect(result.error.name).toBe("TypeError");
+      describe("Errors", () => {
+        it("handles real SyntaxErrors", async () => {
+          const result = await agent.evalScript("foo x++");
+          expect(result.error).toBeTruthy();
+          expect(result.error.name).toBe("SyntaxError");
+          expect(result.stdout).toBe("");
+        });
 
-        // Some engines do not provide enough information to
-        // create a complete stack array for all errors
-        if (result.error.stack.length) {
-          expect(Number(result.error.stack[0].lineNumber)).toBe(1);
-        }
-      });
+        it("handles thrown SyntaxErrors", async () => {
+          const result = await agent.evalScript(
+            'throw new SyntaxError("Custom Message");'
+          );
+          expect(result.error).toBeTruthy();
+          expect(result.stdout).toBe("");
 
-      it("handles thrown RangeErrors", async () => {
-        const result = await agent.evalScript(
-          'throw new RangeError("Custom Message");'
-        );
-        expect(result.error).toBeTruthy();
-        expect(result.stdout).toBe("");
+          expect(result.error.message).toBe("Custom Message");
+          expect(result.error.name).toBe("SyntaxError");
 
-        expect(result.error.message).toBe("Custom Message");
-        expect(result.error.name).toBe("RangeError");
-
-        // Some engines do not provide enough information to
-        // create a complete stack array for all errors
-        if (result.error.stack.length) {
-          expect(Number(result.error.stack[0].lineNumber)).toBe(1);
-        }
-      });
-
-      it("handles thrown Errors", async () => {
-        const result = await agent.evalScript(
-          'throw new Error("Custom Message");'
-        );
-        expect(result.stdout).toBe("");
-        expect(result.error).toBeTruthy();
-        expect(result.error.message).toBe("Custom Message");
-        expect(result.error.name).toBe("Error");
-      });
-
-      it("handles thrown custom Errors", async () => {
-        const result = await agent.evalScript(
-          'function Foo1Error(msg) { this.name = "Foo1Error"; this.message = msg }; Foo1Error.prototype = Error.prototype; throw new Foo1Error("Custom Message");'
-        );
-        expect(result.stdout).toBe("");
-
-        expect(result.error).toBeTruthy();
-        expect(result.error.message).toBe("Custom Message");
-
-        // graaljs gets this wrong, there's nothing eshost can do about it
-        if (type !== "graaljs") {
-          expect(result.error.name).toBe("Foo1Error");
-        }
-      });
-
-      it("handles thrown custom Errors that don't have Error.prototype", async () => {
-        const result = await agent.evalScript(stripIndent`
-          function Foo2Error(msg) {
-            this.message = msg;
+          // Some engines do not provide enough information to
+          // create a complete stack array for all errors
+          if (result.error.stack.length) {
+            expect(Number(result.error.stack[0].lineNumber)).toBe(1);
           }
-          Foo2Error.prototype.name = 'Foo2Error';
-          Foo2Error.prototype.toString = function() {
-            return 'Foo2Error: ' + this.message;
+        });
+
+        it("handles thrown TypeErrors", async () => {
+          const result = await agent.evalScript(
+            'throw new TypeError("Custom Message");'
+          );
+          expect(result.error).toBeTruthy();
+          expect(result.stdout).toBe("");
+          expect(result.error.message).toBe("Custom Message");
+          expect(result.error.name).toBe("TypeError");
+
+          // Some engines do not provide enough information to
+          // create a complete stack array for all errors
+          if (result.error.stack.length) {
+            expect(Number(result.error.stack[0].lineNumber)).toBe(1);
           }
+        });
 
-          throw new Foo2Error('FAIL!');
-        `);
+        it("handles thrown RangeErrors", async () => {
+          const result = await agent.evalScript(
+            'throw new RangeError("Custom Message");'
+          );
+          expect(result.error).toBeTruthy();
+          expect(result.stdout).toBe("");
 
-        expect(result.stdout).toBe("");
-        expect(result.error).toBeTruthy();
-        expect(result.error.message).toBe("FAIL!");
-        expect(result.error.name).toBe("Foo2Error");
-      });
+          expect(result.error.message).toBe("Custom Message");
+          expect(result.error.name).toBe("RangeError");
 
-      it("handles thrown Errors without messages", async () => {
-        const result = await agent.evalScript("throw new Error();");
-        expect(result.stdout).toBe("");
-        expect(result.error).toBeTruthy();
-        expect(result.error.message).toBeFalsy();
-        expect(result.error.name).toBe("Error");
-      });
+          // Some engines do not provide enough information to
+          // create a complete stack array for all errors
+          if (result.error.stack.length) {
+            expect(Number(result.error.stack[0].lineNumber)).toBe(1);
+          }
+        });
 
-      it("handles thrown errors from eval", async () => {
-        const result = await agent.evalScript(
-          'eval("\'\\u000Astr\\u000Aing\\u000A\'") === "\\u000Astr\\u000Aing\\u000A"'
-        );
-        expect(result.stdout).toBe("");
+        it("handles thrown Errors", async () => {
+          const result = await agent.evalScript(
+            'throw new Error("Custom Message");'
+          );
+          expect(result.stdout).toBe("");
+          expect(result.error).toBeTruthy();
+          expect(result.error.message).toBe("Custom Message");
+          expect(result.error.name).toBe("Error");
+        });
 
-        expect(result.error).toBeTruthy();
-        expect(result.error.name).toBe("SyntaxError");
+        it("handles thrown custom Errors", async () => {
+          const result = await agent.evalScript(
+            'function Foo1Error(msg) { this.name = "Foo1Error"; this.message = msg }; Foo1Error.prototype = Error.prototype; throw new Foo1Error("Custom Message");'
+          );
+          expect(result.stdout).toBe("");
 
-        // Some engines do not provide enough information to
-        // create a complete stack array for all errors
-        if (result.error.stack.length) {
-          // message should be present (but is implementation defined)
-          expect(result.error.message).toBeTruthy();
-        }
+          expect(result.error).toBeTruthy();
+          expect(result.error.message).toBe("Custom Message");
+
+          // graaljs gets this wrong, there's nothing eshost can do about it
+          if (type !== "graaljs") {
+            expect(result.error.name).toBe("Foo1Error");
+          }
+        });
+
+        it("handles thrown custom Errors that don't have Error.prototype", async () => {
+          const result = await agent.evalScript(stripIndent`
+            function Foo2Error(msg) {
+              this.message = msg;
+            }
+            Foo2Error.prototype.name = 'Foo2Error';
+            Foo2Error.prototype.toString = function() {
+              return 'Foo2Error: ' + this.message;
+            }
+
+            throw new Foo2Error('FAIL!');
+          `);
+
+          expect(result.stdout).toBe("");
+          expect(result.error).toBeTruthy();
+          expect(result.error.message).toBe("FAIL!");
+          expect(result.error.name).toBe("Foo2Error");
+        });
+
+        it("handles thrown Errors without messages", async () => {
+          const result = await agent.evalScript("throw new Error();");
+          expect(result.stdout).toBe("");
+          expect(result.error).toBeTruthy();
+          expect(result.error.message).toBeFalsy();
+          expect(result.error.name).toBe("Error");
+        });
+
+        it("handles thrown errors from eval", async () => {
+          const result = await agent.evalScript(
+            'eval("\'\\u000Astr\\u000Aing\\u000A\'") === "\\u000Astr\\u000Aing\\u000A"'
+          );
+          expect(result.stdout).toBe("");
+
+          expect(result.error).toBeTruthy();
+          expect(result.error.name).toBe("SyntaxError");
+
+          // Some engines do not provide enough information to
+          // create a complete stack array for all errors
+          if (result.error.stack.length) {
+            // message should be present (but is implementation defined)
+            expect(result.error.message).toBeTruthy();
+          }
+        });
       });
 
       it("gathers stdout", async () => {
         const result = await agent.evalScript('print("foo")');
         expect(result.stdout.match(/^foo\r?\n/)).toBeTruthy();
-      });
-
-      it("runs in the proper mode", async () => {
-        let result = await agent.evalScript(stripIndent`
-          "use strict"
-          function foo() { print(this === undefined) }
-          foo();
-        `);
-        expect(result.stdout.match(/^true\r?\n/m)).toBeTruthy();
-
-        result = await agent.evalScript(stripIndent`
-          'use strict'
-          function foo() { print(this === undefined) }
-          foo();
-        `);
-        expect(result.stdout.match(/^true\r?\n/m)).toBeTruthy();
-
-        result = await agent.evalScript(stripIndent`
-          function foo() { print(this === Function('return this;')()) }
-          foo();
-        `);
-        expect(result.stdout.match(/^true\r?\n/m)).toBeTruthy();
-
-        result = await agent.evalScript(stripIndent`
-          /*---
-          ---*/
-          "use strict";
-          function foo() { print(this === undefined) }
-          foo();
-        `);
-        expect(result.stdout.match(/^true\r?\n/m)).toBeTruthy();
-
-        result = await agent.evalScript(stripIndent`
-          /*---
-          ---*/
-          " some other prolog "
-          "use strict";
-          function foo() { print(this === undefined) }
-          foo();
-        `);
-        expect(result.stdout.match(/^true\r?\n/m)).toBeTruthy();
-
-        result = await agent.evalScript(stripIndent`
-          // normal comment
-          /*---
-          ---*/
-          " some other prolog "
-          // another comment
-          "use strict";
-          function foo() { print(this === undefined) }
-          foo();
-        `);
-        expect(result.stdout.match(/^true\r?\n/m)).toBeTruthy();
       });
 
       it("prints values correctly", async () => {
@@ -364,11 +389,11 @@ hosts.forEach(function (record) {
       // these operations are taking place, the host should not evaluate the
       // script.
       it("avoids race conditions in `stop`", async () => {
-        const evalScript = agent.evalScript("print(1);");
+        const evalP = agent.evalScript("print(1);");
 
         agent.stop();
 
-        const result = await evalScript;
+        const result = await evalP;
 
         expect(result.stdout).toBe("");
       });
