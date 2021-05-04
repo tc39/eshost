@@ -1,5 +1,7 @@
-if (!globalThis.$262) {
-  globalThis.$262 = {
+var $262 = globalThis.$262;
+
+if (!$262) {
+  $262 = {
     global: globalThis,
     createRealm(options) {
       throw new Test262Error('createRealm() not yet supported.');

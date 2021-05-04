@@ -3,7 +3,7 @@ const jsc = globalThis["\x24"];
 const DollarCreateRealm = jsc.createRealm;
 const DollarEvalScript = jsc.evalScript.bind(jsc);
 
-const $262 = Object.assign({}, jsc);
+var $262 = Object.assign({}, jsc);
 $262.global = globalThis;
 $262.source = $SOURCE;
 $262.destroy = function() {};
