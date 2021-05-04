@@ -5,7 +5,6 @@
   "main": "lib/eshost.js",
   "scripts": {
     "build:env": "./node_modules/.bin/esvu",
-    "___test": "export $(./scripts/prepare-environment.sh); jest --runInBand --no-cache --config=./jest.config.js",
     "test": "jest --runInBand --no-cache --config=./jest.config.js",
     "lint": "eslint lib/* bin/* test/*.js"
   },
