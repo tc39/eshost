@@ -115,13 +115,6 @@ hosts.forEach(function (record) {
       return;
     }
 
-    beforeAll(() => {
-      // run = this;
-      if (type === "remote") {
-        // run.timeout(60 * 1000);
-      }
-    });
-
     beforeEach(async () => {
       agent = await eshost.createAgent(type, options);
     });
@@ -407,17 +400,15 @@ hosts.forEach(function (record) {
           return;
         }
 
-        const resultP = agent.evalScript(
-          stripIndent`while (true) { }; print(2);`
-        );
-        await timeout(10);
+        const resultP = agent.evalScript(stripIndent`while (true) { }; print(2);`);
+        return timeout(100).then(() => {
+          const stopP = agent.stop();
 
-        const stopP = agent.stop();
-
-        const outcomes = await Promise.all([resultP, stopP]);
-        const result = outcomes[0];
-
-        expect(!result.stdout.match(/2/)).toBeTruthy();
+          return Promise.all([resultP, stopP]);
+        }).then(record => {
+          const result = record[0];
+          assert(!result.stdout.match(/2/), `Unexpected stdout: ${result.stdout}`);
+        });
       });
 
       it("tolerates LINE SEPARATOR and PARAGRAPH SEPARATOR", async () => {
@@ -754,9 +745,6 @@ hosts.forEach(function (record) {
       });
 
       it("Can evaluate module code", async () => {
-        // 60 seconds should be enough.
-        // run.timeout(60000);
-
         return Promise.all(
           records.map(async (record) => {
             let options = record.attrs.flags;
@@ -778,7 +766,7 @@ hosts.forEach(function (record) {
             }
           })
         );
-      });
+      }, 60_000);
     });
 
     describe('"shortName" option', () => {
