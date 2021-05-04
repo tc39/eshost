@@ -309,30 +309,17 @@ describe("ConsoleAgent", () => {
     });
 
     it("Does not call agent.compile() when attrs.flags.raw === true", async () => {
-      const a = new ConsoleAgent();
-      return Promise.resolve(a).then((agent) => {
-        return Promise.all([
-          // Initiate a script evaluation
-          agent.evalScript(defaultTestRecord, {}),
+      const agent = new ConsoleAgent();
 
-          // Since we control the child process,
-          // we need to wait a moment and then send
-          // a close event to end the script evaluation
-          new Promise((resolve) => {
-            setTimeout(() => {
-              child.emit("close");
-              resolve();
-            }, 100);
-          }),
-        ]).then(() => {
-          expect(compile.callCount).toEqual(0);
-        });
-      });
+      agent.evalScript(defaultTestRecord, {});
+
+      child.emit("close");
+
+      expect(compile.callCount).toBe(0);
     });
 
     it("Does call agent.compile() when attrs.flags.raw !== true", async () => {
-      // const a = new ConsoleAgent();
-      const agent = await new ConsoleAgent();
+      const agent = new ConsoleAgent();
 
       let record = {
         ...defaultTestRecord,
@@ -343,17 +330,11 @@ describe("ConsoleAgent", () => {
         },
       };
 
-      const result = agent.evalScript(record, {});
-
-      // Since we control the child process,
-      // we need to wait a moment and then send
-      // a close event to end the script evaluation
-      await timeout(100);
+      agent.evalScript(record, {});
 
       child.emit("close");
 
       expect(compile.callCount).toBe(1);
-      expect(result).toMatchInlineSnapshot(`Promise {}`);
     });
   });
 });
