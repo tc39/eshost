@@ -115,8 +115,8 @@ install: |
 
     npm install --ignore-scripts;
     npm install esvu -g;
-    # esvu --engines=all;
-    esvu --engines=engine262,quickjs,spidermonkey,v8,xs;
+    esvu --engines=all;
+    # esvu --engines=engine262,quickjs,spidermonkey,v8,xs;
 
 script:
   - npm run lint
