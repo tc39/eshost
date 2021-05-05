@@ -31,7 +31,7 @@ describe("ConsoleAgent", () => {
           ],
           "cpOptions": Object {},
           "hostPath": "../",
-          "isCreatingChildProcess": false,
+          "isStopped": false,
           "options": Object {
             "hostArguments": "-a",
             "hostPath": "../",
@@ -59,7 +59,7 @@ describe("ConsoleAgent", () => {
           ],
           "cpOptions": Object {},
           "hostPath": "c:\\\\",
-          "isCreatingChildProcess": false,
+          "isStopped": false,
           "options": Object {
             "hostArguments": "-a -b --c --dee",
             "hostPath": "c:\\\\",
@@ -84,7 +84,7 @@ describe("ConsoleAgent", () => {
           ],
           "cpOptions": Object {},
           "hostPath": "../",
-          "isCreatingChildProcess": false,
+          "isStopped": false,
           "options": Object {
             "hostArguments": Array [
               "-a",
@@ -114,7 +114,7 @@ describe("ConsoleAgent", () => {
           ],
           "cpOptions": Object {},
           "hostPath": "c:\\\\",
-          "isCreatingChildProcess": false,
+          "isStopped": false,
           "options": Object {
             "hostArguments": Array [
               "-a",
@@ -147,7 +147,7 @@ describe("ConsoleAgent", () => {
           ],
           "cpOptions": Object {},
           "hostPath": "/do/wa/diddy/",
-          "isCreatingChildProcess": false,
+          "isStopped": false,
           "options": Object {
             "hostArguments": "-a     -b --c 	 --dee",
             "hostPath": "/do/wa/diddy/",

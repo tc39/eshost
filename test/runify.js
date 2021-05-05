@@ -791,7 +791,7 @@ hosts.forEach(function (record) {
         `);
       });
 
-      dit("observes correct cross-script interaction semantics", async () => {
+      it("observes correct cross-script interaction semantics", async () => {
         if (["engine262", "graaljs", "hermes", "xs"].includes(type)) {
           return;
         }
@@ -800,7 +800,15 @@ hosts.forEach(function (record) {
           print($262.evalScript('let eshost;').type);
           print($262.evalScript('let eshost;').type);
         `);
-        expect(result).toMatchInlineSnapshot();
+        expect(result).toMatchInlineSnapshot(`
+          Object {
+            "error": null,
+            "stderr": "",
+            "stdout": "normal
+          throw
+          ",
+          }
+        `);
       });
     });
 
@@ -860,7 +868,7 @@ hosts.forEach(function (record) {
               ? "Test262:AsyncTestComplete"
               : "";
 
-              if (negative) {
+            if (negative) {
               expect(result.error).not.toBe(null);
               expect(result.stdout).toBeFalsy();
             } else {
