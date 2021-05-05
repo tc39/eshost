@@ -42,9 +42,7 @@ const hostsOnWindows = [
   ["ch", { hostPath: makeHostPath("chakra.exe") }],
   ["d8", { hostPath: makeHostPath("v8.exe") }],
   ["engine262", { hostPath: makeHostPath("engine262.cmd") }],
-  ["hermes", { hostPath: makeHostPath("hermes.exe") }],
   ["jsshell", { hostPath: makeHostPath("sm.exe") }],
-  ["jsc", { hostPath: makeHostPath("jsc.exe") }],
   ["node", { hostPath: "node.exe" }], // Not provided by esvu
 ];
 
@@ -86,9 +84,7 @@ if (isWindows) {
   });
 }
 
-const timeout = function (ms) {
-  return new Promise((resolve) => setTimeout(resolve, ms));
-};
+const timeout = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
 hosts.forEach(function (record) {
   const type = record[0];
@@ -125,14 +121,14 @@ hosts.forEach(function (record) {
       }
     });
 
-    describe("normal script evaluation", function () {
+    describe("Normal script evaluation", function () {
       describe("Code evaluation modes", () => {
         // As of 2021-05-04, hermes and xs fail these tests.
         if (["hermes", "xs"].includes(type)) {
           return;
         }
 
-        it("strict mode evaluation, via \"use strict\" directive", async () => {
+        it('strict mode evaluation, via "use strict" directive', async () => {
           let code = stripIndent`
             "use strict"
             function foo() { print(this === undefined) }
@@ -377,37 +373,63 @@ hosts.forEach(function (record) {
         expect(result.stdout.match(/^okay\r?\n/m)).toBeTruthy();
       });
 
-      // The host may need to perform a number of asynchronous operations in
-      // order to evaluate a script. If the `stop` method is invoked while
-      // these operations are taking place, the host should not evaluate the
-      // script.
-      it("avoids race conditions in `stop`", async () => {
-        const evalP = agent.evalScript("print(1);");
+      describe("Time sensitive execution", () => {
+        beforeEach(() => {
+          // jest.setTimeout(6_000);
+        });
 
-        agent.stop();
+        afterEach(() => {
+          // jest.setTimeout(5_000);
+        });
 
-        const result = await evalP;
+        // The host may need to perform a number of asynchronous operations in
+        // order to evaluate a script. If the `stop` method is invoked while
+        // these operations are taking place, the host should not evaluate the
+        // script.
+        it("avoids race conditions in `stop`", async () => {
+          const evaluationResult = agent.evalScript("print(1);");
 
-        expect(result.stdout).toBe("");
-      });
+          agent.stop();
 
-      // mostly this test shouldn't hang (if it hangs, it's a bug)
-      it("can kill infinite loops", async () => {
-        // The GeckoDriver project cannot currently destroy browsing sessions
-        // whose main thread is blocked.
-        // https://github.com/mozilla/geckodriver/issues/825
-        if (effectiveType === "firefox") {
-          return;
-        }
+          const result = await evaluationResult;
 
-        const resultP = agent.evalScript(stripIndent`while (true) { }; print(2);`);
-        return timeout(100).then(() => {
-          const stopP = agent.stop();
+          expect(result).toMatchInlineSnapshot(`
+            Object {
+              "error": null,
+              "stderr": "",
+              "stdout": "",
+            }
+          `);
+        });
 
-          return Promise.all([resultP, stopP]);
-        }).then(record => {
-          const result = record[0];
-          assert(!result.stdout.match(/2/), `Unexpected stdout: ${result.stdout}`);
+        // mostly this test shouldn't hang (if it hangs, it's a bug)
+        it("can kill infinite loops", async () => {
+          // The GeckoDriver project cannot currently destroy browsing sessions
+          // whose main thread is blocked.
+          // https://github.com/mozilla/geckodriver/issues/825
+
+          if (effectiveType === "firefox") {
+            return;
+          }
+
+          const evaluationResult = agent.evalScript(
+            "while (true) { }; print(2);"
+          );
+
+          await timeout(100);
+
+          const outcome = await Promise.all([evaluationResult, agent.stop()]);
+
+          expect(outcome).toMatchInlineSnapshot(`
+            Array [
+              Object {
+                "error": null,
+                "stderr": "",
+                "stdout": "",
+              },
+              true,
+            ]
+          `);
         });
       });
 
@@ -426,31 +448,56 @@ hosts.forEach(function (record) {
 
         const results = await Promise.all(operations);
 
-        expect(results[0].stderr).toBe("");
-        expect(results[0].stdout.match(/^U\+2028 once\r?\n/)).toBeTruthy();
-
-        expect(results[1].stderr).toBe("");
-        expect(results[1].stdout.match(/^U\+2029 once\r?\n/)).toBeTruthy();
-
-        expect(results[2].stderr).toBe("");
-        expect(
-          results[2].stdout.match(/^both U\+2028 and U\+2029\r?\n/)
-        ).toBeTruthy();
-
-        expect(results[3].stderr).toBe("");
-        expect(results[3].stdout.match(/^U\+2028 twice\r?\n/)).toBeTruthy();
-
-        expect(results[4].stderr).toBe("");
-        expect(results[4].stdout.match(/^U\+2029 twice\r?\n/)).toBeTruthy();
+        expect(results).toMatchInlineSnapshot(`
+          Array [
+            Object {
+              "error": null,
+              "stderr": "",
+              "stdout": "U+2028 once
+          ",
+            },
+            Object {
+              "error": null,
+              "stderr": "",
+              "stdout": "U+2029 once
+          ",
+            },
+            Object {
+              "error": null,
+              "stderr": "",
+              "stdout": "both U+2028 and U+2029
+          ",
+            },
+            Object {
+              "error": null,
+              "stderr": "",
+              "stdout": "U+2028 twice
+          ",
+            },
+            Object {
+              "error": null,
+              "stderr": "",
+              "stdout": "U+2029 twice
+          ",
+            },
+          ]
+        `);
       });
 
       it('creates "optional" environments correctly (hostArgs)', async () => {
         // browsers are irrelevant to this test
         // jsshell is not working correctly on travis
         if (
-          ["engine262", "firefox", "graaljs", "hermes", "chrome", "qjs", "remote", "xs"].includes(
-            type
-          )
+          [
+            "engine262",
+            "firefox",
+            "graaljs",
+            "hermes",
+            "chrome",
+            "qjs",
+            "remote",
+            "xs",
+          ].includes(type)
         ) {
           return;
         }
@@ -502,7 +549,7 @@ hosts.forEach(function (record) {
       });
     });
 
-    describe("realm evaluation", function() {
+    describe("Realm evaluation", function () {
       it("can create new realms", async () => {
         if (["hermes"].includes(type)) {
           return;
@@ -517,8 +564,15 @@ hosts.forEach(function (record) {
           subRealm.evalScript("print(2)");
         `);
 
-        expect(result.stderr).toBe("");
-        expect(result.stdout.match(/^1\r?\n2\r?\n/m)).toBeTruthy();
+        expect(result).toMatchInlineSnapshot(`
+          Object {
+            "error": null,
+            "stderr": "",
+            "stdout": "1
+          2
+          ",
+          }
+        `);
       });
 
       it("can eval in new realms", async () => {
@@ -533,11 +587,18 @@ hosts.forEach(function (record) {
           print(x);
         `);
 
-        expect(result.stderr).toBe("");
-        expect(result.stdout.match(/^1\r?\n2\r?\n/m)).toBeTruthy();
+        expect(result).toMatchInlineSnapshot(`
+          Object {
+            "error": null,
+            "stderr": "",
+            "stdout": "1
+          2
+          ",
+          }
+        `);
       });
 
-      it("can set globals in new realms", async () => {
+      fit("can set globals in new realms", async () => {
         if (["hermes", "xs"].includes(type)) {
           return;
         }
@@ -547,10 +608,18 @@ hosts.forEach(function (record) {
           realm = $262.createRealm({globals: {x: 2}});
           realm.evalScript("print(x);");
         `);
-        expect(result.stdout.match(/^2\r?\n/m)).toBeTruthy();
+
+        expect(result).toMatchInlineSnapshot(`
+          Object {
+            "error": null,
+            "stderr": "",
+            "stdout": "2
+          ",
+          }
+        `);
       });
 
-      it("can eval in new scripts", async () => {
+      fit("can eval in new scripts", async () => {
         if (["hermes", "xs"].includes(type)) {
           return;
         }
@@ -560,11 +629,17 @@ hosts.forEach(function (record) {
           $262.evalScript("x = 3;");
           print(x);
         `);
-
-        expect(result.stdout.match(/^3\r?\n/m)).toBeTruthy();
+        expect(result).toMatchInlineSnapshot(`
+          Object {
+            "error": null,
+            "stderr": "",
+            "stdout": "3
+          ",
+          }
+        `);
       });
 
-      it("returns errors from evaling in new script", async () => {
+      fit("returns errors from evaling in new script", async () => {
         if (["hermes", "engine262"].includes(type)) {
           return;
         }
@@ -579,7 +654,7 @@ hosts.forEach(function (record) {
         ).toBeTruthy();
       });
 
-      it("can eval lexical bindings in new scripts", async () => {
+      fit("can eval lexical bindings in new scripts", async () => {
         if (["hermes"].includes(type)) {
           return;
         }
@@ -589,10 +664,17 @@ hosts.forEach(function (record) {
           print(x);
         `);
 
-        expect(result.stdout.match(/^3\r?\n/m)).toBeTruthy();
+        expect(result).toMatchInlineSnapshot(`
+          Object {
+            "error": null,
+            "stderr": "",
+            "stdout": "3
+          ",
+          }
+        `);
       });
 
-      it("can set properties in new realms", async () => {
+      fit("can set properties in new realms", async () => {
         if (["hermes"].includes(type)) {
           return;
         }
@@ -601,17 +683,21 @@ hosts.forEach(function (record) {
           var realm = $262.createRealm({});
           realm.evalScript("var x = 1");
           realm.evalScript("print(x)");
-
           realm.setGlobal("x", 2);
-
           realm.evalScript("print(x)");
         `);
-
-        expect(result.stderr).toBe("");
-        expect(result.stdout.match(/^1\r?\n2\r?\n/m)).toBeTruthy();
+        expect(result).toMatchInlineSnapshot(`
+          Object {
+            "error": null,
+            "stderr": "",
+            "stdout": "1
+          2
+          ",
+          }
+        `);
       });
 
-      it("can access properties from new realms", async () => {
+      fit("can access properties from new realms", async () => {
         if (["hermes"].includes(type)) {
           return;
         }
@@ -619,15 +705,19 @@ hosts.forEach(function (record) {
         const result = await agent.evalScript(stripIndent`
           var realm = $262.createRealm({});
           realm.evalScript("var x = 1");
-
           print(realm.getGlobal("x"));
         `);
-
-        expect(result.stderr).toBe("");
-        expect(result.stdout.match(/^1\r?\n/m)).toBeTruthy();
+        expect(result).toMatchInlineSnapshot(`
+          Object {
+            "error": null,
+            "stderr": "",
+            "stdout": "1
+          ",
+          }
+        `);
       });
 
-      it("runs async code", async () => {
+      fit("runs async code", async () => {
         const result = await agent.evalScript(
           stripIndent`
           if ($262.global.Promise === undefined) {
@@ -643,11 +733,17 @@ hosts.forEach(function (record) {
           { async: true }
         );
 
-        expect(result.stderr).toBe("");
-        expect(result.stdout.match(/async result/)).toBeTruthy();
+        expect(result).toMatchInlineSnapshot(`
+          Object {
+            "error": null,
+            "stderr": "",
+            "stdout": "async result
+          ",
+          }
+        `);
       });
 
-      it("accepts destroy callbacks", async () => {
+      fit("accepts destroy callbacks", async () => {
         if (["hermes", "xs"].includes(type)) {
           return;
         }
@@ -656,11 +752,17 @@ hosts.forEach(function (record) {
           realm = $262.createRealm({ destroy() { print("destroyed") }});
           realm.destroy();
         `);
-        expect(result.stderr).toBe("");
-        expect(result.stdout.match(/destroyed/)).toBeTruthy();
+        expect(result).toMatchInlineSnapshot(`
+          Object {
+            "error": null,
+            "stderr": "",
+            "stdout": "destroyed
+          ",
+          }
+        `);
       });
 
-      it("supports realm nesting", async () => {
+      fit("supports realm nesting", async () => {
         if (["hermes", "xs"].includes(type)) {
           return;
         }
@@ -677,13 +779,19 @@ hosts.forEach(function (record) {
           \`);
           print(typeof x);
         `);
-        expect(result.stderr).toBe("");
-        expect(
-          result.stdout.match(/^object\r?\nstring\r?\nnumber\r?\n/m)
-        ).toBeTruthy();
+        expect(result).toMatchInlineSnapshot(`
+          Object {
+            "error": null,
+            "stderr": "",
+            "stdout": "object
+          string
+          number
+          ",
+          }
+        `);
       });
 
-      it("observes correct cross-script interaction semantics", async () => {
+      dit("observes correct cross-script interaction semantics", async () => {
         if (["engine262", "graaljs", "hermes", "xs"].includes(type)) {
           return;
         }
@@ -692,13 +800,11 @@ hosts.forEach(function (record) {
           print($262.evalScript('let eshost;').type);
           print($262.evalScript('let eshost;').type);
         `);
-
-        expect(result.stderr).toBe("");
-        expect(result.stdout.match(/^normal\r?\nthrow/m)).toBeTruthy();
+        expect(result).toMatchInlineSnapshot();
       });
     });
 
-    describe("normal module evaluation", function () {
+    describe("Normal module evaluation", function () {
       let records;
       // For now we're only going to confirm these in
       // JSC, SpiderMonkey, V8
@@ -708,6 +814,8 @@ hosts.forEach(function (record) {
       }
 
       beforeEach(async () => {
+        jest.setTimeout(60_000);
+
         const FAKE_TEST262 = path.join(
           process.cwd(),
           "test/fixtures/fake-test262"
@@ -721,10 +829,6 @@ hosts.forEach(function (record) {
         });
 
         stream.on("data", (test) => {
-          // SpiderMonkey doesn't support these yet.
-          if (type === "jsshell" && test.file.includes("dynamic-import")) {
-            return;
-          }
           if (test.scenario === "default") {
             test.file = path.join(FAKE_TEST262, test.file);
             captured.push(test);
@@ -738,13 +842,14 @@ hosts.forEach(function (record) {
       });
 
       afterEach(() => {
+        jest.setTimeout(5_000);
         records.length = 0;
         if (agent) {
           agent.destroy();
         }
       });
 
-      it("Can evaluate module code", async () => {
+      fit("Can evaluate module code", async () => {
         return Promise.all(
           records.map(async (record) => {
             let options = record.attrs.flags;
@@ -755,13 +860,13 @@ hosts.forEach(function (record) {
               ? "Test262:AsyncTestComplete"
               : "";
 
-            if (negative) {
-              expect(result.error).toBeTruthy();
-              expect(result.stdout).toBe("");
+              if (negative) {
+              expect(result.error).not.toBe(null);
+              expect(result.stdout).toBeFalsy();
             } else {
               let stdout = result.stdout.trim();
-              expect(!result.error).toBeTruthy();
-              expect(!result.stderr).toBeTruthy();
+              expect(result.error).toBe(null);
+              expect(result.stderr).toBeFalsy();
               expect(stdout).toBe(expectedStdout);
             }
           })
