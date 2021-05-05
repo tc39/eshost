@@ -35,8 +35,8 @@ $262.createRealm = function (options = {}) {
     }
   };
   const globals = options.globals || {};
-  for (let glob in options.globals) {
-    realm.global[glob] = options.globals[glob];
+  for (let glob in globals) {
+    realm.global[glob] = globals[glob];
   }
   return realm;
 };

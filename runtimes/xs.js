@@ -3,7 +3,7 @@ var $262 = globalThis.$262;
 if (!$262) {
   $262 = {
     global: globalThis,
-    createRealm(options) {
+    createRealm() {
       throw new Test262Error('createRealm() not yet supported.');
     },
     evalScript(code) {
@@ -26,7 +26,7 @@ if (!$262) {
     agent: (function() {
       function thrower() {
         throw new Test262Error('agent.* not yet supported.');
-      };
+      }
       return {
         start: thrower,
         broadcast: thrower,
