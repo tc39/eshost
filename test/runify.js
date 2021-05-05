@@ -598,7 +598,7 @@ hosts.forEach(function (record) {
         `);
       });
 
-      fit("can set globals in new realms", async () => {
+      it("can set globals in new realms", async () => {
         if (["hermes", "xs"].includes(type)) {
           return;
         }
@@ -619,7 +619,7 @@ hosts.forEach(function (record) {
         `);
       });
 
-      fit("can eval in new scripts", async () => {
+      it("can eval in new scripts", async () => {
         if (["hermes", "xs"].includes(type)) {
           return;
         }
@@ -639,7 +639,7 @@ hosts.forEach(function (record) {
         `);
       });
 
-      fit("returns errors from evaling in new script", async () => {
+      it("returns errors from evaling in new script", async () => {
         if (["hermes", "engine262"].includes(type)) {
           return;
         }
@@ -654,7 +654,7 @@ hosts.forEach(function (record) {
         ).toBeTruthy();
       });
 
-      fit("can eval lexical bindings in new scripts", async () => {
+      it("can eval lexical bindings in new scripts", async () => {
         if (["hermes"].includes(type)) {
           return;
         }
@@ -674,7 +674,7 @@ hosts.forEach(function (record) {
         `);
       });
 
-      fit("can set properties in new realms", async () => {
+      it("can set properties in new realms", async () => {
         if (["hermes"].includes(type)) {
           return;
         }
@@ -697,7 +697,7 @@ hosts.forEach(function (record) {
         `);
       });
 
-      fit("can access properties from new realms", async () => {
+      it("can access properties from new realms", async () => {
         if (["hermes"].includes(type)) {
           return;
         }
@@ -717,7 +717,7 @@ hosts.forEach(function (record) {
         `);
       });
 
-      fit("runs async code", async () => {
+      it("runs async code", async () => {
         const result = await agent.evalScript(
           stripIndent`
           if ($262.global.Promise === undefined) {
@@ -743,7 +743,7 @@ hosts.forEach(function (record) {
         `);
       });
 
-      fit("accepts destroy callbacks", async () => {
+      it("accepts destroy callbacks", async () => {
         if (["hermes", "xs"].includes(type)) {
           return;
         }
@@ -762,7 +762,7 @@ hosts.forEach(function (record) {
         `);
       });
 
-      fit("supports realm nesting", async () => {
+      it("supports realm nesting", async () => {
         if (["hermes", "xs"].includes(type)) {
           return;
         }
@@ -849,7 +849,7 @@ hosts.forEach(function (record) {
         }
       });
 
-      fit("Can evaluate module code", async () => {
+      it("Can evaluate module code", async () => {
         return Promise.all(
           records.map(async (record) => {
             let options = record.attrs.flags;
