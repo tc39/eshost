@@ -34,6 +34,7 @@ install: |
     export ESHOST_SKIP_JSSHELL=1
     export ESHOST_SKIP_QJS=1
     export ESHOST_SKIP_NODE=1
+    export ESHOST_SKIP_XS=1
 
     # Browsers
     export ESHOST_SKIP_CHROME=1
