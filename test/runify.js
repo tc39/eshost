@@ -547,6 +547,9 @@ hosts.forEach(function (record) {
         });
         const result = await agent.evalScript(source);
         expect(result.stdout.trim()).toBe("true");
+
+        await agent.stop();
+        await agent.destroy();
       });
     });
 
@@ -850,11 +853,12 @@ hosts.forEach(function (record) {
         agent = await eshost.createAgent(type, options);
       });
 
-      afterEach(() => {
+      afterEach(async () => {
         jest.setTimeout(5_000);
         records.length = 0;
         if (agent) {
-          agent.destroy();
+          await agent.stop();
+          await agent.destroy();
         }
       });
 
@@ -893,7 +897,8 @@ hosts.forEach(function (record) {
         const result = await agent.evalScript("print(typeof $testing)");
         expect(result.error).toBe(null);
         expect(result.stdout.trim()).toMatchInlineSnapshot(`"object"`);
-        agent.destroy();
+        await agent.stop();
+        await agent.destroy();
       });
     });
 
@@ -911,6 +916,9 @@ hosts.forEach(function (record) {
           "2
           "
         `);
+
+        await agent.stop();
+        await agent.destroy();
       });
     });
 
@@ -923,7 +931,9 @@ hosts.forEach(function (record) {
         const result = await agent.evalScript("print(typeof $262.IsHTMLDDA);");
         expect(result.error === null).toBeTruthy();
         expect(result.stdout.indexOf("function")).toBe(0);
-        agent.destroy();
+
+        await agent.stop();
+        await agent.destroy();
       });
     });
   });
