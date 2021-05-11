@@ -115,9 +115,10 @@ hosts.forEach(function (record) {
       agent = await eshost.createAgent(type, options);
     });
 
-    afterEach(() => {
+    afterEach(async () => {
       if (agent) {
-        agent.destroy();
+        await agent.stop();
+        await agent.destroy();
       }
     });
 
