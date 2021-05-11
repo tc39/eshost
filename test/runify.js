@@ -903,7 +903,7 @@ hosts.forEach(function (record) {
     });
 
     describe('"shortName" option', () => {
-      if (["hermes", "engine262"].includes(type)) {
+      if (["hermes", "engine262", "firefox", "chrome", "remote"].includes(type)) {
         return;
       }
       it("allows custom shortNames", async () => {
@@ -918,6 +918,9 @@ hosts.forEach(function (record) {
     });
 
     describe('"transform" option', () => {
+      if (["firefox", "chrome", "remote"].includes(type)) {
+        return;
+      }
       it("runs transforms", async () => {
         const agent = await eshost.createAgent(type, {
           ...options,
