@@ -13,13 +13,13 @@ const isWindows =
   process.env.OSTYPE === "cygwin" ||
   process.env.OSTYPE === "msys";
 
-const capabilities = {
-  browserName: process.env.ESHOST_REMOTE_BROWSERNAME || "firefox",
-  platform: process.env.ESHOST_REMOTE_PLATFORM || "ANY",
-  version: process.env.ESHOST_REMOTE_VERSION || "",
-};
+// const capabilities = {
+//   browserName: process.env.ESHOST_REMOTE_BROWSERNAME || "firefox",
+//   platform: process.env.ESHOST_REMOTE_PLATFORM || "ANY",
+//   version: process.env.ESHOST_REMOTE_VERSION || "",
+// };
 
-const webdriverServer = "http://localhost:4444/wd/hub";
+// const webdriverServer = "http://localhost:4444/wd/hub";
 
 const makeHostPath = (binName) => {
   return path.join(os.homedir(), ".esvu/bin", binName);
