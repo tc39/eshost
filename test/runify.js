@@ -879,8 +879,23 @@ hosts.forEach(function (record) {
             } else {
               let stdout = result.stdout.trim();
               expect(result.error).toBe(null);
-              expect(result.stderr).toBeFalsy();
               expect(stdout).toBe(expectedStdout);
+
+              if (result.stderr) {
+                console.log(`
+                  This test:
+
+                    ${JSON.stringify(record, null, 2)}
+
+                  Produced an unexpected error:
+
+                    ${result.stderr}
+
+
+                  If the error is regarding a missing dependency, then
+                  it's possible that it can safely be ignored.
+                `);
+              }
             }
           })
         );
