@@ -388,6 +388,10 @@ hosts.forEach(function (record) {
         // these operations are taking place, the host should not evaluate the
         // script.
         it("avoids race conditions in `stop`", async () => {
+          if (effectiveType === "firefox") {
+            return;
+          }
+
           const evaluationResult = agent.evalScript("print(1);");
 
           agent.stop();
