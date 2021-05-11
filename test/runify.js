@@ -52,7 +52,7 @@ if (process.env.CI) {
   hosts.push(
     ["chrome", { hostPath: "chrome" }], // Not provided by esvu
     ["firefox", { hostPath: "firefox" }], // Not provided by esvu
-    ["remote", { webdriverServer, capabilities }]
+    // ["remote", { webdriverServer, capabilities }]
   );
 
   hostsOnWindows[0] = ["ch", { hostPath: "ch.exe" }];
