@@ -958,5 +958,26 @@ hosts.forEach(function (record) {
         await agent.destroy();
       });
     });
+
+    describe("agent", () => {
+      if (!["jsc", "jsshell", "d8"].includes(type)) {
+        return;
+      }
+
+      const read = async (expression) => {
+        const result = await agent.evalScript(`print(${expression});`);
+        expect(result.error).toBe(null);
+        return result.stdout;
+      };
+
+      it("exposes the complete Test262-defined API", async () => {
+        expect(await read("typeof $262.agent")).toMatch(/^object/);
+        expect(await read("typeof $262.agent.start")).toMatch(/^function/);
+        expect(await read("typeof $262.agent.broadcast")).toMatch(/^function/);
+        expect(await read("typeof $262.agent.getReport")).toMatch(/^function/);
+        expect(await read("typeof $262.agent.sleep")).toMatch(/^function/);
+        expect(await read("typeof $262.agent.monotonicNow")).toMatch(/^function/);
+      });
+    });
   });
 });
