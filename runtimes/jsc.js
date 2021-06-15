@@ -3,7 +3,14 @@ const jsc = globalThis["\x24"];
 const DollarCreateRealm = jsc.createRealm;
 const DollarEvalScript = jsc.evalScript.bind(jsc);
 
-var $262 = Object.assign({}, jsc);
+var $262 = {};
+// Copy "own" properties from the JSC-defined object to the normalized `$262`
+// object. Neither `Object.assign` nor the object "spread" syntax can be used
+// for this task because not all properties on the source object are
+// enumerable.
+Object.getOwnPropertyNames(jsc).forEach(function(name) {
+  $262[name] = jsc[name];
+});
 $262.global = globalThis;
 $262.source = $SOURCE;
 $262.destroy = function() {};
