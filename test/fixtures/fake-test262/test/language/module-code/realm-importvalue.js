@@ -39,9 +39,9 @@ info: |
 
 if (typeof Realm === 'function') {
   const r = new Realm();
-  r.importValue('./realm-importvalue_FIXTURE.js', 'x').then(exported => {
+  r.importValue('./realm-importvalue_FIXTURE.js', 'x').then(x => {
 
-    assert.sameValue(exported.x, 1);
+    assert.sameValue(x, 1);
 
   }).then($DONE, $DONE);
 } else {
