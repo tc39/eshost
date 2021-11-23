@@ -33,6 +33,7 @@ const hosts = [
   ["hermes", { hostPath: makeHostPath("hermes") }],
   ["jsshell", { hostPath: makeHostPath("sm") }],
   ["jsc", { hostPath: makeHostPath("jsc") }],
+  ["libjs", { hostPath: "js" }], // Not provided by esvu
   ["node", { hostPath: "node" }], // Not provided by esvu
   ["qjs", { hostPath: makeHostPath("quickjs-run-test262") }],
   ["xs", { hostPath: makeHostPath("xs") }],
@@ -125,7 +126,7 @@ hosts.forEach(function (record) {
     describe("Normal script evaluation", function () {
       describe("Code evaluation modes", () => {
         // As of 2021-05-04, hermes and xs fail these tests.
-        if (["hermes", "xs"].includes(type)) {
+        if (["hermes", "xs", "libjs"].includes(type)) {
           return;
         }
 
@@ -283,6 +284,9 @@ hosts.forEach(function (record) {
         });
 
         it("handles thrown custom Errors that don't have Error.prototype", async () => {
+          if (["libjs"].includes(type)) {
+            return;
+          }
           const result = await agent.evalScript(stripIndent`
             function Foo2Error(msg) {
               this.message = msg;
@@ -355,7 +359,9 @@ hosts.forEach(function (record) {
         expect(values[4]).toBe("false");
         expect(values[5]).toBe("0");
         expect(values[6]).toBe("1");
-        expect(values[7]).toBe("1.2");
+        if (type !== "libjs") {
+          expect(values[7]).toBe("1.2");
+        }
         expect(values[8]).toBe("-1");
       });
 
@@ -498,6 +504,7 @@ hosts.forEach(function (record) {
             "firefox",
             "graaljs",
             "hermes",
+            "libjs",
             "chrome",
             "qjs",
             "remote",
@@ -559,7 +566,7 @@ hosts.forEach(function (record) {
 
     describe("Realm evaluation", function () {
       it("can create new realms", async () => {
-        if (["hermes"].includes(type)) {
+        if (["hermes", "libjs"].includes(type)) {
           return;
         }
 
@@ -584,7 +591,7 @@ hosts.forEach(function (record) {
       });
 
       it("can eval in new realms", async () => {
-        if (["hermes", "xs"].includes(type)) {
+        if (["hermes", "xs", "libjs"].includes(type)) {
           return;
         }
 
@@ -607,7 +614,7 @@ hosts.forEach(function (record) {
       });
 
       it("can set globals in new realms", async () => {
-        if (["hermes", "xs"].includes(type)) {
+        if (["hermes", "xs", "libjs"].includes(type)) {
           return;
         }
 
@@ -628,7 +635,7 @@ hosts.forEach(function (record) {
       });
 
       it("can eval in new scripts", async () => {
-        if (["hermes", "xs"].includes(type)) {
+        if (["hermes", "xs", "libjs"].includes(type)) {
           return;
         }
 
@@ -648,7 +655,7 @@ hosts.forEach(function (record) {
       });
 
       it("returns errors from evaling in new script", async () => {
-        if (["hermes", "engine262"].includes(type)) {
+        if (["hermes", "engine262", "libjs"].includes(type)) {
           return;
         }
 
@@ -663,7 +670,7 @@ hosts.forEach(function (record) {
       });
 
       it("can eval lexical bindings in new scripts", async () => {
-        if (["hermes"].includes(type)) {
+        if (["hermes", "libjs"].includes(type)) {
           return;
         }
 
@@ -683,7 +690,7 @@ hosts.forEach(function (record) {
       });
 
       it("can set properties in new realms", async () => {
-        if (["hermes"].includes(type)) {
+        if (["hermes", "libjs"].includes(type)) {
           return;
         }
 
@@ -706,7 +713,7 @@ hosts.forEach(function (record) {
       });
 
       it("can access properties from new realms", async () => {
-        if (["hermes"].includes(type)) {
+        if (["hermes", "libjs"].includes(type)) {
           return;
         }
 
@@ -752,7 +759,7 @@ hosts.forEach(function (record) {
       });
 
       it("accepts destroy callbacks", async () => {
-        if (["hermes", "xs"].includes(type)) {
+        if (["hermes", "xs", "libjs"].includes(type)) {
           return;
         }
 
@@ -771,7 +778,7 @@ hosts.forEach(function (record) {
       });
 
       it("supports realm nesting", async () => {
-        if (["hermes", "xs"].includes(type)) {
+        if (["hermes", "xs", "libjs"].includes(type)) {
           return;
         }
 
@@ -800,7 +807,7 @@ hosts.forEach(function (record) {
       });
 
       it("observes correct cross-script interaction semantics", async () => {
-        if (["engine262", "graaljs", "hermes", "xs"].includes(type)) {
+        if (["engine262", "graaljs", "hermes", "libjs", "xs"].includes(type)) {
           return;
         }
 
