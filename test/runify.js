@@ -65,11 +65,11 @@ if (process.env.CI) {
 
 // console.log(`isWindows: ${isWindows}`);
 if (isWindows) {
-  hosts.forEach((record, index) => {
-    const host = hostsOnWindows[index];
+  hosts.forEach(record => {
     if (record[1].hostPath) {
-      if (record[0] === host[0]) {
-        record[1].hostPath = host[1].hostPath;
+      const windowsRecord = hostsOnWindows.find(windowsRecord => record[0] === windowsRecord[0]);
+      if (windowsRecord) {
+        record[1].hostPath = windowsRecord[1].hostPath;
       }
       const ESHOST_ENV_NAME = `ESHOST_${record[0].toUpperCase()}_PATH`;
       console.log(`ESHOST_ENV_NAME: ${ESHOST_ENV_NAME}`);
