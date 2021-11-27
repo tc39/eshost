@@ -10,9 +10,7 @@ environment:
   ESHOST_SKIP_GRAALJS: 1
   ESHOST_SKIP_HERMES: 1
   ESHOST_SKIP_JSC: 1
-  ESHOST_SKIP_JSSHELL: 1
   ESHOST_SKIP_QJS: 1
-  ESHOST_SKIP_NODE: 1
   ESHOST_SKIP_XS: 1
   # Browsers
   ESHOST_SKIP_CHROME: 1
@@ -41,7 +39,6 @@ install:
   - set ESHOST_ENGINE262_PATH=C:\Users\appveyor\AppData\Roaming\npm\
   - set PATH=%PATH%;C:\Users\appveyor\AppData\Roaming\npm\
   - where engine262
-  - set ESHOST_SKIP_ENGINE262=0
   - cd %ESHOST_PATH%\hosts
   # SpiderMonkey: Curl, Unzip and set PATH
   - mkdir spidermonkey
@@ -50,7 +47,6 @@ install:
   - set PATH=%PATH%;%CD%\spidermonkey\
   - set ESHOST_JSSHELL_PATH=%CD%\spidermonkey\
   - where js
-  - set ESHOST_SKIP_JSSHELL=0
   # ChakraCore: Clone, Build and set PATH
   # TEMPORARILY DISABLED!
   # ChakraCore is failing to build on windows, which is not a requirement of this project.
@@ -64,7 +60,6 @@ install:
   # Return to eshost dir
   - cd %ESHOST_PATH%
   - where node
-  - set ESHOST_SKIP_NODE=0
   - echo %PATH%
   - node -v
   - npm install -g npm
