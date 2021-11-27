@@ -41,8 +41,8 @@ const hosts = [
 const hostsOnWindows = [
   ["ch", { hostPath: makeHostPath("chakra.exe") }],
   ["d8", { hostPath: makeHostPath("v8.exe") }],
-  ["engine262", { hostPath: makeHostPath("engine262.cmd") }],
-  ["jsshell", { hostPath: makeHostPath("sm.exe") }],
+  ["engine262", { hostPath: "engine262.cmd" }],
+  ["jsshell", { hostPath: "js.exe" }],
   ["node", { hostPath: "node.exe" }], // Not provided by esvu
 ];
 

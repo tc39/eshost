@@ -36,7 +36,6 @@ install:
   - npm install
   - npm run build
   - npm link
-  - set ESHOST_ENGINE262_PATH=C:\Users\appveyor\AppData\Roaming\npm\
   - set PATH=%PATH%;C:\Users\appveyor\AppData\Roaming\npm\
   - where engine262
   - cd %ESHOST_PATH%\hosts
@@ -45,7 +44,6 @@ install:
   - curl -fsS -o spidermonkey\jsshell-win64.zip https://archive.mozilla.org/pub/firefox/nightly/latest-mozilla-central/jsshell-win64.zip
   - 7z e -o%CD%\spidermonkey spidermonkey\jsshell-win64.zip
   - set PATH=%PATH%;%CD%\spidermonkey\
-  - set ESHOST_JSSHELL_PATH=%CD%\spidermonkey\
   - where js
   # ChakraCore: Clone, Build and set PATH
   # TEMPORARILY DISABLED!
@@ -69,7 +67,10 @@ build: off
 
 test_script:
   - ps: "npm run lint # PowerShell"
-  - cmd: npm test
+  - set ESHOST_ENGINE262_PATH=C:\Users\appveyor\AppData\Roaming\npm\
+  - set ESHOST_JSSHELL_PATH=%CD%\hosts\spidermonkey\
+  - set ESHOST_NODE_PATH=C:\Program Files\nodejs\
+  - npm test
 
 matrix:
   fast_finish: true
