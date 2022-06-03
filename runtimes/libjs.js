@@ -7,10 +7,10 @@ var $262 = {
     return gc();
   },
   createRealm(options) {
-    throw new Test262Error('createRealm() not yet supported.');
+    throw new InternalError('createRealm() not yet supported.');
   },
   evalScript(code) {
-    throw new Test262Error('evalScript() not yet supported.');
+    throw new InternalError('evalScript() not yet supported.');
   },
   getGlobal(name) {
     return this.global[name];
@@ -22,6 +22,6 @@ var $262 = {
   IsHTMLDDA() { return {}; },
   source: $SOURCE,
   get agent() {
-    throw new Test262Error('agent.* not yet supported.');
+    throw new InternalError('agent.* not yet supported.');
   }
 };

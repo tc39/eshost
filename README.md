@@ -18,23 +18,23 @@ npm install eshost
 
 ## Supported Hosts
 
-| Host | Name | Type | Supported Platforms | Download | Notes |
-|------|------|------|---------------------|----------|-------|
-| ch¹ | ChakraCore | CLI | Any | [Download](https://github.com/Microsoft/ChakraCore/releases) or [build](https://github.com/Microsoft/ChakraCore/wiki/Building-ChakraCore) | Chakra console host. |
-| d8¹ | V8 | CLI | Any | Build [from source](https://github.com/v8/v8) | V8 console host. Errors are reported on stdout. Use `$262.getGlobal` and `$262.setGlobal` to get and set properties of global objects in other realms. |
-| engine262 | Engine262 | CLI | Any | Build [from source](https://github.com/engine262/engine262) | An implementation of ECMA-262 in JavaScript. |
-| graaljs | GraalJS | CLI | Any | [Download](https://github.com/graalvm/graalvm-ce-builds) | |
-| jsshell¹ | SpiderMonkey | CLI | Any | [Download](https://archive.mozilla.org/pub/firefox/nightly/latest-mozilla-central/) | SpiderMonkey console host. |
-| jsc¹ | JavaScriptCore | CLI | Mac² | Build [from source](http://trac.webkit.org/wiki/JavaScriptCore)³ | |
-| libjs | LibJS | CLI | Any | Build [from source](https://github.com/SerenityOS/serenity) | |
-| nashorn | Nashorn | CLI | Any | Build [from source](https://wiki.openjdk.java.net/display/Nashorn/Building+Nashorn) | |
-| node | Node.js | CLI | Any | https://nodejs.org | [Active LTS versions only](https://nodejs.org/en/about/releases/) |
-| qjs<sup>4</sup> | QuickJS | CLI | Any | Build [from source](https://bellard.org/quickjs/) | |
-| xs | Moddable XS | CLI | Any | Build [from source](https://github.com/Moddable-OpenSource/moddable-xst) | |
-| chrome | Google Chrome | Browser | Any | | Requires [ChromeDriver](https://sites.google.com/a/chromium.org/chromedriver/downloads) in your path.|
-| edge | Microsoft Edge | Browser | Windows | | Errors reported from Microsoft Edge are all of type Error. Requires [Microsoft WebDriver](https://developer.microsoft.com/en-us/microsoft-edge/platform/documentation/dev-guide/tools/webdriver/) in your path. |
-| firefox | Mozilla Firefox | Browser | Any | | Requires [GeckoDriver](https://github.com/mozilla/geckodriver/releases) in your path (possibly renamed to `wires`).|
-| safari | Apple Safari | Browser | Mac | | Requires [SafariDriver browser extension](https://github.com/SeleniumHQ/selenium/wiki/SafariDriver). |
+| Host            | Name            | Type | Supported Platforms | Download | Notes |
+|-----------------|-----------------|------|---------------------|----------|-------|
+| ch¹             | ChakraCore      | CLI | Any | [Download](https://github.com/Microsoft/ChakraCore/releases) or [build](https://github.com/Microsoft/ChakraCore/wiki/Building-ChakraCore) | Chakra console host. |
+| d8¹             | V8              | CLI | Any | Build [from source](https://github.com/v8/v8) | V8 console host. Errors are reported on stdout. Use `$262.getGlobal` and `$262.setGlobal` to get and set properties of global objects in other realms. |
+| engine262       | Engine262       | CLI | Any | Build [from source](https://github.com/engine262/engine262) | An implementation of ECMA-262 in JavaScript. |
+| graaljs         | GraalJS         | CLI | Any | [Download](https://github.com/graalvm/graalvm-ce-builds) | |
+| jsshell¹        | SpiderMonkey    | CLI | Any | [Download](https://archive.mozilla.org/pub/firefox/nightly/latest-mozilla-central/) | SpiderMonkey console host. |
+| jsc¹            | JavaScriptCore  | CLI | Mac² | Build [from source](http://trac.webkit.org/wiki/JavaScriptCore)³ | |
+| serenity-js     | Serenity LibJS  | CLI | Any | Build [from source](https://github.com/SerenityOS/serenity) | |
+| nashorn         | Nashorn         | CLI | Any | Build [from source](https://wiki.openjdk.java.net/display/Nashorn/Building+Nashorn) | |
+| node            | Node.js         | CLI | Any | https://nodejs.org | [Active LTS versions only](https://nodejs.org/en/about/releases/) |
+| qjs<sup>4</sup> | QuickJS         | CLI | Any | Build [from source](https://bellard.org/quickjs/) | |
+| xs              | Moddable XS     | CLI | Any | Build [from source](https://github.com/Moddable-OpenSource/moddable-xst) | |
+| chrome          | Google Chrome   | Browser | Any | | Requires [ChromeDriver](https://sites.google.com/a/chromium.org/chromedriver/downloads) in your path.|
+| edge            | Microsoft Edge  | Browser | Windows | | Errors reported from Microsoft Edge are all of type Error. Requires [Microsoft WebDriver](https://developer.microsoft.com/en-us/microsoft-edge/platform/documentation/dev-guide/tools/webdriver/) in your path. |
+| firefox         | Mozilla Firefox | Browser | Any | | Requires [GeckoDriver](https://github.com/mozilla/geckodriver/releases) in your path (possibly renamed to `wires`).|
+| safari          | Apple Safari    | Browser | Mac | | Requires [SafariDriver browser extension](https://github.com/SeleniumHQ/selenium/wiki/SafariDriver). |
 
 * 1: `eshost` accepts `esvu` or `jsvu` style binary name values as the first argument to `eshost.createAgent(type: string, options = {}): Agent`. See [Installing Engines](#installing-engines).
 * 2: It is possible to build `jsc` on other platforms, but not supported.
@@ -85,7 +85,7 @@ Creates an instance of a host agent for a particular host type. See the table ab
   | GraalJS | `graaljs` |
   | Hermes | `hermes` |
   | JavaScriptCore | `javascriptcore`, `jsc` |
-  | LibJS | `libjs` |
+  | Serenity LibJS | `serenity-js`, `libjs` |
   | Nashorn | `nashorn` |
   | Node | `node` |
   | QuickJS | `qjs` <sup>1</sup> |

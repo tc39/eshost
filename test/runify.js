@@ -33,7 +33,7 @@ const hosts = [
   ["hermes", { hostPath: makeHostPath("hermes") }],
   ["jsshell", { hostPath: makeHostPath("sm") }],
   ["jsc", { hostPath: makeHostPath("jsc") }],
-  ["libjs", { hostPath: "js" }], // Not provided by esvu
+  ["libjs", { hostPath: makeHostPath("serenity-js") }],
   ["node", { hostPath: "node" }], // Not provided by esvu
   ["qjs", { hostPath: makeHostPath("quickjs-run-test262") }],
   ["xs", { hostPath: makeHostPath("xs") }],
@@ -126,7 +126,7 @@ hosts.forEach(function (record) {
     describe("Normal script evaluation", function () {
       describe("Code evaluation modes", () => {
         // As of 2021-05-04, hermes and xs fail these tests.
-        if (["hermes", "xs", "libjs"].includes(type)) {
+        if (["hermes", "xs"].includes(type)) {
           return;
         }
 
@@ -284,9 +284,6 @@ hosts.forEach(function (record) {
         });
 
         it("handles thrown custom Errors that don't have Error.prototype", async () => {
-          if (["libjs"].includes(type)) {
-            return;
-          }
           const result = await agent.evalScript(stripIndent`
             function Foo2Error(msg) {
               this.message = msg;
@@ -302,7 +299,8 @@ hosts.forEach(function (record) {
           expect(result.stdout).toBe("");
           expect(result.error).toBeTruthy();
           expect(result.error.message).toBe("FAIL!");
-          expect(result.error.name).toBe("Foo2Error");
+          if (type !== "libjs") // libjs gets this wrong
+            expect(result.error.name).toBe("Foo2Error");
         });
 
         it("handles thrown Errors without messages", async () => {
@@ -345,7 +343,7 @@ hosts.forEach(function (record) {
           print(false);
           print(0);
           print(1);
-          print(1.2);
+          print(1.3);
           print(-1);
         `);
 
@@ -359,9 +357,7 @@ hosts.forEach(function (record) {
         expect(values[4]).toBe("false");
         expect(values[5]).toBe("0");
         expect(values[6]).toBe("1");
-        if (type !== "libjs") {
-          expect(values[7]).toBe("1.2");
-        }
+        expect(values[7]).toBe("1.3");
         expect(values[8]).toBe("-1");
       });
 
