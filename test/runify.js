@@ -68,7 +68,7 @@ if (process.env.CI) {
 if (isWindows) {
   hosts.forEach((record, index) => {
     const host = hostsOnWindows[index];
-    if (record[1].hostPath) {
+    if (host && record[1].hostPath) {
       if (record[0] === host[0]) {
         record[1].hostPath = host[1].hostPath;
       }
