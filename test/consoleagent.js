@@ -26,13 +26,13 @@ describe("ConsoleAgent", () => {
 
       expect(agent).toMatchInlineSnapshot(`
         ConsoleAgent {
-          "args": Array [
+          "args": [
             "-a",
           ],
-          "cpOptions": Object {},
+          "cpOptions": {},
           "hostPath": "../",
           "isStopped": false,
-          "options": Object {
+          "options": {
             "hostArguments": "-a",
             "hostPath": "../",
           },
@@ -51,18 +51,18 @@ describe("ConsoleAgent", () => {
       });
       expect(agent).toMatchInlineSnapshot(`
         ConsoleAgent {
-          "args": Array [
+          "args": [
             "-a",
             "-b",
             "--c",
             "--dee",
           ],
-          "cpOptions": Object {},
-          "hostPath": "c:\\\\",
+          "cpOptions": {},
+          "hostPath": "c:\\",
           "isStopped": false,
-          "options": Object {
+          "options": {
             "hostArguments": "-a -b --c --dee",
-            "hostPath": "c:\\\\",
+            "hostPath": "c:\\",
           },
           "out": "",
           "printCommand": "print",
@@ -79,14 +79,14 @@ describe("ConsoleAgent", () => {
       });
       expect(agent).toMatchInlineSnapshot(`
         ConsoleAgent {
-          "args": Array [
+          "args": [
             "-a",
           ],
-          "cpOptions": Object {},
+          "cpOptions": {},
           "hostPath": "../",
           "isStopped": false,
-          "options": Object {
-            "hostArguments": Array [
+          "options": {
+            "hostArguments": [
               "-a",
             ],
             "hostPath": "../",
@@ -106,23 +106,23 @@ describe("ConsoleAgent", () => {
       });
       expect(agent).toMatchInlineSnapshot(`
         ConsoleAgent {
-          "args": Array [
+          "args": [
             "-a",
             "-b",
             "--c",
             "--dee",
           ],
-          "cpOptions": Object {},
-          "hostPath": "c:\\\\",
+          "cpOptions": {},
+          "hostPath": "c:\\",
           "isStopped": false,
-          "options": Object {
-            "hostArguments": Array [
+          "options": {
+            "hostArguments": [
               "-a",
               "-b",
               "--c",
               "--dee",
             ],
-            "hostPath": "c:\\\\",
+            "hostPath": "c:\\",
           },
           "out": "",
           "printCommand": "print",
@@ -139,16 +139,16 @@ describe("ConsoleAgent", () => {
       });
       expect(agent).toMatchInlineSnapshot(`
         ConsoleAgent {
-          "args": Array [
+          "args": [
             "-a",
             "-b",
             "--c",
             "--dee",
           ],
-          "cpOptions": Object {},
+          "cpOptions": {},
           "hostPath": "/do/wa/diddy/",
           "isStopped": false,
-          "options": Object {
+          "options": {
             "hostArguments": "-a     -b --c 	 --dee",
             "hostPath": "/do/wa/diddy/",
           },
@@ -254,7 +254,7 @@ describe("ConsoleAgent", () => {
 
       expect(compiled).toMatchInlineSnapshot(`
         "
-               var Mine = { m() { Mine.something(\\"1\\") } }; Mine.m();
+               var Mine = { m() { Mine.something("1") } }; Mine.m();
               "
       `);
 

@@ -388,7 +388,7 @@ hosts.forEach(function (record) {
           const result = await evaluationResult;
 
           expect(result).toMatchInlineSnapshot(`
-            Object {
+            {
               "error": null,
               "stderr": "",
               "stdout": "",
@@ -413,8 +413,8 @@ hosts.forEach(function (record) {
           const outcome = await Promise.all([evaluationResult, agent.stop()]);
 
           expect(outcome).toMatchInlineSnapshot(`
-            Array [
-              Object {
+            [
+              {
                 "error": null,
                 "stderr": "",
                 "stdout": "",
@@ -441,32 +441,32 @@ hosts.forEach(function (record) {
         const results = await Promise.all(operations);
 
         expect(results).toMatchInlineSnapshot(`
-          Array [
-            Object {
+          [
+            {
               "error": null,
               "stderr": "",
               "stdout": "U+2028 once
           ",
             },
-            Object {
+            {
               "error": null,
               "stderr": "",
               "stdout": "U+2029 once
           ",
             },
-            Object {
+            {
               "error": null,
               "stderr": "",
               "stdout": "both U+2028 and U+2029
           ",
             },
-            Object {
+            {
               "error": null,
               "stderr": "",
               "stdout": "U+2028 twice
           ",
             },
-            Object {
+            {
               "error": null,
               "stderr": "",
               "stdout": "U+2029 twice
@@ -561,7 +561,7 @@ hosts.forEach(function (record) {
         `);
 
         expect(result).toMatchInlineSnapshot(`
-          Object {
+          {
             "error": null,
             "stderr": "",
             "stdout": "1
@@ -584,7 +584,7 @@ hosts.forEach(function (record) {
         `);
 
         expect(result).toMatchInlineSnapshot(`
-          Object {
+          {
             "error": null,
             "stderr": "",
             "stdout": "1
@@ -606,7 +606,7 @@ hosts.forEach(function (record) {
         `);
 
         expect(result).toMatchInlineSnapshot(`
-          Object {
+          {
             "error": null,
             "stderr": "",
             "stdout": "2
@@ -626,7 +626,7 @@ hosts.forEach(function (record) {
           print(x);
         `);
         expect(result).toMatchInlineSnapshot(`
-          Object {
+          {
             "error": null,
             "stderr": "",
             "stdout": "3
@@ -659,7 +659,7 @@ hosts.forEach(function (record) {
         `);
 
         expect(result).toMatchInlineSnapshot(`
-          Object {
+          {
             "error": null,
             "stderr": "",
             "stdout": "3
@@ -681,7 +681,7 @@ hosts.forEach(function (record) {
           realm.evalScript("print(x)");
         `);
         expect(result).toMatchInlineSnapshot(`
-          Object {
+          {
             "error": null,
             "stderr": "",
             "stdout": "1
@@ -702,7 +702,7 @@ hosts.forEach(function (record) {
           print(realm.getGlobal("x"));
         `);
         expect(result).toMatchInlineSnapshot(`
-          Object {
+          {
             "error": null,
             "stderr": "",
             "stdout": "1
@@ -728,7 +728,7 @@ hosts.forEach(function (record) {
         );
 
         expect(result).toMatchInlineSnapshot(`
-          Object {
+          {
             "error": null,
             "stderr": "",
             "stdout": "async result
@@ -747,7 +747,7 @@ hosts.forEach(function (record) {
           realm.destroy();
         `);
         expect(result).toMatchInlineSnapshot(`
-          Object {
+          {
             "error": null,
             "stderr": "",
             "stdout": "destroyed
@@ -774,7 +774,7 @@ hosts.forEach(function (record) {
           print(typeof x);
         `);
         expect(result).toMatchInlineSnapshot(`
-          Object {
+          {
             "error": null,
             "stderr": "",
             "stdout": "object
@@ -795,7 +795,7 @@ hosts.forEach(function (record) {
           print($262.evalScript('let eshost;').type);
         `);
         expect(result).toMatchInlineSnapshot(`
-          Object {
+          {
             "error": null,
             "stderr": "",
             "stdout": "normal
