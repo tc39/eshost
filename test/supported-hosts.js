@@ -7,8 +7,6 @@ const runtimePath = require("../lib/runtime-path");
 
 const supportedHostsMap = {
   BrowserAgent: "BrowserAgent",
-  ch: "chakra",
-  chakra: "chakra",
   chrome: "chrome",
   d8: "d8",
   edge: "edge",

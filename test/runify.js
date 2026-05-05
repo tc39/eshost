@@ -24,7 +24,6 @@ const makeHostPath = (binName) => {
 };
 
 const hosts = [
-  ["ch", { hostPath: makeHostPath("chakra") }],
   ["d8", { hostPath: makeHostPath("v8") }],
   ["engine262", { hostPath: makeHostPath("engine262") }],
   ["graaljs", { hostPath: makeHostPath("graaljs") }],
@@ -38,7 +37,6 @@ const hosts = [
 ];
 
 const hostsOnWindows = [
-  ["ch", { hostPath: makeHostPath("chakra.exe") }],
   ["d8", { hostPath: makeHostPath("v8.exe") }],
   ["engine262", { hostPath: makeHostPath("engine262.cmd") }],
   ["jsshell", { hostPath: makeHostPath("sm.exe") }],
@@ -46,15 +44,12 @@ const hostsOnWindows = [
 ];
 
 if (process.env.CI) {
-  // This is for testing the specially built version of Chakra in CI
-  hosts[0] = ["ch", { hostPath: "ch" }];
   hosts.push(
     ["chrome", { hostPath: "chrome" }], // Not provided by esvu
     ["firefox", { hostPath: "firefox" }], // Not provided by esvu
     // ["remote", { webdriverServer, capabilities }]
   );
 
-  hostsOnWindows[0] = ["ch", { hostPath: "ch.exe" }];
   // hostsOnWindows.push(
   //   ["chrome", { hostPath: "chrome.exe" }], // Not provided by esvu
   //   ["firefox", { hostPath: "firefox.exe" }], // Not provided by esvu
@@ -505,23 +500,10 @@ hosts.forEach(function (record) {
           return;
         }
 
-        if (type === "ch" && !process.env.CI) {
-          return;
-        }
-
         let source = "";
         let hostArguments = "";
 
         // Setup special cases
-        if (type === "ch") {
-          // Hello! If you come here wondering why this fails
-          // on your local machine, it's because you're using a
-          // version of Chakra that was not compiled with support
-          // for development flags. That's ok! The CI machine
-          // will check this for you, so don't sweat it.
-          hostArguments = "-Intl-";
-          source = 'print(typeof Intl === "undefined");';
-        }
 
         if (type === "d8") {
           hostArguments = "--expose_gc";
