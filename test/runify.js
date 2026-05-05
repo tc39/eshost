@@ -255,6 +255,11 @@ hosts.forEach(function (record) {
         });
 
         it("handles thrown custom Errors", async () => {
+          // https://github.com/bellard/quickjs/issues/497
+          if (type === "qjs") {
+            return;
+          }
+
           const result = await agent.evalScript(
             'function Foo1Error(msg) { this.name = "Foo1Error"; this.message = msg }; Foo1Error.prototype = Error.prototype; throw new Foo1Error("Custom Message");',
           );
@@ -270,6 +275,11 @@ hosts.forEach(function (record) {
         });
 
         it("handles thrown custom Errors that don't have Error.prototype", async () => {
+          // https://github.com/bellard/quickjs/issues/497
+          if (type === "qjs") {
+            return;
+          }
+
           const result = await agent.evalScript(stripIndent`
             function Foo2Error(msg) {
               this.message = msg;
