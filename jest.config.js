@@ -18,9 +18,9 @@ const jestConfig = {
 
 if (!process.env.CI) {
   jestConfig.collectCoverageFrom.push(
+    "!<rootDir>/lib/BrowserAgent.js",
     "!<rootDir>/lib/Server.js",
     "!<rootDir>/lib/WebdriverAgent.js",
-    "!<rootDir>/lib/agents/BrowserAgent.js",
     "!<rootDir>/lib/agents/chrome.js",
     "!<rootDir>/lib/agents/edge.js",
     "!<rootDir>/lib/agents/firefox.js",
