@@ -16,19 +16,19 @@ var $262 = {
         options.destroy();
       }
     };
-    for(var glob in options.globals) {
+    for (var glob in options.globals) {
       realm.$262.global[glob] = options.globals[glob];
     }
 
     return realm.$262;
   },
   evalScript(code) {
-    var realmId = typeof this.realm === 'number' ? this.realm : Realm.current();
+    var realmId = typeof this.realm === "number" ? this.realm : Realm.current();
     try {
       Realm.eval(realmId, code);
-      return { type: 'normal', value: undefined }
+      return { type: "normal", value: undefined };
     } catch (e) {
-      return { type: 'throw', value: e }
+      return { type: "throw", value: e };
     }
   },
   getGlobal(name) {
@@ -37,15 +37,19 @@ var $262 = {
   setGlobal(name, value) {
     this.global[name] = value;
   },
-  destroy() { /* noop */ },
-  IsHTMLDDA() { return {}; },
+  destroy() {
+    /* noop */
+  },
+  IsHTMLDDA() {
+    return {};
+  },
   source: $SOURCE,
   realm: Realm.current(),
   detachArrayBuffer(buffer) {
-    var w = new Worker('', {type: 'string'});
-    w.postMessage('', [buffer]);
+    var w = new Worker("", { type: "string" });
+    w.postMessage("", [buffer]);
   },
-  agent: (function() {
+  agent: (function () {
     /*
       Copyright 2017 the V8 project authors. All rights reserved.
       Use of this source code is governed by a BSD-style license that can be
@@ -120,21 +124,21 @@ var $262 = {
         if (i32a === null) {
           i32a = new Int32Array(new SharedArrayBuffer(256));
         }
-        var w = new Worker(workerScript(script), {type: 'string'});
+        var w = new Worker(workerScript(script), { type: "string" });
         w.index = workers.length;
-        w.postMessage({kind: 'start', i32a, index: w.index});
+        w.postMessage({ kind: "start", i32a, index: w.index });
         workers.push(w);
       },
 
       broadcast(sab, id) {
         if (!(sab instanceof SharedArrayBuffer)) {
-          throw new TypeError('sab must be a SharedArrayBuffer.');
+          throw new TypeError("sab must be a SharedArrayBuffer.");
         }
 
         Atomics.store(i32a, BROADCAST_LOC, 0);
 
         for (var w of workers) {
-          w.postMessage({kind: 'broadcast', sab, id: id|0});
+          w.postMessage({ kind: "broadcast", sab, id: id | 0 });
         }
 
         while (Atomics.load(i32a, BROADCAST_LOC) != workers.length) {}
@@ -160,5 +164,5 @@ var $262 = {
       },
     };
     return agent;
-  })()
+  })(),
 };

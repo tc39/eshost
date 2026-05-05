@@ -9,9 +9,7 @@ const path = require("path");
 const Test262Stream = require("test262-stream");
 
 const isWindows =
-  process.platform === "win32" ||
-  process.env.OSTYPE === "cygwin" ||
-  process.env.OSTYPE === "msys";
+  process.platform === "win32" || process.env.OSTYPE === "cygwin" || process.env.OSTYPE === "msys";
 
 // const capabilities = {
 //   browserName: process.env.ESHOST_REMOTE_BROWSERNAME || "firefox",
@@ -75,10 +73,7 @@ if (isWindows) {
       const ESHOST_ENV_NAME = `ESHOST_${record[0].toUpperCase()}_PATH`;
       console.log(`ESHOST_ENV_NAME: ${ESHOST_ENV_NAME}`);
       if (process.env[ESHOST_ENV_NAME]) {
-        record[1].hostPath = path.join(
-          process.env[ESHOST_ENV_NAME],
-          record[1].hostPath
-        );
+        record[1].hostPath = path.join(process.env[ESHOST_ENV_NAME], record[1].hostPath);
         console.log(record[1].hostPath);
       }
     }
@@ -90,8 +85,7 @@ const timeout = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 hosts.forEach(function (record) {
   const type = record[0];
   const options = record[1];
-  const effectiveType =
-    type === "remote" ? options.capabilities.browserName : type;
+  const effectiveType = type === "remote" ? options.capabilities.browserName : type;
 
   const isSkipped = process.env[`ESHOST_SKIP_${type.toUpperCase()}`] || false;
   console.log(`ESHOST_SKIP_${type.toUpperCase()}: ${isSkipped ? "YES" : "NO"}`);
@@ -209,9 +203,7 @@ hosts.forEach(function (record) {
         });
 
         it("handles thrown SyntaxErrors", async () => {
-          const result = await agent.evalScript(
-            'throw new SyntaxError("Custom Message");'
-          );
+          const result = await agent.evalScript('throw new SyntaxError("Custom Message");');
           expect(result.error).toBeTruthy();
           expect(result.stdout).toBe("");
 
@@ -226,9 +218,7 @@ hosts.forEach(function (record) {
         });
 
         it("handles thrown TypeErrors", async () => {
-          const result = await agent.evalScript(
-            'throw new TypeError("Custom Message");'
-          );
+          const result = await agent.evalScript('throw new TypeError("Custom Message");');
           expect(result.error).toBeTruthy();
           expect(result.stdout).toBe("");
           expect(result.error.message).toBe("Custom Message");
@@ -242,9 +232,7 @@ hosts.forEach(function (record) {
         });
 
         it("handles thrown RangeErrors", async () => {
-          const result = await agent.evalScript(
-            'throw new RangeError("Custom Message");'
-          );
+          const result = await agent.evalScript('throw new RangeError("Custom Message");');
           expect(result.error).toBeTruthy();
           expect(result.stdout).toBe("");
 
@@ -259,9 +247,7 @@ hosts.forEach(function (record) {
         });
 
         it("handles thrown Errors", async () => {
-          const result = await agent.evalScript(
-            'throw new Error("Custom Message");'
-          );
+          const result = await agent.evalScript('throw new Error("Custom Message");');
           expect(result.stdout).toBe("");
           expect(result.error).toBeTruthy();
           expect(result.error.message).toBe("Custom Message");
@@ -270,7 +256,7 @@ hosts.forEach(function (record) {
 
         it("handles thrown custom Errors", async () => {
           const result = await agent.evalScript(
-            'function Foo1Error(msg) { this.name = "Foo1Error"; this.message = msg }; Foo1Error.prototype = Error.prototype; throw new Foo1Error("Custom Message");'
+            'function Foo1Error(msg) { this.name = "Foo1Error"; this.message = msg }; Foo1Error.prototype = Error.prototype; throw new Foo1Error("Custom Message");',
           );
           expect(result.stdout).toBe("");
 
@@ -299,7 +285,8 @@ hosts.forEach(function (record) {
           expect(result.stdout).toBe("");
           expect(result.error).toBeTruthy();
           expect(result.error.message).toBe("FAIL!");
-          if (type !== "libjs") // libjs gets this wrong
+          if (type !== "libjs")
+            // libjs gets this wrong
             expect(result.error.name).toBe("Foo2Error");
         });
 
@@ -313,7 +300,7 @@ hosts.forEach(function (record) {
 
         it("handles thrown errors from eval", async () => {
           const result = await agent.evalScript(
-            'eval("\'\\u000Astr\\u000Aing\\u000A\'") === "\\u000Astr\\u000Aing\\u000A"'
+            'eval("\'\\u000Astr\\u000Aing\\u000A\'") === "\\u000Astr\\u000Aing\\u000A"',
           );
           expect(result.stdout).toBe("");
 
@@ -419,9 +406,7 @@ hosts.forEach(function (record) {
             return;
           }
 
-          const evaluationResult = agent.evalScript(
-            "while (true) { }; print(2);"
-          );
+          const evaluationResult = agent.evalScript("while (true) { }; print(2);");
 
           await timeout(100);
 
@@ -660,9 +645,7 @@ hosts.forEach(function (record) {
           print(completion.value.name);
         `);
 
-        expect(
-          (result.stdout || result.stderr).match(/SyntaxError/m)
-        ).toBeTruthy();
+        expect((result.stdout || result.stderr).match(/SyntaxError/m)).toBeTruthy();
       });
 
       it("can eval lexical bindings in new scripts", async () => {
@@ -741,7 +724,7 @@ hosts.forEach(function (record) {
             });
           }
         `,
-          { async: true }
+          { async: true },
         );
 
         expect(result).toMatchInlineSnapshot(`
@@ -835,10 +818,7 @@ hosts.forEach(function (record) {
       beforeEach(async () => {
         jest.setTimeout(60_000);
 
-        const FAKE_TEST262 = path.join(
-          process.cwd(),
-          "test/fixtures/fake-test262"
-        );
+        const FAKE_TEST262 = path.join(process.cwd(), "test/fixtures/fake-test262");
 
         let captured = [];
         let stream = new Test262Stream(FAKE_TEST262, {
@@ -876,9 +856,7 @@ hosts.forEach(function (record) {
 
             const result = await agent.evalScript(record, options);
             let negative = record.attrs.negative;
-            let expectedStdout = record.attrs.flags.async
-              ? "Test262:AsyncTestComplete"
-              : "";
+            let expectedStdout = record.attrs.flags.async ? "Test262:AsyncTestComplete" : "";
 
             if (negative) {
               expect(result.error).not.toBe(null);
@@ -904,7 +882,7 @@ hosts.forEach(function (record) {
                 `);
               }
             }
-          })
+          }),
         );
       }, 60_000);
     });

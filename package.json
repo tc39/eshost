@@ -6,7 +6,8 @@
   "scripts": {
     "build:env": "./node_modules/.bin/esvu",
     "test": "jest --runInBand --config=./jest.config.js",
-    "lint": "eslint lib/* bin/* test/*.js"
+    "lint": "eslint lib/* bin/* test/*.js",
+    "format": "prettier --write ."
   },
   "author": "Brian Terlson",
   "license": "MIT",

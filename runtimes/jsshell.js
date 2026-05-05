@@ -1,5 +1,5 @@
 var $262 = {
-  global: Function('return this')(),
+  global: Function("return this")(),
   gc() {
     return gc();
   },
@@ -15,7 +15,7 @@ var $262 = {
         options.destroy();
       }
     };
-    for(var glob in options.globals) {
+    for (var glob in options.globals) {
       realm.$262.global[glob] = options.globals[glob];
     }
 
@@ -24,9 +24,9 @@ var $262 = {
   evalScript(code) {
     try {
       evaluate(code);
-      return { type: 'normal', value: undefined };
+      return { type: "normal", value: undefined };
     } catch (e) {
-      return { type: 'throw', value: e };
+      return { type: "throw", value: e };
     }
   },
   getGlobal(name) {
@@ -35,10 +35,12 @@ var $262 = {
   setGlobal(name, value) {
     this.global[name] = value;
   },
-  destroy() { /* noop */ },
+  destroy() {
+    /* noop */
+  },
   IsHTMLDDA() {
     /* objectEmulatingUndefined was replaced by createIsHTMLDDA in newer SpiderMonkey builds. */
-    if (typeof createIsHTMLDDA === 'function') {
+    if (typeof createIsHTMLDDA === "function") {
       return createIsHTMLDDA();
     }
     return objectEmulatingUndefined();
@@ -68,22 +70,21 @@ var $262 = {
       being run at all.
     */
 
-    var hasEvalInWorker = typeof evalInWorker === 'function';
-    var hasMailbox = typeof setSharedArrayBuffer === 'function' &&
-                      typeof getSharedArrayBuffer == 'function';
+    var hasEvalInWorker = typeof evalInWorker === "function";
+    var hasMailbox =
+      typeof setSharedArrayBuffer === "function" && typeof getSharedArrayBuffer == "function";
     var shellCode = hasMailbox && hasEvalInWorker;
     var hasThreads = helperThreadCount ? helperThreadCount() > 0 : true;
     var sabTestable = Atomics && SharedArrayBuffer && hasThreads && shellCode;
-
 
     // Date.now() is an invalid substitute for monotonicNow,
     // but until jsshell exposes the function we need, Date.now()
     // is the closest thing available.
     // Ref: https://bugzilla.mozilla.org/show_bug.cgi?id=1457560
-    var monotonicNow = typeof monotonicNow === 'function' ? monotonicNow : Date.now;
+    var monotonicNow = typeof monotonicNow === "function" ? monotonicNow : Date.now;
 
     function thrower() {
-      throw new Test262Error('agent.* not yet supported.');
+      throw new Test262Error("agent.* not yet supported.");
     }
 
     if (!sabTestable) {
@@ -98,23 +99,23 @@ var $262 = {
     // The SpiderMonkey implementation uses a designated shared buffer _ia
     // for coordination, and spinlocks for everything except sleeping.
 
-    var _MSG_LOC = 0;           // Low bit set: broadcast available; High bits: seq #
-    var _ID_LOC = 1;            // ID sent with broadcast
-    var _ACK_LOC = 2;           // Worker increments this to ack that broadcast was received
-    var _RDY_LOC = 3;           // Worker increments this to ack that worker is up and running
-    var _LOCKTXT_LOC = 4;       // Writer lock for the text buffer: 0=open, 1=closed
-    var _NUMTXT_LOC = 5;        // Count of messages in text buffer
-    var _NEXT_LOC = 6;          // First free location in the buffer
-    var _SLEEP_LOC = 7;         // Used for sleeping
+    var _MSG_LOC = 0; // Low bit set: broadcast available; High bits: seq #
+    var _ID_LOC = 1; // ID sent with broadcast
+    var _ACK_LOC = 2; // Worker increments this to ack that broadcast was received
+    var _RDY_LOC = 3; // Worker increments this to ack that worker is up and running
+    var _LOCKTXT_LOC = 4; // Writer lock for the text buffer: 0=open, 1=closed
+    var _NUMTXT_LOC = 5; // Count of messages in text buffer
+    var _NEXT_LOC = 6; // First free location in the buffer
+    var _SLEEP_LOC = 7; // Used for sleeping
 
-    var _FIRST = 10;            // First location of first message
+    var _FIRST = 10; // First location of first message
 
     var _ia = new Int32Array(new SharedArrayBuffer(65536));
     _ia[_NEXT_LOC] = _FIRST;
 
     var _worker_prefix =
-// BEGIN WORKER PREFIX
-`
+      // BEGIN WORKER PREFIX
+      `
 if (typeof $262 == 'undefined') {
   $262 = {};
 }
@@ -166,16 +167,16 @@ $262.agent = (function (global) {
   Atomics_add(_ia, ${_RDY_LOC}, 1);
   return agent;
 })(this);`;
-// END WORKER PREFIX
+    // END WORKER PREFIX
 
     var _numWorkers = 0;
     var _numReports = 0;
     var _reportPtr = _FIRST;
     var {
-        add: Atomics_add,
-        load: Atomics_load,
-        store: Atomics_store,
-        wait: Atomics_wait,
+      add: Atomics_add,
+      load: Atomics_load,
+      store: Atomics_store,
+      wait: Atomics_wait,
     } = Atomics;
     var StringFromCharCode = String.fromCharCode;
 
@@ -184,8 +185,7 @@ $262.agent = (function (global) {
         setSharedArrayBuffer(_ia.buffer);
         var oldrdy = Atomics_load(_ia, _RDY_LOC);
         evalInWorker(_worker_prefix + script);
-        while (Atomics_load(_ia, _RDY_LOC) === oldrdy)
-          ;
+        while (Atomics_load(_ia, _RDY_LOC) === oldrdy);
         _numWorkers++;
       },
 
@@ -194,8 +194,7 @@ $262.agent = (function (global) {
         Atomics_store(_ia, _ID_LOC, id);
         Atomics_store(_ia, _ACK_LOC, 0);
         Atomics_add(_ia, _MSG_LOC, 1);
-        while (Atomics_load(_ia, _ACK_LOC) < _numWorkers)
-          ;
+        while (Atomics_load(_ia, _ACK_LOC) < _numWorkers);
         Atomics_add(_ia, _MSG_LOC, 1);
       },
 
@@ -203,11 +202,10 @@ $262.agent = (function (global) {
         if (_numReports === Atomics_load(_ia, _NUMTXT_LOC)) {
           return null;
         }
-        var s = '';
+        var s = "";
         var i = _reportPtr;
         var len = _ia[i++];
-        for ( let j=0 ; j < len ; j++ )
-          s += StringFromCharCode(_ia[i++]);
+        for (let j = 0; j < len; j++) s += StringFromCharCode(_ia[i++]);
         _reportPtr = i;
         _numReports++;
         return s;
@@ -219,5 +217,5 @@ $262.agent = (function (global) {
 
       monotonicNow,
     };
-  })()
+  })(),
 };

@@ -7,25 +7,29 @@ const DollarEvalScript = graaljs.evalScript;
 const $262 = Object.assign({}, graaljs);
 
 $262.global = globalThis;
-$262.gc = function() {
-  throw new Test262Error('gc() not yet supported.');
+$262.gc = function () {
+  throw new Test262Error("gc() not yet supported.");
 };
-$262.getGlobal = function(name) {
+$262.getGlobal = function (name) {
   return this.global[name];
 };
-$262.setGlobal = function(name, value) {
+$262.setGlobal = function (name, value) {
   this.global[name] = value;
 };
-$262.destroy = function () { /* noop */ };
-$262.IsHTMLDDA = function() { return {}; };
+$262.destroy = function () {
+  /* noop */
+};
+$262.IsHTMLDDA = function () {
+  return {};
+};
 $262.source = $SOURCE;
 
-$262.evalScript = function(code) {
+$262.evalScript = function (code) {
   try {
     DollarEvalScript(code);
-    return { type: 'normal', value: undefined };
+    return { type: "normal", value: undefined };
   } catch (e) {
-    return { type: 'throw', value: e };
+    return { type: "throw", value: e };
   }
 };
 $262.createRealm = function (options = {}) {
