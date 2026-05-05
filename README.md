@@ -1,7 +1,6 @@
 # eshost
 
-[![Travis Build Status](https://travis-ci.org/bterlson/eshost.svg?branch=master)](https://travis-ci.org/bterlson/eshost)
-[![Appveyor Build Status](https://ci.appveyor.com/api/projects/status/github/bterlson/eshost?branch=master&svg=true)](https://ci.appveyor.com/project/bterlson/eshost)
+[![CI](https://github.com/tc39/eshost/actions/workflows/ci.yml/badge.svg)](https://github.com/tc39/eshost/actions/workflows/ci.yml)
 
 Execute ECMAScript code uniformly across any ECMAScript host environment. See also [eshost-cli](https://github.com/bterlson/eshost-cli) for an easy way to use this library from the command line.
 
