@@ -87,7 +87,7 @@ Creates an instance of a host agent for a particular host type. See the table ab
   | SpiderMonkey   | `jsshell`, `spidermonkey`, `sm` |
   | V8             | `d8`, `v8`                      |
   | XS             | `xs`                            |
-  - 1: **DO NOT USE `~/.jsvu/quickjs` WITH ESHOST-CLI**. The main `quickjs` binary does not support the [eshost runtime API](https://github.com/bterlson/eshost#runtime-library). For more, see [Install and Configure Hosts](https://github.com/bterlson/eshost-cli#install-and-configure-hosts).
+  - 1: **DO NOT USE `~/.jsvu/quickjs` WITH ESHOST-CLI**. The main `quickjs` binary does not support the [eshost runtime API](#runtime-library). For more, see [Install and Configure Hosts](https://github.com/bterlson/eshost-cli#install-and-configure-hosts).
 
   Browsers:
 
