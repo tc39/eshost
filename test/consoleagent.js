@@ -9,7 +9,7 @@ let fs;
 
 try {
   fs = require("fs/promises");
-} catch (error) {
+} catch {
   fs = require("fs").promises;
 }
 
