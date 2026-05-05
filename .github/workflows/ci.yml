@@ -9,7 +9,6 @@ on:
 
 env:
   # Shells
-  ESHOST_SKIP_CH: "1"
   ESHOST_SKIP_D8: "1"
   ESHOST_SKIP_ENGINE262: "1"
   ESHOST_SKIP_GRAALJS: "1"
@@ -52,7 +51,6 @@ jobs:
       fail-fast: false
       matrix:
         # Omitted:
-        # - ch: Not installable with esvu, to be removed
         # - hermes: "esvu ✖ Fatal error installing Hermes Error: Command was killed with SIGSEGV (Segmentation fault): /home/runner/.esvu/bin/hermes /tmp/esvu_hermes_test.js"
         # - jsshell: https://github.com/tc39/eshost/pull/141
         # - libjs: Not installable with esvu, as of 1.3.0
@@ -74,13 +72,6 @@ jobs:
         run: |
           echo "$HOME/.esvu/bin" >> "$GITHUB_PATH"
           case "${{ matrix.engine }}" in
-            ch)
-              if ! command -v ch >/dev/null 2>&1; then
-                echo "Chakra binary (ch) not found on PATH" >&2
-                exit 1
-              fi
-              echo "ESHOST_SKIP_CH=" >> "$GITHUB_ENV"
-              ;;
             d8)
               npx esvu --engines=v8
               echo "ESHOST_SKIP_D8=" >> "$GITHUB_ENV"
