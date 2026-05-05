@@ -19,9 +19,7 @@
     "esvu": "^1.3.0",
     "globals": "^17.6.0",
     "hasbin": "^1.2.3",
-    "jasmine": "^6.2.0",
     "jest": "^30.3.0",
-    "mocha": "^11.7.5",
     "prettier": "^3.8.3",
     "sinon": "^21.1.2",
     "test262-stream": "^1.4.0"
@@ -37,6 +35,7 @@
     "selenium-webdriver": "^4.43.0",
     "server-destroy": "^1.0.1",
     "socket.io": "^4.8.3",
+    "stackframe": "^1.3.4",
     "unique-temp-dir": "^1.0.0"
   },
   "homepage": "https://github.com/tc39/eshost"
