@@ -19,7 +19,7 @@ npm install eshost
 | Host            | Name            | Type    | Supported Platforms | Download                                                                            | Notes                                                                                                                                                                                                           |
 | --------------- | --------------- | ------- | ------------------- | ----------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | boa¹            | Boa             | CLI     | Any                 | [Download](https://github.com/boa-dev/boa/releases/tag/nightly)                     |                                                                                                                                                                                                                 |
-| d8¹             | V8              | CLI     | Any                 | Build [from source](https://github.com/v8/v8)                                       | V8 console host. Errors are reported on stdout. Use `$262.getGlobal` and `$262.setGlobal` to get and set properties of global objects in other realms.                                                          |
+| d8¹             | V8              | CLI     | Any                 | Build [from source](https://github.com/v8/v8)                                       | V8 console host. Errors are reported on stdout.                                                                                                                                                                 |
 | engine262       | Engine262       | CLI     | Any                 | Build [from source](https://github.com/engine262/engine262)                         | An implementation of ECMA-262 in JavaScript.                                                                                                                                                                    |
 | graaljs         | GraalJS         | CLI     | Any                 | [Download](https://github.com/graalvm/graalvm-ce-builds)                            |                                                                                                                                                                                                                 |
 | jsshell¹        | SpiderMonkey    | CLI     | Any                 | [Download](https://archive.mozilla.org/pub/firefox/nightly/latest-mozilla-central/) | SpiderMonkey console host.                                                                                                                                                                                      |
@@ -214,14 +214,6 @@ Scripts are different from eval in that lexical bindings go into the global lexi
 ### `$262.destroy()`
 
 Destroys the realm. Note that in some hosts, $262.destroy may not actually stop executing code in the realm or even destroy the realm.
-
-### `$262.getGlobal(name)`
-
-Gets a global property name.
-
-### `$262.setGlobal(name, value)`
-
-Sets a global property name to value.
 
 ## Running the tests
 

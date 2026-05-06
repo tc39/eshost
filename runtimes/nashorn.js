@@ -30,12 +30,6 @@ var $262 = {
       return { type: "throw", value: e };
     }
   },
-  getGlobal: function (name) {
-    return this.global[name];
-  },
-  setGlobal: function (name, value) {
-    this.global[name] = value;
-  },
   destroy: function () {
     /* noop */
   },

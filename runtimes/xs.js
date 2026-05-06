@@ -17,12 +17,6 @@ if (!$262) {
     gc() {
       throw new Test262Error("gc() not yet supported.");
     },
-    getGlobal(name) {
-      return global[name];
-    },
-    setGlobal(name, value) {
-      global[name] = value;
-    },
     agent: (function () {
       function thrower() {
         throw new Test262Error("agent.* not yet supported.");
@@ -39,10 +33,4 @@ if (!$262) {
 }
 /* No IsHTMLDDA */
 $262.destroy = function () {};
-$262.getGlobal = function (name) {
-  return this.global[name];
-};
-$262.setGlobal = function (name, value) {
-  this.global[name] = value;
-};
 $262.source = $SOURCE;
