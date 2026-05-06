@@ -55,8 +55,6 @@ var $262 = {
   destroy() {
     /* noop */
   },
-  IsHTMLDDA() {
-    return {};
-  },
+  /* No IsHTMLDDA */
   source: $SOURCE,
 };

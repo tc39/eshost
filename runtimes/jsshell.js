@@ -38,7 +38,7 @@ var $262 = {
   destroy() {
     /* noop */
   },
-  IsHTMLDDA() {
+  get IsHTMLDDA() {
     /* objectEmulatingUndefined was replaced by createIsHTMLDDA in newer SpiderMonkey builds. */
     if (typeof createIsHTMLDDA === "function") {
       return createIsHTMLDDA();

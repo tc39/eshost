@@ -923,9 +923,25 @@ hosts.forEach(function (record) {
       }
       it("has a default IsHTMLDDA", async () => {
         const agent = await eshost.createAgent(type, options);
-        const result = await agent.evalScript("print(typeof $262.IsHTMLDDA);");
+        const result = await agent.evalScript(stripIndent`
+          if (!("IsHTMLDDA" in $262)) {
+            print("absent");
+          } else {
+            const IsHTMLDDA = $262.IsHTMLDDA;
+            print("present");
+            print(typeof IsHTMLDDA === "undefined");
+            print(IsHTMLDDA == null);
+            print(IsHTMLDDA !== undefined && IsHTMLDDA !== null);
+            print(!IsHTMLDDA);
+          }
+        `);
         expect(result.error === null).toBeTruthy();
-        expect(result.stdout.indexOf("function")).toBe(0);
+        const lines = result.stdout.trim().split(/\r?\n/);
+        if (lines[0] === "present") {
+          expect(lines).toEqual(["present", "true", "true", "true", "true"]);
+        } else {
+          expect(lines).toEqual(["absent"]);
+        }
 
         await agent.stop();
         await agent.destroy();
