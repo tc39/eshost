@@ -16,6 +16,7 @@ env:
   ESHOST_SKIP_HERMES: "1"
   ESHOST_SKIP_JSC: "1"
   ESHOST_SKIP_JSSHELL: "1"
+  ESHOST_SKIP_KIESEL: "1"
   ESHOST_SKIP_LIBJS: "1"
   ESHOST_SKIP_NASHORN: "1"
   ESHOST_SKIP_NODE: "1"
@@ -56,7 +57,7 @@ jobs:
         # - jsshell: https://github.com/tc39/eshost/pull/141
         # - libjs: Not installable with esvu, as of 1.3.0
         # - nashorn: Not installable with esvu
-        engine: [boa, d8, engine262, graaljs, jsc, node, qjs, xs]
+        engine: [boa, d8, engine262, graaljs, jsc, kiesel, node, qjs, xs]
     steps:
       - uses: actions/checkout@v6
 
@@ -71,6 +72,7 @@ jobs:
 
       - name: Install engine
         run: |
+          mkdir -p "$HOME/.esvu/bin"
           echo "$HOME/.esvu/bin" >> "$GITHUB_PATH"
           case "${{ matrix.engine }}" in
             boa)
@@ -96,6 +98,11 @@ jobs:
             jsc)
               npx esvu --engines=javascriptcore
               echo "ESHOST_SKIP_JSC=" >> "$GITHUB_ENV"
+              ;;
+            kiesel)
+              curl -fsSL "https://files.kiesel.dev/kiesel-linux-$(uname -m)" -o "$HOME/.esvu/bin/kiesel"
+              chmod +x "$HOME/.esvu/bin/kiesel"
+              echo "ESHOST_SKIP_KIESEL=" >> "$GITHUB_ENV"
               ;;
             jsshell)
               npx esvu --engines=spidermonkey

@@ -24,6 +24,7 @@ npm install eshost
 | graaljs         | GraalJS         | CLI     | Any                 | [Download](https://github.com/graalvm/graalvm-ce-builds)                            |                                                                                                                                                                                                                 |
 | jsshell¹        | SpiderMonkey    | CLI     | Any                 | [Download](https://archive.mozilla.org/pub/firefox/nightly/latest-mozilla-central/) | SpiderMonkey console host.                                                                                                                                                                                      |
 | jsc¹            | JavaScriptCore  | CLI     | Mac²                | Build [from source](http://trac.webkit.org/wiki/JavaScriptCore)³                    |                                                                                                                                                                                                                 |
+| kiesel          | Kiesel          | CLI     | Any                 | [Download](https://files.kiesel.dev/)                                               |                                                                                                                                                                                                                 |
 | serenity-js     | Serenity LibJS  | CLI     | Any                 | Build [from source](https://github.com/SerenityOS/serenity)                         |                                                                                                                                                                                                                 |
 | nashorn         | Nashorn         | CLI     | Any                 | Build [from source](https://wiki.openjdk.java.net/display/Nashorn/Building+Nashorn) |                                                                                                                                                                                                                 |
 | node            | Node.js         | CLI     | Any                 | https://nodejs.org                                                                  | [Active LTS versions only](https://nodejs.org/en/about/releases/)                                                                                                                                               |
@@ -79,6 +80,7 @@ Creates an instance of a host agent for a particular host type. See the table ab
   | GraalJS        | `graaljs`                       |
   | Hermes         | `hermes`                        |
   | JavaScriptCore | `javascriptcore`, `jsc`         |
+  | Kiesel         | `kiesel`                        |
   | Serenity LibJS | `serenity-js`, `libjs`          |
   | Nashorn        | `nashorn`                       |
   | Node           | `node`                          |

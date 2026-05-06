@@ -17,6 +17,7 @@ const supportedHostsMap = {
   javascriptcore: "jsc",
   jsc: "jsc",
   jsshell: "jsshell",
+  kiesel: "kiesel",
   "serenity-js": "libjs",
   libjs: "libjs",
   nashorn: "nashorn",

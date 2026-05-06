@@ -31,6 +31,7 @@ const hosts = [
   ["hermes", { hostPath: makeHostPath("hermes") }],
   ["jsshell", { hostPath: makeHostPath("sm") }],
   ["jsc", { hostPath: makeHostPath("jsc") }],
+  ["kiesel", { hostPath: makeHostPath("kiesel") }],
   ["libjs", { hostPath: makeHostPath("serenity-js") }],
   ["node", { hostPath: "node" }], // Not provided by esvu
   ["qjs", { hostPath: makeHostPath("quickjs-run-test262") }],
@@ -42,6 +43,7 @@ const hostsOnWindows = [
   ["d8", { hostPath: makeHostPath("v8.exe") }],
   ["engine262", { hostPath: makeHostPath("engine262.cmd") }],
   ["jsshell", { hostPath: makeHostPath("sm.exe") }],
+  ["kiesel", { hostPath: makeHostPath("kiesel.exe") }],
   ["node", { hostPath: "node.exe" }], // Not provided by esvu
 ];
 
@@ -497,6 +499,7 @@ hosts.forEach(function (record) {
             "firefox",
             "graaljs",
             "hermes",
+            "kiesel",
             "libjs",
             "chrome",
             "qjs",
@@ -594,7 +597,7 @@ hosts.forEach(function (record) {
       });
 
       it("can set globals in new realms", async () => {
-        if (["hermes", "xs", "libjs"].includes(type)) {
+        if (["hermes", "xs", "libjs", "kiesel"].includes(type)) {
           return;
         }
 
@@ -737,7 +740,7 @@ hosts.forEach(function (record) {
       });
 
       it("accepts destroy callbacks", async () => {
-        if (["hermes", "xs", "libjs"].includes(type)) {
+        if (["hermes", "xs", "libjs", "kiesel"].includes(type)) {
           return;
         }
 
