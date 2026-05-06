@@ -24,6 +24,7 @@ const makeHostPath = (binName) => {
 };
 
 const hosts = [
+  ["boa", { hostPath: "boa" }],
   ["d8", { hostPath: makeHostPath("v8") }],
   ["engine262", { hostPath: makeHostPath("engine262") }],
   ["graaljs", { hostPath: makeHostPath("graaljs") }],
@@ -37,6 +38,7 @@ const hosts = [
 ];
 
 const hostsOnWindows = [
+  ["boa", { hostPath: "boa.exe" }],
   ["d8", { hostPath: makeHostPath("v8.exe") }],
   ["engine262", { hostPath: makeHostPath("engine262.cmd") }],
   ["jsshell", { hostPath: makeHostPath("sm.exe") }],
@@ -190,6 +192,10 @@ hosts.forEach(function (record) {
       });
 
       describe("Errors", () => {
+        if (["boa"].includes(type)) {
+          return;
+        }
+
         it("handles real SyntaxErrors", async () => {
           const result = await agent.evalScript("foo x++");
           expect(result.error).toBeTruthy();
@@ -486,6 +492,7 @@ hosts.forEach(function (record) {
         // jsshell is not working correctly on travis
         if (
           [
+            "boa",
             "engine262",
             "firefox",
             "graaljs",
@@ -641,7 +648,7 @@ hosts.forEach(function (record) {
       });
 
       it("can eval lexical bindings in new scripts", async () => {
-        if (["hermes", "libjs"].includes(type)) {
+        if (["boa", "hermes", "libjs"].includes(type)) {
           return;
         }
 
@@ -778,7 +785,7 @@ hosts.forEach(function (record) {
       });
 
       it("observes correct cross-script interaction semantics", async () => {
-        if (["engine262", "graaljs", "hermes", "libjs", "xs"].includes(type)) {
+        if (["boa", "engine262", "graaljs", "hermes", "libjs", "xs"].includes(type)) {
           return;
         }
 

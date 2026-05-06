@@ -18,6 +18,7 @@ npm install eshost
 
 | Host            | Name            | Type    | Supported Platforms | Download                                                                            | Notes                                                                                                                                                                                                           |
 | --------------- | --------------- | ------- | ------------------- | ----------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| boa¹            | Boa             | CLI     | Any                 | [Download](https://github.com/boa-dev/boa/releases/tag/nightly)                     |                                                                                                                                                                                                                 |
 | d8¹             | V8              | CLI     | Any                 | Build [from source](https://github.com/v8/v8)                                       | V8 console host. Errors are reported on stdout. Use `$262.getGlobal` and `$262.setGlobal` to get and set properties of global objects in other realms.                                                          |
 | engine262       | Engine262       | CLI     | Any                 | Build [from source](https://github.com/engine262/engine262)                         | An implementation of ECMA-262 in JavaScript.                                                                                                                                                                    |
 | graaljs         | GraalJS         | CLI     | Any                 | [Download](https://github.com/graalvm/graalvm-ce-builds)                            |                                                                                                                                                                                                                 |
@@ -73,6 +74,7 @@ Creates an instance of a host agent for a particular host type. See the table ab
 
   | Host Type      | All Acceptable `type` Values    |
   | -------------- | ------------------------------- |
+  | Boa            | `boa`                           |
   | Engine262      | `engine262`                     |
   | GraalJS        | `graaljs`                       |
   | Hermes         | `hermes`                        |

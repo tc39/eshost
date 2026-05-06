@@ -9,6 +9,7 @@ on:
 
 env:
   # Shells
+  ESHOST_SKIP_BOA: "1"
   ESHOST_SKIP_D8: "1"
   ESHOST_SKIP_ENGINE262: "1"
   ESHOST_SKIP_GRAALJS: "1"
@@ -55,7 +56,7 @@ jobs:
         # - jsshell: https://github.com/tc39/eshost/pull/141
         # - libjs: Not installable with esvu, as of 1.3.0
         # - nashorn: Not installable with esvu
-        engine: [d8, engine262, graaljs, jsc, node, qjs, xs]
+        engine: [boa, d8, engine262, graaljs, jsc, node, qjs, xs]
     steps:
       - uses: actions/checkout@v6
 
@@ -72,6 +73,10 @@ jobs:
         run: |
           echo "$HOME/.esvu/bin" >> "$GITHUB_PATH"
           case "${{ matrix.engine }}" in
+            boa)
+              npx esvu --engines=boa
+              echo "ESHOST_SKIP_BOA=" >> "$GITHUB_ENV"
+              ;;
             d8)
               npx esvu --engines=v8
               echo "ESHOST_SKIP_D8=" >> "$GITHUB_ENV"

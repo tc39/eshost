@@ -6,6 +6,7 @@ const { supportedHostsMap: hostMap, supportedHosts: hostList } = require("../lib
 const runtimePath = require("../lib/runtime-path");
 
 const supportedHostsMap = {
+  boa: "boa",
   chrome: "chrome",
   d8: "d8",
   edge: "edge",
