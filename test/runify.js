@@ -670,49 +670,6 @@ hosts.forEach(function (record) {
         `);
       });
 
-      it("can set properties in new realms", async () => {
-        if (["hermes", "libjs"].includes(type)) {
-          return;
-        }
-
-        const result = await agent.evalScript(stripIndent`
-          var realm = $262.createRealm({});
-          realm.evalScript("var x = 1");
-          realm.evalScript("print(x)");
-          realm.setGlobal("x", 2);
-          realm.evalScript("print(x)");
-        `);
-        expect(result).toMatchInlineSnapshot(`
-          {
-            "error": null,
-            "stderr": "",
-            "stdout": "1
-          2
-          ",
-          }
-        `);
-      });
-
-      it("can access properties from new realms", async () => {
-        if (["hermes", "libjs"].includes(type)) {
-          return;
-        }
-
-        const result = await agent.evalScript(stripIndent`
-          var realm = $262.createRealm({});
-          realm.evalScript("var x = 1");
-          print(realm.getGlobal("x"));
-        `);
-        expect(result).toMatchInlineSnapshot(`
-          {
-            "error": null,
-            "stderr": "",
-            "stdout": "1
-          ",
-          }
-        `);
-      });
-
       it("runs async code", async () => {
         const result = await agent.evalScript(
           stripIndent`

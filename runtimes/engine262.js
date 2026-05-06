@@ -16,10 +16,6 @@
 
     return realm;
   };
-  $262.getGlobal = (name) => $262.global[name];
-  $262.setGlobal = (name, value) => {
-    $262.global[name] = value;
-  };
   $262.destroy = () => {};
   $262.source = $SOURCE;
 }

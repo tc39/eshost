@@ -12,12 +12,6 @@ var $262 = {
   evalScript(code) {
     throw new InternalError("evalScript() not yet supported.");
   },
-  getGlobal(name) {
-    return this.global[name];
-  },
-  setGlobal(name, value) {
-    this.global[name] = value;
-  },
   destroy() {
     /* noop */
   },

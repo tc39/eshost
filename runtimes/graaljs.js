@@ -10,12 +10,6 @@ $262.global = globalThis;
 $262.gc = function () {
   throw new Test262Error("gc() not yet supported.");
 };
-$262.getGlobal = function (name) {
-  return this.global[name];
-};
-$262.setGlobal = function (name, value) {
-  this.global[name] = value;
-};
 $262.destroy = function () {
   /* noop */
 };
@@ -34,8 +28,6 @@ $262.createRealm = function (options = {}) {
   const realm = DollarCreateRealm(options);
   realm.evalScript($262.source);
   realm.source = $262.source;
-  realm.getGlobal = $262.getGlobal;
-  realm.setGlobal = $262.setGlobal;
   realm.destroy = () => {
     if (options.destroy) {
       options.destroy();
