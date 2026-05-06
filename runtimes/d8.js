@@ -40,9 +40,7 @@ var $262 = {
   destroy() {
     /* noop */
   },
-  IsHTMLDDA() {
-    return {};
-  },
+  /* No IsHTMLDDA */
   source: $SOURCE,
   realm: Realm.current(),
   detachArrayBuffer(buffer) {

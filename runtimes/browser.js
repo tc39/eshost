@@ -85,9 +85,7 @@
     destroy() {
       $262.socket.emit("destroy");
     },
-    IsHTMLDDA() {
-      return document.all;
-    },
+    IsHTMLDDA: document.all,
     source: $SOURCE,
   });
 

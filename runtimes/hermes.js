@@ -18,9 +18,7 @@ var $262 = {
   destroy() {
     /* noop */
   },
-  IsHTMLDDA() {
-    return {};
-  },
+  /* No IsHTMLDDA */
   source: $SOURCE,
   get agent() {
     throw new Test262Error("agent.* not yet supported.");

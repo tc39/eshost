@@ -39,9 +39,7 @@ var $262 = {
   destroy: function () {
     /* noop */
   },
-  IsHTMLDDA: function () {
-    return {};
-  },
+  /* No IsHTMLDDA */
   source: $SOURCE,
   agent: (function () {
     function thrower() {
