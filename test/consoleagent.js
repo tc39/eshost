@@ -9,7 +9,7 @@ let fs;
 
 try {
   fs = require("fs/promises");
-} catch (error) {
+} catch {
   fs = require("fs").promises;
 }
 
@@ -26,13 +26,13 @@ describe("ConsoleAgent", () => {
 
       expect(agent).toMatchInlineSnapshot(`
         ConsoleAgent {
-          "args": Array [
+          "args": [
             "-a",
           ],
-          "cpOptions": Object {},
+          "cpOptions": {},
           "hostPath": "../",
           "isStopped": false,
-          "options": Object {
+          "options": {
             "hostArguments": "-a",
             "hostPath": "../",
           },
@@ -51,18 +51,18 @@ describe("ConsoleAgent", () => {
       });
       expect(agent).toMatchInlineSnapshot(`
         ConsoleAgent {
-          "args": Array [
+          "args": [
             "-a",
             "-b",
             "--c",
             "--dee",
           ],
-          "cpOptions": Object {},
-          "hostPath": "c:\\\\",
+          "cpOptions": {},
+          "hostPath": "c:\\",
           "isStopped": false,
-          "options": Object {
+          "options": {
             "hostArguments": "-a -b --c --dee",
-            "hostPath": "c:\\\\",
+            "hostPath": "c:\\",
           },
           "out": "",
           "printCommand": "print",
@@ -79,14 +79,14 @@ describe("ConsoleAgent", () => {
       });
       expect(agent).toMatchInlineSnapshot(`
         ConsoleAgent {
-          "args": Array [
+          "args": [
             "-a",
           ],
-          "cpOptions": Object {},
+          "cpOptions": {},
           "hostPath": "../",
           "isStopped": false,
-          "options": Object {
-            "hostArguments": Array [
+          "options": {
+            "hostArguments": [
               "-a",
             ],
             "hostPath": "../",
@@ -106,23 +106,23 @@ describe("ConsoleAgent", () => {
       });
       expect(agent).toMatchInlineSnapshot(`
         ConsoleAgent {
-          "args": Array [
+          "args": [
             "-a",
             "-b",
             "--c",
             "--dee",
           ],
-          "cpOptions": Object {},
-          "hostPath": "c:\\\\",
+          "cpOptions": {},
+          "hostPath": "c:\\",
           "isStopped": false,
-          "options": Object {
-            "hostArguments": Array [
+          "options": {
+            "hostArguments": [
               "-a",
               "-b",
               "--c",
               "--dee",
             ],
-            "hostPath": "c:\\\\",
+            "hostPath": "c:\\",
           },
           "out": "",
           "printCommand": "print",
@@ -139,16 +139,16 @@ describe("ConsoleAgent", () => {
       });
       expect(agent).toMatchInlineSnapshot(`
         ConsoleAgent {
-          "args": Array [
+          "args": [
             "-a",
             "-b",
             "--c",
             "--dee",
           ],
-          "cpOptions": Object {},
+          "cpOptions": {},
           "hostPath": "/do/wa/diddy/",
           "isStopped": false,
-          "options": Object {
+          "options": {
             "hostArguments": "-a     -b --c 	 --dee",
             "hostPath": "/do/wa/diddy/",
           },
@@ -214,9 +214,7 @@ describe("ConsoleAgent", () => {
       let async = true;
       let compiled = agent.compile(program, { async });
 
-      expect(compiled).toMatchInlineSnapshot(
-        `" const name = 'ConsoleAgent';var a = 1;"`
-      );
+      expect(compiled).toMatchInlineSnapshot(`" const name = 'ConsoleAgent';var a = 1;"`);
     });
     it("Removes all linebreaks from runtime code", async () => {
       const runtime = ConsoleAgent.runtime;
@@ -256,7 +254,7 @@ describe("ConsoleAgent", () => {
 
       expect(compiled).toMatchInlineSnapshot(`
         "
-               var Mine = { m() { Mine.something(\\"1\\") } }; Mine.m();
+               var Mine = { m() { Mine.something("1") } }; Mine.m();
               "
       `);
 
@@ -270,13 +268,10 @@ describe("ConsoleAgent", () => {
     let child;
 
     const defaultTestRecord = {
-      file:
-        "test/fixtures/fake-test262/test/language/comments/hashbang/escaped-hashbang.js",
-      contents:
-        '\u0023\u0021\n\nthrow "Test262: This statement should not be evaluated.";\n',
+      file: "test/fixtures/fake-test262/test/language/comments/hashbang/escaped-hashbang.js",
+      contents: '\u0023\u0021\n\nthrow "Test262: This statement should not be evaluated.";\n',
       attrs: {
-        description:
-          "Hashbang comments should not be allowed to have encoded characters\n",
+        description: "Hashbang comments should not be allowed to have encoded characters\n",
         info: "HashbangComment::\n  #! SingleLineCommentChars[opt]\n",
         flags: { raw: true },
         negative: { phase: "parse", type: "SyntaxError" },
@@ -294,12 +289,8 @@ describe("ConsoleAgent", () => {
       child.stdout = new Emitter();
       child.stderr = new Emitter();
 
-      compile = sandbox
-        .stub(ConsoleAgent.prototype, "compile")
-        .callsFake((code) => code);
-      sandbox
-        .stub(ConsoleAgent.prototype, "createChildProcess")
-        .returns(Promise.resolve(child));
+      compile = sandbox.stub(ConsoleAgent.prototype, "compile").callsFake((code) => code);
+      sandbox.stub(ConsoleAgent.prototype, "createChildProcess").returns(Promise.resolve(child));
 
       sandbox.stub(fs, "writeFile").returns(Promise.resolve(child));
       sandbox.stub(fs, "stat").returns(true);

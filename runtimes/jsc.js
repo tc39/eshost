@@ -8,27 +8,27 @@ var $262 = {};
 // object. Neither `Object.assign` nor the object "spread" syntax can be used
 // for this task because not all properties on the source object are
 // enumerable.
-Object.getOwnPropertyNames(jsc).forEach(function(name) {
+Object.getOwnPropertyNames(jsc).forEach(function (name) {
   $262[name] = jsc[name];
 });
 $262.global = globalThis;
 $262.source = $SOURCE;
-$262.destroy = function() {};
-$262.getGlobal = function(name) {
+$262.destroy = function () {};
+$262.getGlobal = function (name) {
   return this.global[name];
 };
-$262.setGlobal = function(name, value) {
+$262.setGlobal = function (name, value) {
   this.global[name] = value;
 };
-$262.gc = function() {
+$262.gc = function () {
   return gc();
 };
-$262.evalScript = function(code) {
+$262.evalScript = function (code) {
   try {
     DollarEvalScript(code);
-    return { type: 'normal', value: undefined };
+    return { type: "normal", value: undefined };
   } catch (e) {
-    return { type: 'throw', value: e };
+    return { type: "throw", value: e };
   }
 };
 $262.createRealm = function (options = {}) {
@@ -49,7 +49,8 @@ $262.createRealm = function (options = {}) {
   return realm;
 };
 
-
 if (!$262.IsHTMLDDA) {
-  $262.IsHTMLDDA = function() { return {}; };
+  $262.IsHTMLDDA = function () {
+    return {};
+  };
 }

@@ -1,0 +1,141 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+  workflow_dispatch:
+
+env:
+  # Shells
+  ESHOST_SKIP_CH: "1"
+  ESHOST_SKIP_D8: "1"
+  ESHOST_SKIP_ENGINE262: "1"
+  ESHOST_SKIP_GRAALJS: "1"
+  ESHOST_SKIP_HERMES: "1"
+  ESHOST_SKIP_JSC: "1"
+  ESHOST_SKIP_JSSHELL: "1"
+  ESHOST_SKIP_LIBJS: "1"
+  ESHOST_SKIP_NASHORN: "1"
+  ESHOST_SKIP_NODE: "1"
+  ESHOST_SKIP_QJS: "1"
+  ESHOST_SKIP_XS: "1"
+  # Browsers
+  ESHOST_SKIP_CHROME: "1"
+  ESHOST_SKIP_FIREFOX: "1"
+  ESHOST_SKIP_REMOTE: "1"
+
+jobs:
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run linters
+        run: npm run lint
+
+  test:
+    name: Test - ${{ matrix.engine }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        # Omitted:
+        # - ch: Not installable with esvu, to be removed
+        # - hermes: "esvu ✖ Fatal error installing Hermes Error: Command was killed with SIGSEGV (Segmentation fault): /home/runner/.esvu/bin/hermes /tmp/esvu_hermes_test.js"
+        # - jsshell: https://github.com/tc39/eshost/pull/141
+        # - libjs: Not installable with esvu, as of 1.3.0
+        # - nashorn: Not installable with esvu
+        engine: [d8, engine262, graaljs, jsc, node, qjs, xs]
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install engine
+        run: |
+          echo "$HOME/.esvu/bin" >> "$GITHUB_PATH"
+          case "${{ matrix.engine }}" in
+            ch)
+              if ! command -v ch >/dev/null 2>&1; then
+                echo "Chakra binary (ch) not found on PATH" >&2
+                exit 1
+              fi
+              echo "ESHOST_SKIP_CH=" >> "$GITHUB_ENV"
+              ;;
+            d8)
+              npx esvu --engines=v8
+              echo "ESHOST_SKIP_D8=" >> "$GITHUB_ENV"
+              ;;
+            engine262)
+              npx esvu --engines=engine262
+              echo "ESHOST_SKIP_ENGINE262=" >> "$GITHUB_ENV"
+              ;;
+            graaljs)
+              npx esvu --engines=graaljs
+              echo "ESHOST_SKIP_GRAALJS=" >> "$GITHUB_ENV"
+              ;;
+            hermes)
+              npx esvu --engines=hermes
+              echo "ESHOST_SKIP_HERMES=" >> "$GITHUB_ENV"
+              ;;
+            jsc)
+              npx esvu --engines=javascriptcore
+              echo "ESHOST_SKIP_JSC=" >> "$GITHUB_ENV"
+              ;;
+            jsshell)
+              npx esvu --engines=spidermonkey
+              echo "ESHOST_SKIP_JSSHELL=" >> "$GITHUB_ENV"
+              ;;
+            libjs)
+              if ! command -v serenity-js >/dev/null 2>&1; then
+                echo "LibJS binary (serenity-js) not found on PATH" >&2
+                exit 1
+              fi
+              echo "ESHOST_SKIP_LIBJS=" >> "$GITHUB_ENV"
+              ;;
+            nashorn)
+              if ! command -v nashorn >/dev/null 2>&1; then
+                echo "Nashorn binary (nashorn) not found on PATH" >&2
+                exit 1
+              fi
+              echo "ESHOST_SKIP_NASHORN=" >> "$GITHUB_ENV"
+              ;;
+            node)
+              echo "ESHOST_SKIP_NODE=" >> "$GITHUB_ENV"
+              ;;
+            qjs)
+              npx esvu --engines=quickjs
+              echo "ESHOST_SKIP_QJS=" >> "$GITHUB_ENV"
+              ;;
+            xs)
+              npx esvu --engines=xs
+              echo "ESHOST_SKIP_XS=" >> "$GITHUB_ENV"
+              ;;
+            *)
+              echo "Unknown engine: ${{ matrix.engine }}" >&2
+              exit 1
+              ;;
+          esac
+
+      - name: Run tests
+        run: |
+          npm test

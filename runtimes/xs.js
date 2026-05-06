@@ -4,18 +4,18 @@ if (!$262) {
   $262 = {
     global: globalThis,
     createRealm() {
-      throw new Test262Error('createRealm() not yet supported.');
+      throw new Test262Error("createRealm() not yet supported.");
     },
     evalScript(code) {
       try {
         global.evalScript(code);
-        return { type: 'normal', value: undefined };
+        return { type: "normal", value: undefined };
       } catch (e) {
-        return { type: 'throw', value: e };
+        return { type: "throw", value: e };
       }
     },
     gc() {
-      throw new Test262Error('gc() not yet supported.');
+      throw new Test262Error("gc() not yet supported.");
     },
     getGlobal(name) {
       return global[name];
@@ -23,9 +23,9 @@ if (!$262) {
     setGlobal(name, value) {
       global[name] = value;
     },
-    agent: (function() {
+    agent: (function () {
       function thrower() {
-        throw new Test262Error('agent.* not yet supported.');
+        throw new Test262Error("agent.* not yet supported.");
       }
       return {
         start: thrower,
@@ -37,12 +37,12 @@ if (!$262) {
     })(),
   };
 }
-$262.IsHTMLDDA = function() {};
-$262.destroy = function() {};
-$262.getGlobal = function(name) {
+$262.IsHTMLDDA = function () {};
+$262.destroy = function () {};
+$262.getGlobal = function (name) {
   return this.global[name];
 };
-$262.setGlobal = function(name, value) {
+$262.setGlobal = function (name, value) {
   this.global[name] = value;
 };
 $262.source = $SOURCE;

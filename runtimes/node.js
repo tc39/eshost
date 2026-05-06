@@ -1,9 +1,9 @@
 function print(...args) {
   console.log(...args);
 }
-var vm = require('vm');
+var vm = require("vm");
 var $262 = {
-  global: Function('return this')(),
+  global: Function("return this")(),
   gc() {
     return gc();
   },
@@ -17,8 +17,8 @@ var $262 = {
       print,
     };
 
-    for(var glob in options.globals) {
-       context[glob] = options.globals[glob];
+    for (var glob in options.globals) {
+      context[glob] = options.globals[glob];
     }
 
     var context = vm.createContext(context);
@@ -36,14 +36,14 @@ var $262 = {
     const displayErrors = false;
     try {
       if (this.context) {
-        vm.runInContext(code, this.context, {displayErrors});
+        vm.runInContext(code, this.context, { displayErrors });
       } else {
-        vm.runInESHostContext(code, {displayErrors});
+        vm.runInESHostContext(code, { displayErrors });
       }
 
-      return { type: 'normal', value: undefined };
+      return { type: "normal", value: undefined };
     } catch (e) {
-      return { type: 'throw', value: e };
+      return { type: "throw", value: e };
     }
   },
   getGlobal(name) {
@@ -52,9 +52,11 @@ var $262 = {
   setGlobal(name, value) {
     this.global[name] = value;
   },
-  destroy() { /* noop */ },
-  IsHTMLDDA() { return {}; },
-  source: $SOURCE
+  destroy() {
+    /* noop */
+  },
+  IsHTMLDDA() {
+    return {};
+  },
+  source: $SOURCE,
 };
-
-

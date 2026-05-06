@@ -1,25 +1,25 @@
 var $262 = {
-  global: typeof globalThis !== 'undefined' ? globalThis : Function('return this')(),
+  global: typeof globalThis !== "undefined" ? globalThis : Function("return this")(),
   gc() {
-    if (typeof CollectGarbage === 'function') {
+    if (typeof CollectGarbage === "function") {
       return CollectGarbage();
     } else {
-      throw new Test262Error('gc() not yet supported.');
+      throw new Test262Error("gc() not yet supported.");
     }
   },
   createRealm(options) {
     options = options || {};
     options.globals = options.globals || {};
 
-    var realm = WScript.LoadScript(this.source, 'samethread');
+    var realm = WScript.LoadScript(this.source, "samethread");
     realm.$262.source = this.source;
-    realm.$262.destroy = function() {
+    realm.$262.destroy = function () {
       if (options.destroy) {
         options.destroy();
       }
     };
 
-    for(var glob in options.globals) {
+    for (var glob in options.globals) {
       realm.$262.global[glob] = options.globals[glob];
     }
 
@@ -28,9 +28,9 @@ var $262 = {
   evalScript(code) {
     try {
       WScript.LoadScript(code);
-      return { type: 'normal', value: undefined };
+      return { type: "normal", value: undefined };
     } catch (e) {
-      return { type: 'throw', value: e };
+      return { type: "throw", value: e };
     }
   },
   getGlobal(name) {
@@ -39,16 +39,24 @@ var $262 = {
   setGlobal(name, value) {
     this.global[name] = value;
   },
-  destroy() { /* noop */ },
-  IsHTMLDDA() { return {}; },
+  destroy() {
+    /* noop */
+  },
+  IsHTMLDDA() {
+    return {};
+  },
   source: $SOURCE,
-  agent: (function() {
-    const isAgentSupportable = WScript.Broadcast && WScript.ReceiveBroadcast &&
-                                WScript.Sleep && WScript.Leaving &&
-                                WScript.Report && WScript.GetReport;
+  agent: (function () {
+    const isAgentSupportable =
+      WScript.Broadcast &&
+      WScript.ReceiveBroadcast &&
+      WScript.Sleep &&
+      WScript.Leaving &&
+      WScript.Report &&
+      WScript.GetReport;
 
     function thrower() {
-      throw new Test262Error('agent.* not yet supported.');
+      throw new Test262Error("agent.* not yet supported.");
     }
 
     // Date.now() is an invalid substitute for monotonicNow,
@@ -58,7 +66,6 @@ var $262 = {
     if (isAgentSupportable) {
       return {
         start(src) {
-
           const source = `
           var $262 = {
             agent: {
@@ -72,13 +79,23 @@ var $262 = {
           ${src}
           `.trim();
 
-          WScript.LoadScript(source, 'crossthread');
+          WScript.LoadScript(source, "crossthread");
         },
-        broadcast(sab) { WScript.Broadcast(sab); },
-        getReport() { return WScript.GetReport(); },
-        sleep(timeout) { WScript.Sleep(timeout); },
-        leaving() { WScript.Leaving(); },
-        monotonicNow() { return Date.now(); },
+        broadcast(sab) {
+          WScript.Broadcast(sab);
+        },
+        getReport() {
+          return WScript.GetReport();
+        },
+        sleep(timeout) {
+          WScript.Sleep(timeout);
+        },
+        leaving() {
+          WScript.Leaving();
+        },
+        monotonicNow() {
+          return Date.now();
+        },
       };
     } else {
       return {

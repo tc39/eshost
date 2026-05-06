@@ -8,34 +8,42 @@
 <script src="/runtime.js"></script>
 <script src="/error-stack-parser.js"></script>
 <script>
-(function() {
-'use strict';
-var clientId = document.location.search.match(/clientId=([^&]+)(&|$)/)[1];
-// This script removes the global `$262` binding if the `shortName` option is in
-// use. Maintain a function-scoped binding for internal use.
-var $262 = window.$262;
-$262.shortName = document.location.search.match(/shortName=([^&]+)(&|$)/)[1];
-delete window.$262;
-window[$262.shortName] = $262;
+  (function () {
+    "use strict";
+    var clientId = document.location.search.match(/clientId=([^&]+)(&|$)/)[1];
+    // This script removes the global `$262` binding if the `shortName` option is in
+    // use. Maintain a function-scoped binding for internal use.
+    var $262 = window.$262;
+    $262.shortName = document.location.search.match(/shortName=([^&]+)(&|$)/)[1];
+    delete window.$262;
+    window[$262.shortName] = $262;
 
-$262.socket = io(location.origin);
-$262.socket.emit('clientId', clientId);
-$262.socket.on('exec', function (code, options) {
-  function realmDestroyed() {
-    $262.socket.emit('execDone');
-  }
-  var realm = $262.createRealm({ destroy: realmDestroyed });
-  var completion = realm.evalScript(code);
-  if (completion.type === 'throw') {
-    var err = completion.value;
-    if (err.stack) {
-      $262.socket.emit('execError', { name: err.name, message: err.message, stack: ErrorStackParser.parse(err) });
-    } else {
-      $262.socket.emit('execError', { name: err.name, message: err.message, stack: null });
-    }
+    $262.socket = io(location.origin);
+    $262.socket.emit("clientId", clientId);
+    $262.socket.on("exec", function (code, options) {
+      function realmDestroyed() {
+        $262.socket.emit("execDone");
+      }
+      var realm = $262.createRealm({ destroy: realmDestroyed });
+      var completion = realm.evalScript(code);
+      if (completion.type === "throw") {
+        var err = completion.value;
+        if (err.stack) {
+          $262.socket.emit("execError", {
+            name: err.name,
+            message: err.message,
+            stack: ErrorStackParser.parse(err),
+          });
+        } else {
+          $262.socket.emit("execError", {
+            name: err.name,
+            message: err.message,
+            stack: null,
+          });
+        }
 
-    realm.destroy();
-  }
-});
-}());
+        realm.destroy();
+      }
+    });
+  })();
 </script>
