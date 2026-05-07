@@ -207,41 +207,39 @@ describe("ConsoleAgent", () => {
   });
 
   describe("ConsoleAgent.prototype.compile", () => {
-    it("Consumes this.constructor.runtime", async () => {
+    it("Consumes this.constructor.RUNTIME", async () => {
       const agent = new ConsoleAgent();
 
       let program = "var a = 1;";
       let async = true;
       let compiled = agent.compile(program, { async });
 
-      expect(compiled).toMatchInlineSnapshot(`" const name = 'ConsoleAgent';var a = 1;"`);
+      expect(compiled).toMatchInlineSnapshot(`"const name = 'ConsoleAgent';var a = 1;"`);
     });
     it("Removes all linebreaks from runtime code", async () => {
-      const runtime = ConsoleAgent.runtime;
-      const a = new ConsoleAgent();
+      const runtime = ConsoleAgent.RUNTIME;
+      const agent = new ConsoleAgent();
 
-      return Promise.resolve(a).then(function (agent) {
-        ConsoleAgent.runtime = `
+      ConsoleAgent.RUNTIME = `
 
 
         `;
-        let program = "";
-        let async = true;
-        let compiled = agent.compile(program, { async });
+      let program = "";
+      let async = true;
+      let compiled = agent.compile(program, { async });
 
-        expect(compiled).toMatchInlineSnapshot(`" "`);
+      expect(compiled).toMatchInlineSnapshot(`" "`);
 
-        ConsoleAgent.runtime = runtime;
-      });
+      ConsoleAgent.RUNTIME = runtime;
     });
 
     it("Safely replaces all $262 in runtime code", async () => {
-      const runtime = ConsoleAgent.runtime;
+      const runtime = ConsoleAgent.RUNTIME;
       const agent = new ConsoleAgent({
         shortName: "Mine",
       });
 
-      ConsoleAgent.runtime = `
+      ConsoleAgent.RUNTIME = `
         /* $262 is special */
         var $262 = { m() { $262.something("1") } };
         // But not very special.
@@ -258,7 +256,7 @@ describe("ConsoleAgent", () => {
               "
       `);
 
-      ConsoleAgent.runtime = runtime;
+      ConsoleAgent.RUNTIME = runtime;
     });
   });
 
