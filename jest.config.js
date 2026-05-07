@@ -11,7 +11,7 @@ const jestConfig = {
   //   },
   // },
   rootDir: "./",
-  testMatch: ["<rootDir>/test/*.js"],
+  testMatch: ["<rootDir>/test/*.js", "<rootDir>/test/agents/*.js"],
   testPathIgnorePatterns: [],
   transform: {},
   verbose: true,
