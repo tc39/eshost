@@ -1,9 +1,11 @@
-"use strict";
+import fs from "node:fs";
 
-const fs = require("fs");
-const eshost = require("../");
-const { supportedHostsMap: hostMap, supportedHosts: hostList } = require("../lib/supported-hosts");
-const runtimePath = require("../lib/runtime-path");
+import * as eshost from "../lib/eshost.js";
+import {
+  supportedHostsMap as hostMap,
+  supportedHosts as hostList,
+} from "../lib/supported-hosts.js";
+import * as runtimePath from "../lib/runtime-path.js";
 
 const supportedHostsMap = {
   boa: "boa",

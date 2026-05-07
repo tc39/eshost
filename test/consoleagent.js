@@ -1,20 +1,11 @@
-"use strict";
+import { ChildProcess } from "node:child_process";
+import { EventEmitter } from "node:events";
+import fs from "node:fs/promises";
+import os from "node:os";
+import path from "node:path";
+import sinon from "sinon";
 
-const { ChildProcess } = require("child_process");
-const Emitter = require("events");
-const os = require("os");
-const path = require("path");
-
-let fs;
-
-try {
-  fs = require("fs/promises");
-} catch {
-  fs = require("fs").promises;
-}
-
-const ConsoleAgent = require("../lib/ConsoleAgent");
-const sinon = require("sinon");
+import { ConsoleAgent } from "../lib/ConsoleAgent.js";
 
 describe("ConsoleAgent", () => {
   describe("ConsoleAgent({ hostArguments })", () => {
@@ -170,8 +161,8 @@ describe("ConsoleAgent", () => {
       sandbox = sinon.createSandbox();
       child = new ChildProcess();
 
-      child.stdout = new Emitter();
-      child.stderr = new Emitter();
+      child.stdout = new EventEmitter();
+      child.stderr = new EventEmitter();
 
       ccp = sandbox
         .stub(ConsoleAgent.prototype, "createChildProcess")
@@ -284,8 +275,8 @@ describe("ConsoleAgent", () => {
       sandbox = sinon.createSandbox();
       child = new ChildProcess();
 
-      child.stdout = new Emitter();
-      child.stderr = new Emitter();
+      child.stdout = new EventEmitter();
+      child.stderr = new EventEmitter();
 
       compile = sandbox.stub(ConsoleAgent.prototype, "compile").callsFake((code) => code);
       sandbox.stub(ConsoleAgent.prototype, "createChildProcess").returns(Promise.resolve(child));
