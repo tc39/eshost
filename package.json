@@ -6,16 +6,17 @@
   "scripts": {
     "build:env": "./node_modules/.bin/esvu",
     "test": "jest --runInBand --config=./jest.config.js",
-    "lint": "eslint lib/* bin/* test/*.js && prettier --check .",
-    "format": "prettier --write ."
+    "lint": "eslint .",
+    "lint:fix": "eslint --fix ."
   },
   "author": "Brian Terlson",
   "license": "MIT",
   "devDependencies": {
-    "@eslint/eslintrc": "^3.3.5",
     "@eslint/js": "^10.0.1",
     "common-tags": "^1.8.2",
     "eslint": "^10.3.0",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-prettier": "^5.5.5",
     "esvu": "^1.3.0",
     "globals": "^17.6.0",
     "hasbin": "^1.2.3",
