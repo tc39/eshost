@@ -134,6 +134,7 @@ By default, a script will run in `eshost` until the realm is destroyed. For most
   | Property | Description                                                                                                                                         | Default Value |
   | -------- | --------------------------------------------------------------------------------------------------------------------------------------------------- | ------------- |
   | `async`  | Set to `true` if the test is expected to call `$262.destroy()` on the root realm when it's finished. When false, `$262.destroy()` is added for you. | `false`       |
+  | `module` | Set to `true` to evaluate as a module if supported by the host.                                                                                     | `false`       |
 
 #### `Result` Object
 
@@ -153,17 +154,13 @@ The **`error` object** is similar to an error object you get in the host itself.
 | `message` | Error message, if available.                      |
 | `stack`   | An array of stack frames, if available.           |
 
-### `stop(): Promise<void>`
+### `stop(): Promise<boolean>`
 
-Stops the currently executing script. For a console host, this simply kills the child process. For browser hosts, it will kill the current window and create a new one.
-
-### `destroy(): Promise<void>`
-
-Destroys the agent, closing any of its associated resources (eg. browser windows, child processes, etc.).
+Stops the currently executing script. For console agents, this kills the child process and resolves to `true` when an active child process was interrupted, or `false` otherwise. For browser agents, this stops the active evaluation and resolves to `true`.
 
 ### `destroy(): Promise<void>`
 
-Tears down the agent. For browsers, this will close the browser window. For most CLI/Shell hosts, this is a no-op.
+For console agents, `destroy()` calls `stop()`. For browser agents, `destroy()` tears down the browser-side execution environment. For WebDriver-based agents (including `remote`), it also quits the WebDriver session.
 
 ## Runtime Library
 
