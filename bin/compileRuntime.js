@@ -1,6 +1,5 @@
-"use strict";
+import fs from "node:fs";
 
-const fs = require("fs");
 const runtime = process.argv[2];
 
 let file = fs.readFileSync(runtime, "utf-8");

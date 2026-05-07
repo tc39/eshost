@@ -13,6 +13,7 @@ const jestConfig = {
   rootDir: "./",
   testMatch: ["<rootDir>/test/*.js"],
   testPathIgnorePatterns: [],
+  transform: {},
   verbose: true,
 };
 
@@ -29,4 +30,5 @@ if (!process.env.CI) {
   );
 }
 
-module.exports = jestConfig;
+export default jestConfig;
+export { jestConfig };

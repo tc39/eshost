@@ -1,12 +1,12 @@
-"use strict";
+import fs from "node:fs";
+import os from "node:os";
+import path from "node:path";
+import { jest } from "@jest/globals";
+import { stripIndent } from "common-tags";
+import hasbin from "hasbin";
+import Test262Stream from "test262-stream";
 
-const eshost = require("../");
-const { stripIndent } = require("common-tags");
-const hasbin = require("hasbin");
-const fs = require("fs");
-const os = require("os");
-const path = require("path");
-const Test262Stream = require("test262-stream");
+import * as eshost from "../lib/eshost.js";
 
 const isWindows =
   process.platform === "win32" || process.env.OSTYPE === "cygwin" || process.env.OSTYPE === "msys";

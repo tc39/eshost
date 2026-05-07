@@ -2,10 +2,11 @@
   "name": "eshost",
   "version": "9.0.0",
   "description": "Invoke ECMAScript scripts in any command line JS engine.",
-  "main": "lib/eshost.js",
+  "type": "module",
+  "exports": "./lib/eshost.js",
   "scripts": {
     "build:env": "./node_modules/.bin/esvu",
-    "test": "jest --runInBand --config=./jest.config.js",
+    "test": "NODE_OPTIONS=--experimental-vm-modules jest --runInBand --config=./jest.config.js",
     "lint": "eslint .",
     "lint:fix": "eslint --fix ."
   },

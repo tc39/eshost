@@ -47,8 +47,8 @@ npm install eshost
 ## Example Usage
 
 ```js
-const eshost = require("eshost");
-const agent = await eshost.createAgent("d8", { hostPath: "path/to/d8.exe" });
+import { createAgent } from "eshost";
+const agent = await createAgent("d8", { hostPath: "path/to/d8.exe" });
 const result = await agent.evalScript(`
   print(1+1);
 `);

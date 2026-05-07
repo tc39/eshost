@@ -1,8 +1,7 @@
-"use strict";
+import assert from "node:assert";
+import os from "node:os";
 
-const Agent = require("../lib/Agent");
-const assert = require("assert");
-const os = require("os");
+import { Agent } from "../lib/Agent.js";
 
 describe("Agent", function () {
   describe("Agent({ hostArguments })", function () {
