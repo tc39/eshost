@@ -1,16 +1,19 @@
 import KieselAgent from "../../lib/agents/kiesel.js";
 
+const OUTPUT = `ok
+`;
+const ERROR = `Uncaught exception: Error: boom
+  at fn foo
+  at fn bar
+  at fn baz
+`;
+
 describe("KieselAgent", () => {
   describe("normalizeResult", () => {
     it("works", () => {
       const agent = new KieselAgent();
       const result = {
-        stdout: `ok
-Uncaught exception: Error: boom
-  at fn foo
-  at fn bar
-  at fn baz
-`,
+        stdout: `${OUTPUT}${ERROR}`,
         stderr: "",
         error: null,
       };
@@ -18,13 +21,8 @@ Uncaught exception: Error: boom
       const normalized = agent.normalizeResult(result);
 
       expect(normalized).toEqual({
-        stdout: `ok
-`,
-        stderr: `Uncaught exception: Error: boom
-  at fn foo
-  at fn bar
-  at fn baz
-`,
+        stdout: OUTPUT,
+        stderr: ERROR,
         error: null,
       });
     });
@@ -33,11 +31,7 @@ Uncaught exception: Error: boom
   describe("parseError", () => {
     it("works", () => {
       const agent = new KieselAgent();
-      const parsed = agent.parseError(`Uncaught exception: Error: boom
-  at fn foo
-  at fn bar
-  at fn baz
-`);
+      const parsed = agent.parseError(ERROR);
 
       expect(parsed).toEqual({
         name: "Error",
