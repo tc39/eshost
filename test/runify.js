@@ -7,6 +7,27 @@ import hasbin from "hasbin";
 import Test262Stream from "test262-stream";
 
 import * as eshost from "../lib/eshost.js";
+import * as runtimePath from "../lib/runtime-path.js";
+
+describe("Supported Hosts", () => {
+  it("resolves a runtime path for each host type", async () => {
+    for (const hostType of eshost.SUPPORTED_HOSTS) {
+      expect(runtimePath.for(hostType)).toBeTruthy();
+      expect(
+        fs.accessSync(runtimePath.for(hostType), fs.constants.R_OK) === undefined,
+      ).toBeTruthy();
+    }
+  });
+
+  it("only accepts canonical host type names", async () => {
+    await expect(eshost.createAgent("d8", {})).rejects.toThrow(/not supported/);
+    await expect(eshost.createAgent("jsc", {})).rejects.toThrow(/not supported/);
+    await expect(eshost.createAgent("jsshell", {})).rejects.toThrow(/not supported/);
+    await expect(eshost.createAgent("serenity-js", {})).rejects.toThrow(/not supported/);
+    await expect(eshost.createAgent("qjs", {})).rejects.toThrow(/not supported/);
+    await expect(eshost.createAgent("sm", {})).rejects.toThrow(/not supported/);
+  });
+});
 
 const isWindows =
   process.platform === "win32" || process.env.OSTYPE === "cygwin" || process.env.OSTYPE === "msys";
@@ -25,26 +46,26 @@ const makeHostPath = (binName) => {
 
 const hosts = [
   ["boa", { hostPath: "boa" }],
-  ["d8", { hostPath: makeHostPath("v8") }],
   ["engine262", { hostPath: makeHostPath("engine262") }],
   ["graaljs", { hostPath: makeHostPath("graaljs") }],
   ["hermes", { hostPath: makeHostPath("hermes") }],
-  ["jsshell", { hostPath: makeHostPath("sm") }],
-  ["jsc", { hostPath: makeHostPath("jsc") }],
+  ["javascriptcore", { hostPath: makeHostPath("jsc") }],
   ["kiesel", { hostPath: makeHostPath("kiesel") }],
   ["libjs", { hostPath: makeHostPath("serenity-js") }],
   ["node", { hostPath: "node" }], // Not provided by esvu
-  ["qjs", { hostPath: makeHostPath("quickjs-run-test262") }],
+  ["quickjs", { hostPath: makeHostPath("quickjs-run-test262") }],
+  ["spidermonkey", { hostPath: makeHostPath("sm") }],
+  ["v8", { hostPath: makeHostPath("v8") }],
   ["xs", { hostPath: makeHostPath("xs") }],
 ];
 
 const hostsOnWindows = [
   ["boa", { hostPath: "boa.exe" }],
-  ["d8", { hostPath: makeHostPath("v8.exe") }],
   ["engine262", { hostPath: makeHostPath("engine262.cmd") }],
-  ["jsshell", { hostPath: makeHostPath("sm.exe") }],
   ["kiesel", { hostPath: makeHostPath("kiesel.exe") }],
   ["node", { hostPath: "node.exe" }], // Not provided by esvu
+  ["spidermonkey", { hostPath: makeHostPath("sm.exe") }],
+  ["v8", { hostPath: makeHostPath("v8.exe") }],
 ];
 
 if (process.env.CI) {
@@ -259,7 +280,7 @@ hosts.forEach(function (record) {
 
         it("handles thrown custom Errors", async () => {
           // https://github.com/bellard/quickjs/issues/497
-          if (type === "qjs") {
+          if (type === "quickjs") {
             return;
           }
 
@@ -279,7 +300,7 @@ hosts.forEach(function (record) {
 
         it("handles thrown custom Errors that don't have Error.prototype", async () => {
           // https://github.com/bellard/quickjs/issues/497
-          if (type === "qjs") {
+          if (type === "quickjs") {
             return;
           }
 
@@ -491,7 +512,7 @@ hosts.forEach(function (record) {
 
       it('creates "optional" environments correctly (hostArgs)', async () => {
         // browsers are irrelevant to this test
-        // jsshell is not working correctly on travis
+        // spidermonkey is not working correctly on travis
         if (
           [
             "boa",
@@ -502,7 +523,7 @@ hosts.forEach(function (record) {
             "kiesel",
             "libjs",
             "chrome",
-            "qjs",
+            "quickjs",
             "remote",
             "xs",
           ].includes(type)
@@ -515,17 +536,17 @@ hosts.forEach(function (record) {
 
         // Setup special cases
 
-        if (type === "d8") {
+        if (type === "v8") {
           hostArguments = "--expose_gc";
           source = 'print(typeof gc === "function");';
         }
 
-        if (type === "jsc") {
+        if (type === "javascriptcore") {
           hostArguments = "--useDollarVM=true";
           source = 'print(typeof $vm === "object");';
         }
 
-        if (type === "jsshell") {
+        if (type === "spidermonkey") {
           hostArguments = "--disable-weak-refs";
           source = 'print(typeof WeakRef === "undefined");';
         }
@@ -768,9 +789,9 @@ hosts.forEach(function (record) {
     describe("Normal module evaluation", function () {
       let records;
       // For now we're only going to confirm these in
-      // JSC, SpiderMonkey, V8
+      // JavaScriptCore, SpiderMonkey, V8
       //
-      if (!["jsc", "jsshell", "d8"].includes(type)) {
+      if (!["javascriptcore", "spidermonkey", "v8"].includes(type)) {
         return;
       }
 
@@ -885,7 +906,7 @@ hosts.forEach(function (record) {
     });
 
     describe('"IsHTMLDDA"', () => {
-      if (!["jsc", "jsshell", "d8"].includes(type)) {
+      if (!["javascriptcore", "spidermonkey", "v8"].includes(type)) {
         return;
       }
       it("has a default IsHTMLDDA", async () => {
@@ -916,7 +937,7 @@ hosts.forEach(function (record) {
     });
 
     describe("agent", () => {
-      if (!["jsc", "jsshell", "d8"].includes(type)) {
+      if (!["javascriptcore", "spidermonkey", "v8"].includes(type)) {
         return;
       }
 

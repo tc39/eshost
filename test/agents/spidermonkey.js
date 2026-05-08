@@ -1,4 +1,4 @@
-import JSShellAgent from "../../lib/agents/jsshell.js";
+import SpiderMonkeyAgent from "../../lib/agents/spidermonkey.js";
 
 const OUTPUT = `ok
 `;
@@ -40,7 +40,7 @@ const RUNTIME_ERROR_CUSTOM = `/path/to/file.js:1:1 uncaught exception: CustomErr
 const RUNTIME_ERROR_CUSTOM_EMPTY_MESSAGE = `/path/to/file.js:1:1 uncaught exception: CustomError
 `;
 
-describe("JSShellAgent", () => {
+describe("SpiderMonkeyAgent", () => {
   describe("normalizeResult", () => {
     it.each([
       {
@@ -68,7 +68,7 @@ describe("JSShellAgent", () => {
         },
       },
     ])("case %#", ({ result, expected }) => {
-      const agent = new JSShellAgent();
+      const agent = new SpiderMonkeyAgent();
       const normalized = agent.normalizeResult(result);
       expect(normalized).toEqual(expected);
     });
@@ -170,7 +170,7 @@ describe("JSShellAgent", () => {
         },
       },
     ])("case %#", ({ error, expected }) => {
-      const agent = new JSShellAgent();
+      const agent = new SpiderMonkeyAgent();
       const parsed = agent.parseError(error);
       expect(parsed).toEqual(expected);
     });
