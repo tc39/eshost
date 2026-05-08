@@ -16,39 +16,39 @@ npm install eshost
 
 ## Supported Hosts
 
-| Host            | Name            | Type    | Supported Platforms | Download                                                                            | Notes                                                                                                                                                                                                           |
-| --------------- | --------------- | ------- | ------------------- | ----------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| boa¹            | Boa             | CLI     | Any                 | [Download](https://github.com/boa-dev/boa/releases/tag/nightly)                     |                                                                                                                                                                                                                 |
-| d8¹             | V8              | CLI     | Any                 | Build [from source](https://github.com/v8/v8)                                       | V8 console host. Errors are reported on stdout.                                                                                                                                                                 |
-| engine262       | Engine262       | CLI     | Any                 | Build [from source](https://github.com/engine262/engine262)                         | An implementation of ECMA-262 in JavaScript.                                                                                                                                                                    |
-| graaljs         | GraalJS         | CLI     | Any                 | [Download](https://github.com/graalvm/graalvm-ce-builds)                            |                                                                                                                                                                                                                 |
-| jsshell¹        | SpiderMonkey    | CLI     | Any                 | [Download](https://archive.mozilla.org/pub/firefox/nightly/latest-mozilla-central/) | SpiderMonkey console host.                                                                                                                                                                                      |
-| jsc¹            | JavaScriptCore  | CLI     | Mac²                | Build [from source](http://trac.webkit.org/wiki/JavaScriptCore)³                    |                                                                                                                                                                                                                 |
-| kiesel          | Kiesel          | CLI     | Any                 | [Download](https://files.kiesel.dev/)                                               |                                                                                                                                                                                                                 |
-| serenity-js     | Serenity LibJS  | CLI     | Any                 | Build [from source](https://github.com/SerenityOS/serenity)                         |                                                                                                                                                                                                                 |
-| nashorn         | Nashorn         | CLI     | Any                 | Build [from source](https://wiki.openjdk.java.net/display/Nashorn/Building+Nashorn) |                                                                                                                                                                                                                 |
-| node            | Node.js         | CLI     | Any                 | https://nodejs.org                                                                  | [Active LTS versions only](https://nodejs.org/en/about/releases/)                                                                                                                                               |
-| qjs<sup>4</sup> | QuickJS         | CLI     | Any                 | Build [from source](https://bellard.org/quickjs/)                                   |                                                                                                                                                                                                                 |
-| xs              | Moddable XS     | CLI     | Any                 | Build [from source](https://github.com/Moddable-OpenSource/moddable-xst)            |                                                                                                                                                                                                                 |
-| chrome          | Google Chrome   | Browser | Any                 |                                                                                     | Requires [ChromeDriver](https://sites.google.com/a/chromium.org/chromedriver/downloads) in your path.                                                                                                           |
-| edge            | Microsoft Edge  | Browser | Windows             |                                                                                     | Errors reported from Microsoft Edge are all of type Error. Requires [Microsoft WebDriver](https://developer.microsoft.com/en-us/microsoft-edge/platform/documentation/dev-guide/tools/webdriver/) in your path. |
-| firefox         | Mozilla Firefox | Browser | Any                 |                                                                                     | Requires [GeckoDriver](https://github.com/mozilla/geckodriver/releases) in your path (possibly renamed to `wires`).                                                                                             |
-| safari          | Apple Safari    | Browser | Mac                 |                                                                                     | Requires [SafariDriver browser extension](https://github.com/SeleniumHQ/selenium/wiki/SafariDriver).                                                                                                            |
+| Host                  | Name             | Type    | Supported Platforms | Download                                                                            | Notes                                                                                                                                                                                                           |
+| --------------------- | ---------------- | ------- | ------------------- | ----------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `boa`                 | Boa              | CLI     | Any                 | [Download](https://github.com/boa-dev/boa/releases/tag/nightly)                     |                                                                                                                                                                                                                 |
+| `engine262`           | engine262        | CLI     | Any                 | Build [from source](https://github.com/engine262/engine262)                         | An implementation of ECMA-262 in JavaScript.                                                                                                                                                                    |
+| `graaljs`             | GraalJS          | CLI     | Any                 | [Download](https://github.com/graalvm/graalvm-ce-builds)                            |                                                                                                                                                                                                                 |
+| `javascriptcore`      | JavaScriptCore   | CLI     | Mac<sup>1</sup>     | Build [from source](http://trac.webkit.org/wiki/JavaScriptCore)<sup>2</sup>         |                                                                                                                                                                                                                 |
+| `kiesel`              | Kiesel           | CLI     | Any                 | [Download](https://files.kiesel.dev/)                                               |                                                                                                                                                                                                                 |
+| `libjs`               | SerenityOS LibJS | CLI     | Any                 | Build [from source](https://github.com/SerenityOS/serenity)                         |                                                                                                                                                                                                                 |
+| `nashorn`             | Nashorn          | CLI     | Any                 | Build [from source](https://wiki.openjdk.java.net/display/Nashorn/Building+Nashorn) |                                                                                                                                                                                                                 |
+| `node`                | Node.js          | CLI     | Any                 | https://nodejs.org                                                                  | [Active LTS versions only](https://nodejs.org/en/about/releases/)                                                                                                                                               |
+| `quickjs`<sup>3</sup> | QuickJS          | CLI     | Any                 | Build [from source](https://bellard.org/quickjs/)                                   |                                                                                                                                                                                                                 |
+| `spidermonkey`        | SpiderMonkey     | CLI     | Any                 | [Download](https://archive.mozilla.org/pub/firefox/nightly/latest-mozilla-central/) | SpiderMonkey console host.                                                                                                                                                                                      |
+| `v8`                  | V8               | CLI     | Any                 | Build [from source](https://github.com/v8/v8)                                       | V8 console host. Errors are reported on stdout.                                                                                                                                                                 |
+| `xs`                  | Moddable XS      | CLI     | Any                 | Build [from source](https://github.com/Moddable-OpenSource/moddable-xst)            |                                                                                                                                                                                                                 |
+| `chrome`              | Google Chrome    | Browser | Any                 |                                                                                     | Requires [ChromeDriver](https://sites.google.com/a/chromium.org/chromedriver/downloads) in your path.                                                                                                           |
+| `edge`                | Microsoft Edge   | Browser | Windows             |                                                                                     | Errors reported from Microsoft Edge are all of type Error. Requires [Microsoft WebDriver](https://developer.microsoft.com/en-us/microsoft-edge/platform/documentation/dev-guide/tools/webdriver/) in your path. |
+| `firefox`             | Mozilla Firefox  | Browser | Any                 |                                                                                     | Requires [GeckoDriver](https://github.com/mozilla/geckodriver/releases) in your path (possibly renamed to `wires`).                                                                                             |
+| `remote`              |                  | Browser | Any                 |                                                                                     | Generic WebDriver agent.                                                                                                                                                                                        |
+| `safari`              | Apple Safari     | Browser | Mac                 |                                                                                     | Requires [SafariDriver browser extension](https://github.com/SeleniumHQ/selenium/wiki/SafariDriver).                                                                                                            |
 
-- 1: `eshost` accepts `esvu` or `jsvu` style binary name values as the first argument to `eshost.createAgent(type: string, options = {}): Agent`. See [Installing Engines](#installing-engines).
-- 2: It is possible to build `jsc` on other platforms, but not supported.
-- 3: Also available on your Mac system at `/System/Library/Frameworks/JavaScriptCore.framework/Versions/A/Resources/jsc`.
-- 4: For QuickJS installation help, see [Install and Configure Hosts](https://github.com/bterlson/eshost-cli#install-and-configure-hosts).
+- 1: It is possible to build `jsc` on other platforms, but not supported.
+- 2: Also available on your Mac system at `/System/Library/Frameworks/JavaScriptCore.framework/Versions/A/Resources/jsc`.
+- 3: For QuickJS installation help, see [Install and Configure Hosts](https://github.com/bterlson/eshost-cli#install-and-configure-hosts).
 
 ## Installing Engines
 
-[esvu](https://github.com/devsnek/esvu) or [jsvu](https://github.com/GoogleChromeLabs/jsvu) are the recommended tools for maintaining JavaScript engines for testing purposes. Take a look at the [esvu supported engines](https://github.com/devsnek/esvu#usage) or [jsvu supported engines](https://github.com/GoogleChromeLabs/jsvu#supported-engines) for more information.
+[esvu](https://github.com/devsnek/esvu) or [jsvu](https://github.com/GoogleChromeLabs/jsvu) are the recommended tools for maintaining JavaScript engines for testing purposes.
 
 ## Example Usage
 
 ```js
 import { createAgent } from "eshost";
-const agent = await createAgent("d8", { hostPath: "path/to/d8.exe" });
+const agent = await createAgent("v8", { hostPath: "path/to/v8" });
 const result = await agent.evalScript(`
   print(1+1);
 `);
@@ -57,47 +57,17 @@ console.log(result.stdout);
 
 ## Documentation
 
-### `eshost`
+### `eshost.SUPPORTED_HOSTS`
 
-The `eshost` object is the main export of the "eshost" module.
-
-### `eshost.supportedHosts`
-
-An array of supported host types.
+A set of supported host types.
 
 ### `eshost.createAgent(type: string, options = {}): Agent`
 
-Creates an instance of a host agent for a particular host type. See the table above for supported host types.
+Creates an instance of a host agent for a particular host type.
 
 - `type`
 
-  Shells:
-
-  | Host Type      | All Acceptable `type` Values    |
-  | -------------- | ------------------------------- |
-  | Boa            | `boa`                           |
-  | Engine262      | `engine262`                     |
-  | GraalJS        | `graaljs`                       |
-  | Hermes         | `hermes`                        |
-  | JavaScriptCore | `javascriptcore`, `jsc`         |
-  | Kiesel         | `kiesel`                        |
-  | Serenity LibJS | `serenity-js`, `libjs`          |
-  | Nashorn        | `nashorn`                       |
-  | Node           | `node`                          |
-  | QuickJS        | `qjs` <sup>1</sup>              |
-  | SpiderMonkey   | `jsshell`, `spidermonkey`, `sm` |
-  | V8             | `d8`, `v8`                      |
-  | XS             | `xs`                            |
-  - 1: **DO NOT USE `~/.jsvu/quickjs` WITH ESHOST-CLI**. The main `quickjs` binary does not support the [eshost runtime API](#runtime-library). For more, see [Install and Configure Hosts](https://github.com/bterlson/eshost-cli#install-and-configure-hosts).
-
-  Browsers:
-
-  | Host Type | All Acceptable `type` Values |
-  | --------- | ---------------------------- |
-  | chrome    | `chrome`                     |
-  | edge      | `edge`                       |
-  | firefox   | `firefox`                    |
-  | safari    | `safari`                     |
+  See [Supported Hosts](#supported-hosts) for the list of host types.
 
 - `options`
 
@@ -174,7 +144,7 @@ A reference to the global object.
 
 ### `$262.createRealm(options)`
 
-Creates a new realm, returning that realm's runtime library ($).
+Creates a new realm, returning that realm's runtime library (`$262`).
 
 For example, creating two nested realms:
 
@@ -227,11 +197,11 @@ variable.
 One or more hosts may be skipped from the test run by setting corresponding
 environment variables whose name match the pattern `ESHOST_SKIP_*`, where `*`
 is the capitalized name of the host. For example, in a Unix-like system, the
-following command executes the project's tests but skips JavaScriptCore and D8
+following command executes the project's tests but skips JavaScriptCore and V8
 tests:
 
 ```
-ESHOST_SKIP_JSC=1 ESHOST_SKIP_D8=1 npm test
+ESHOST_SKIP_JAVASCRIPTCORE=1 ESHOST_SKIP_V8=1 npm test
 ```
 
 Tests for the "remote" agent can be configured to run against any arbitrary
