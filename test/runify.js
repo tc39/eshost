@@ -53,6 +53,7 @@ const hosts = [
   ["kiesel", { hostPath: makeHostPath("kiesel") }],
   ["libjs", { hostPath: makeHostPath("serenity-js") }],
   ["node", { hostPath: "node" }], // Not provided by esvu
+  ["quanta", { hostPath: "quanta" }], // Not provided by esvu
   ["quickjs", { hostPath: makeHostPath("quickjs-run-test262") }],
   ["spidermonkey", { hostPath: makeHostPath("sm") }],
   ["v8", { hostPath: makeHostPath("v8") }],
@@ -523,6 +524,7 @@ hosts.forEach(function (record) {
             "kiesel",
             "libjs",
             "chrome",
+            "quanta",
             "quickjs",
             "remote",
             "xs",
